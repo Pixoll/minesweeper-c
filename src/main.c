@@ -13,8 +13,13 @@
 
 void initSDL();
 void closeSDL();
+void exceptArg(char* args[], int n, const char *message);
 
 int main(int argc, char* argv[]) {
+    exceptArg(argv, 1, "Provide the number of rows\n");
+    exceptArg(argv, 2, "Provide the number of columns\n");
+    exceptArg(argv, 3, "Provide the mines density\n");
+
     initSDL();
     initColors();
 
@@ -66,4 +71,10 @@ void closeSDL() {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
+}
+
+void exceptArg(char *args[], int n, const char *message) {
+    if (args[n]) return;
+    printf("arg%d: %s\n", n, message);
+    exit(1);
 }
