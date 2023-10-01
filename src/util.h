@@ -20,7 +20,7 @@ typedef enum FONT_TYPE FONT_TYPE;
 
 // General purpose
 
-int random(int min, int max);
+int randomBetween(int min, int max);
 
 // String related
 

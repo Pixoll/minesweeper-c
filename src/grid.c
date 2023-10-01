@@ -40,8 +40,8 @@ void createGrid(const int rows, const int columns, const int mines) {
     int placedMines = 0;
     // TODO This is bad
     while (placedMines < mines) {
-        const int x = random(0, columns - 1);
-        const int y = random(0, rows - 1);
+        const int x = randomBetween(0, columns - 1);
+        const int y = randomBetween(0, rows - 1);
         if (grid[x][y] == CELL_0) {
             grid[x][y] = CELL_MINE;
             placedMines++;

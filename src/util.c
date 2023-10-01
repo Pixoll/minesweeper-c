@@ -15,7 +15,7 @@ const char *fontPaths[FONT_TYPES] = {
     "assets/fonts/Rubik-Bold.ttf",
 };
 
-int random(const int min, const int max) {
+int randomBetween(const int min, const int max) {
     return (rand() % (max - min + 1)) + min;
 }
 

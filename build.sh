@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# chmod a+x build.sh
+
 exename=$1
 if [[ -z $exename ]]; then
     exename=minesweeper
