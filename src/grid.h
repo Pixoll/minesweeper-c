@@ -1,8 +1,10 @@
 #ifndef __GRID_DEFINED
 
+#include <stdbool.h>
+
 #define __GRID_DEFINED
 
-enum GRID_CELL {
+enum CELL_TYPE {
     CELL_0,
     CELL_1,
     CELL_2,
@@ -15,7 +17,13 @@ enum GRID_CELL {
     CELL_MINE,
     CELL_TYPES,
 };
-typedef enum GRID_CELL GRID_CELL;
+typedef enum CELL_TYPE CELL_TYPE;
+
+typedef struct GridCell {
+    CELL_TYPE type;
+    bool flagged;
+    bool revealed;
+} GridCell;
 
 typedef struct GridMeasurements {
     int cellSize;

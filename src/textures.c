@@ -18,7 +18,7 @@ void initCellTextures() {
     const int cellSize = gridMeasurements.cellSize;
     const int gridLineWidth = gridMeasurements.gridLineWidth;
 
-    for (GRID_CELL cell = CELL_1; cell < CELL_TYPES; cell++) {
+    for (CELL_TYPE cell = CELL_1; cell < CELL_TYPES; cell++) {
         char cellText[2];
         snprintf(cellText, 2, "%c", cell == CELL_MINE ? 'M' : ('0' + cell));
         Color cellColor = colors[cell == CELL_MINE ? COLOR_WHITE : (COLOR_GRID_1 + cell - 1)];
@@ -73,7 +73,7 @@ void initTextures() {
 }
 
 void freeCellTextures() {
-    for (GRID_CELL cell = CELL_1; cell < CELL_TYPES; cell++) {
+    for (CELL_TYPE cell = CELL_1; cell < CELL_TYPES; cell++) {
         Texture cellTexture = cellTextures[cell];
         SDL_FreeSurface(cellTexture.surface);
         SDL_DestroyTexture(cellTexture.texture);

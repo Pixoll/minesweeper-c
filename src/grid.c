@@ -12,13 +12,13 @@
 #include "textures.h"
 #include "util.h"
 
-char **grid;
+GridCell **grid;
 bool createdGrid = false;
 
 GridMeasurements gridMeasurements;
 bool gridMeasurementsReady = false;
 
-GRID_CELL countSurroundingMines(int x, int y, int rows, int columns);
+CELL_TYPE countSurroundingMines(int x, int y, int rows, int columns);
 
 void createGrid(const int rows, const int columns, const int mines) {
     if (createdGrid) {
@@ -27,11 +27,16 @@ void createGrid(const int rows, const int columns, const int mines) {
         free(grid);
     }
 
-    grid = malloc(columns * sizeof(char *));
+    grid = malloc(columns * sizeof(GridCell *));
     for (int i = 0; i < columns; i++) {
-        grid[i] = malloc(rows * sizeof(char));
-        for (int j = 0; j < rows; j++)
-            grid[i][j] = CELL_0;
+        grid[i] = malloc(rows * sizeof(GridCell));
+        for (int j = 0; j < rows; j++) {
+            grid[i][j] = (GridCell){
+                .type = CELL_0,
+                .flagged = false,
+                .revealed = false,
+            };
+        }
     }
 
     srand(time(NULL));
@@ -41,8 +46,8 @@ void createGrid(const int rows, const int columns, const int mines) {
     while (placedMines < mines) {
         const int x = randomBetween(0, columns - 1);
         const int y = randomBetween(0, rows - 1);
-        if (grid[x][y] == CELL_0) {
-            grid[x][y] = CELL_MINE;
+        if (grid[x][y].type == CELL_0) {
+            grid[x][y].type = CELL_MINE;
             placedMines++;
         }
     }
@@ -50,10 +55,10 @@ void createGrid(const int rows, const int columns, const int mines) {
     // Count surrounding mines
     for (int i = 0; i < columns; i++) {
         for (int j = 0; j < rows; j++) {
-            const GRID_CELL cell = grid[i][j];
+            const CELL_TYPE cell = grid[i][j].type;
             if (cell == CELL_MINE) continue;
-            const GRID_CELL surrounding = countSurroundingMines(i, j, rows, columns);
-            grid[i][j] = surrounding;
+            const CELL_TYPE surrounding = countSurroundingMines(i, j, rows, columns);
+            grid[i][j].type = surrounding;
         }
     }
 
@@ -101,7 +106,7 @@ void drawGrid(const int rows, const int columns) {
         const int x = gridXOffset + cellSize * i;
         for (int j = 0; j < rows; j++) {
             const int y = gridYOffset + cellSize * j;
-            const GRID_CELL cell = grid[i][j];
+            const CELL_TYPE cell = grid[i][j].type;
             if (cell == CELL_0) continue;
 
             Texture cellTexture = cellTextures[cell];
@@ -113,7 +118,7 @@ void drawGrid(const int rows, const int columns) {
     }
 }
 
-GRID_CELL countSurroundingMines(const int x, const int y, const int rows, const int columns) {
+CELL_TYPE countSurroundingMines(const int x, const int y, const int rows, const int columns) {
     int surrounding = 0;
     for (int i = -1; i <= 1; i++) {
         const int nx = x + i;
@@ -121,7 +126,7 @@ GRID_CELL countSurroundingMines(const int x, const int y, const int rows, const 
         for (int j = -1; j <= 1; j++) {
             const int ny = y + j;
             if (ny < 0 || ny > rows - 1) continue;
-            if (grid[nx][ny] == CELL_MINE) surrounding++;
+            if (grid[nx][ny].type == CELL_MINE) surrounding++;
         }
     }
 
