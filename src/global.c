@@ -24,17 +24,18 @@ void getWindowSize() {
 
 void initColors() {
     SDL_Surface *surface = SDL_GetWindowSurface(window);
+    colors[COLOR_BLACK] = mapColor(surface, "#000000");
     colors[COLOR_DARK_GREY] = mapColor(surface, "#1e1f1c");
     colors[COLOR_GREY] = mapColor(surface, "#333333");
     colors[COLOR_LIGHT_GREY] = mapColor(surface, "#606060");
     colors[COLOR_THEME] = mapColor(surface, "#d77f37");
     colors[COLOR_WHITE] = mapColor(surface, "#ffffff");
-    colors[COLOR_GRID_1] = mapColor(surface, "#0000ff");
-    colors[COLOR_GRID_2] = mapColor(surface, "#008000");
-    colors[COLOR_GRID_3] = mapColor(surface, "#ff0000");
-    colors[COLOR_GRID_4] = mapColor(surface, "#000080");
-    colors[COLOR_GRID_5] = mapColor(surface, "#800000");
-    colors[COLOR_GRID_6] = mapColor(surface, "#008080");
-    colors[COLOR_GRID_7] = mapColor(surface, "#808080");
-    colors[COLOR_GRID_8] = mapColor(surface, "#ffffff");
+    colors[COLOR_GRID_1] = mapColor(surface, "#b3b3ff");  // #0000ff
+    colors[COLOR_GRID_2] = mapColor(surface, "#b3ffb3");  // #008000
+    colors[COLOR_GRID_3] = mapColor(surface, "#ffb3b3");  // #ff0000
+    colors[COLOR_GRID_4] = mapColor(surface, "#4d4dff");  // #000080
+    colors[COLOR_GRID_5] = mapColor(surface, "#ff4d4d");  // #800000
+    colors[COLOR_GRID_6] = mapColor(surface, "#b3ffff");  // #008080
+    colors[COLOR_GRID_7] = mapColor(surface, "#bfbfbf");  // #808080
+    colors[COLOR_GRID_8] = mapColor(surface, "#ffffff");  // #ffffff
 }

@@ -19,6 +19,7 @@ extern int windowHeight;
 
 enum COLORS {
     COLOR_THEME,
+    COLOR_BLACK,
     COLOR_DARK_GREY,
     COLOR_GREY,
     COLOR_LIGHT_GREY,
