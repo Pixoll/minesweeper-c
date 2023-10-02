@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include "fonts.h"
 #include "global.h"
@@ -42,6 +43,8 @@ int main(int argc, char *argv[]) {
 
     SDL_Event event;
     bool quit = false;
+    time_t start = time(NULL);
+    int frames = 0;
 
     while (!quit) {
         while (SDL_PollEvent(&event) != 0) {
@@ -65,7 +68,11 @@ int main(int argc, char *argv[]) {
         drawGrid(rows, columns);
 
         SDL_RenderPresent(renderer);
+        frames++;
     }
+
+    const float averageFps = (float)frames / (time(NULL) - start);
+    printf("Average runtime FPS: %.2f", averageFps);
 
     freeTextures();
     freeFonts();
