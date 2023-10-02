@@ -14,6 +14,9 @@
 char **grid;
 bool createdGrid = false;
 
+GridMeasurements gridMeasurements;
+bool gridMeasurementsReady = false;
+
 GRID_CELL countSurroundingMines(int x, int y, int rows, int columns);
 
 void createGrid(const int rows, const int columns, const int mines) {
@@ -56,7 +59,9 @@ void createGrid(const int rows, const int columns, const int mines) {
     createdGrid = true;
 }
 
-void drawGrid(const int rows, const int columns) {
+void calculateGridMeasurements(const int rows, const int columns) {
+    if (gridMeasurementsReady) return;
+
     const float gridRatio = (float)columns / rows;
     const float windowRatio = (float)windowWidth / windowHeight;
 
@@ -71,8 +76,23 @@ void drawGrid(const int rows, const int columns) {
     const int gridHeight = cellSize * rows + gridLineWidth;
     const int gridYOffset = (windowHeight - gridHeight) / 2;
 
+    gridMeasurements.cellSize = cellSize;
+    gridMeasurements.gridLineWidth = gridLineWidth;
+    gridMeasurements.gridXOffset = gridXOffset;
+    gridMeasurements.gridYOffset = gridYOffset;
+    gridMeasurements.gridWidth = gridWidth;
+    gridMeasurements.gridHeight = gridHeight;
+
+    gridMeasurementsReady = true;
+}
+
+void drawGrid(const int rows, const int columns) {
+    const int cellSize = gridMeasurements.cellSize;
+    const int gridXOffset = gridMeasurements.gridXOffset;
+    const int gridYOffset = gridMeasurements.gridYOffset;
+
     TTF_Font *RubikMedium = getFont(FONT_RUBIK_MEDIUM, cellSize);
-    initTextures(RubikMedium, cellSize, gridLineWidth, gridXOffset, gridYOffset, gridWidth, gridHeight);
+    initTextures(RubikMedium);
 
     // Draw grid
     const SDL_Rect gridArea = rectangle(0, 0, windowWidth, windowHeight);

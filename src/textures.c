@@ -13,7 +13,10 @@ Texture cellTextures[CELL_TYPES];
 SDL_Texture *gridTexture = NULL;
 bool texturesReady = false;
 
-void initCellTextures(TTF_Font *RubikMedium, int cellSize, int gridLineWidth) {
+void initCellTextures(TTF_Font *RubikMedium) {
+    const int cellSize = gridMeasurements.cellSize;
+    const int gridLineWidth = gridMeasurements.gridLineWidth;
+
     for (GRID_CELL cell = CELL_1; cell < CELL_TYPES; cell++) {
         char cellText[2];
         snprintf(cellText, 2, "%c", cell == CELL_MINE ? 'M' : ('0' + cell));
@@ -29,7 +32,14 @@ void initCellTextures(TTF_Font *RubikMedium, int cellSize, int gridLineWidth) {
     }
 }
 
-void initGridTexture(int cellSize, int gridLineWidth, int gridXOffset, int gridYOffset, int gridWidth, int gridHeight) {
+void initGridTexture() {
+    const int cellSize = gridMeasurements.cellSize;
+    const int gridLineWidth = gridMeasurements.gridLineWidth;
+    const int gridXOffset = gridMeasurements.gridXOffset;
+    const int gridYOffset = gridMeasurements.gridYOffset;
+    const int gridWidth = gridMeasurements.gridWidth;
+    const int gridHeight = gridMeasurements.gridHeight;
+
     SDL_Surface *surface = SDL_GetWindowSurface(window);
     for (int x = gridXOffset; x <= gridXOffset + gridWidth; x += cellSize) {
         const SDL_Rect gridLine = rectangle(x, gridYOffset, gridLineWidth, gridHeight);
@@ -43,10 +53,10 @@ void initGridTexture(int cellSize, int gridLineWidth, int gridXOffset, int gridY
     gridTexture = SDL_CreateTextureFromSurface(renderer, surface);
 }
 
-void initTextures(TTF_Font *RubikMedium, int cellSize, int gridLineWidth, int gridXOffset, int gridYOffset, int gridWidth, int gridHeight) {
+void initTextures(TTF_Font *RubikMedium) {
     if (texturesReady) return;
-    initGridTexture(cellSize, gridLineWidth, gridXOffset, gridYOffset, gridWidth, gridHeight);
-    initCellTextures(RubikMedium, cellSize, gridLineWidth);
+    initGridTexture();
+    initCellTextures(RubikMedium);
     texturesReady = true;
 }
 

@@ -6,6 +6,7 @@
 
 #include "global.h"
 #include "grid.h"
+#include "textures.h"
 #include "util.h"
 
 #define WINDOW_FLAGS SDL_WINDOW_SHOWN | SDL_WINDOW_MAXIMIZED
@@ -43,11 +44,14 @@ int main(int argc, char* argv[]) {
 
         getWindowSize();
         SDL_RenderClear(renderer);
+
+        calculateGridMeasurements(rows, columns);
         drawGrid(rows, columns);
 
         SDL_RenderPresent(renderer);
     }
 
+    freeTextures();
     closeSDL();
     return 0;
 }

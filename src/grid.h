@@ -17,7 +17,19 @@ enum GRID_CELL {
 };
 typedef enum GRID_CELL GRID_CELL;
 
+typedef struct GridMeasurements {
+    int cellSize;
+    int gridLineWidth;
+    int gridXOffset;
+    int gridYOffset;
+    int gridWidth;
+    int gridHeight;
+} GridMeasurements;
+
+extern GridMeasurements gridMeasurements;
+
 void createGrid(int rows, int columns, int mines);
+void calculateGridMeasurements(int rows, int columns);
 void drawGrid(int rows, int columns);
 
 #endif

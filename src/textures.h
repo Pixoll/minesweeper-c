@@ -16,7 +16,7 @@ typedef struct Texture {
 extern Texture cellTextures[CELL_TYPES];
 extern SDL_Texture *gridTexture;
 
-void initTextures(TTF_Font *RubikMedium, int cellSize, int gridLineWidth, int gridXOffset, int gridYOffset, int gridWidth, int gridHeight);
+void initTextures(TTF_Font *RubikMedium);
 void freeTextures();
 
 #endif
