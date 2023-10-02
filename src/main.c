@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
     }
 
     const float averageFps = (float)frames / (time(NULL) - start);
-    printf("Average runtime FPS: %.2f", averageFps);
+    printf("Average runtime FPS: %.2f\n", averageFps);
 
     freeTextures();
     freeFonts();
