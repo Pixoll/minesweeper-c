@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
     SDL_SetRenderDrawColor(renderer, bgColor.r, bgColor.g, bgColor.b, bgColor.a);
 
     SDL_Event event;
-    bool quit = false;
+    bool quit = false, firstCell = true;
     time_t start = time(NULL);
     int frames = 0;
 
@@ -52,6 +52,19 @@ int main(int argc, char *argv[]) {
                 case SDL_QUIT:
                     quit = true;
                     break;
+                case SDL_MOUSEBUTTONDOWN: {
+                    switch (event.button.button) {
+                        case SDL_BUTTON_LEFT: {
+                            int clickX, clickY;
+                            SDL_GetMouseState(&clickX, &clickY);
+                            revealCell(rows, columns, clickX, clickY, firstCell);
+                            firstCell = false;
+                            break;
+                        }
+                        default:
+                            break;
+                    }
+                }
                 default:
                     break;
             }

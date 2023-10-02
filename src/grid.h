@@ -39,5 +39,6 @@ extern GridMeasurements gridMeasurements;
 void createGrid(int rows, int columns, int mines);
 void calculateGridMeasurements(int rows, int columns);
 void drawGrid(int rows, int columns);
+void revealCell(int rows, int columns, int clickX, int clickY, bool firstCell);
 
 #endif

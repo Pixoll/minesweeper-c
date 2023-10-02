@@ -101,7 +101,7 @@ void drawGrid(const int rows, const int columns) {
     const SDL_Rect gridArea = rectangle(0, 0, windowWidth, windowHeight);
     SDL_RenderCopy(renderer, gridTexture, NULL, &gridArea);
 
-    // Draw mines and numbers
+    // Draw cells
     for (int i = 0; i < columns; i++) {
         const int x = gridXOffset + cellSize * i;
         for (int j = 0; j < rows; j++) {
@@ -109,11 +109,79 @@ void drawGrid(const int rows, const int columns) {
             const GridCell cell = grid[i][j];
             if (cell.type == CELL_0 && cell.revealed) continue;
 
-            Texture cellTexture = !cell.revealed ? coveredCellTexture : cellNumbersTextures[cell.type - CELL_1];
+            Texture cellTexture = !cell.revealed           ? coveredCellTexture
+                                  : cell.type == CELL_MINE ? cellMineTexture
+                                                           : cellNumbersTextures[cell.type - CELL_1];
             cellTexture.area.x += x;
             cellTexture.area.y += y;
 
             SDL_RenderCopy(renderer, cellTexture.texture, NULL, &cellTexture.area);
+        }
+    }
+}
+
+typedef struct Coords {
+    int x;
+    int y;
+} Coords;
+
+void revealCellsDFS(int rows, int columns, int x, int y, Coords *group, int *groupSize);
+void revealGroupBorderDFS(int rows, int columns, const Coords *group, int groupSize);
+
+void revealCell(const int rows, int const columns, const int clickX, const int clickY, const bool firstCell) {
+    const int cellSize = gridMeasurements.cellSize;
+    const int gridXOffset = gridMeasurements.gridXOffset;
+    const int gridYOffset = gridMeasurements.gridYOffset;
+
+    const int x = (clickX - gridXOffset) / cellSize;
+    const int y = (clickY - gridYOffset) / cellSize;
+    const CELL_TYPE cellType = grid[x][y].type;
+
+    if (grid[x][y].revealed || (firstCell && cellType == CELL_MINE)) return;
+
+    grid[x][y].revealed = true;
+    if (cellType != CELL_0) return;
+
+    Coords group[rows * columns];
+    int groupSize = 0;
+    revealCellsDFS(rows, columns, x, y, group, &groupSize);
+    revealGroupBorderDFS(rows, columns, group, groupSize);
+}
+
+void revealCellsDFS(const int rows, const int columns, const int x, const int y, Coords *group, int *groupSize) {
+    for (int i = -1; i <= 1; i++) {
+        const int nx = x + i;
+        if (nx < 0 || nx > columns - 1) continue;
+        for (int j = -1; j <= 1; j++) {
+            // Do not check corners
+            if (abs(x) == 1 && abs(y) == 1) continue;
+
+            const int ny = y + j;
+            if (ny < 0 || ny > rows - 1 || grid[nx][ny].type != CELL_0 || grid[nx][ny].revealed) continue;
+
+            grid[nx][ny].revealed = true;
+
+            group[*groupSize] = (Coords){nx, ny};
+            const int incGroupSize = *groupSize + 1;
+            *groupSize = incGroupSize;
+
+            revealCellsDFS(rows, columns, nx, ny, group, groupSize);
+        }
+    }
+}
+
+void revealGroupBorderDFS(const int rows, const int columns, const Coords *group, const int groupSize) {
+    for (int i = 0; i < groupSize; i++) {
+        const int x = group[i].x;
+        const int y = group[i].y;
+        for (int i = -1; i <= 1; i++) {
+            const int nx = x + i;
+            if (nx < 0 || nx > columns - 1) continue;
+            for (int j = -1; j <= 1; j++) {
+                const int ny = y + j;
+                if (ny < 0 || ny > rows - 1 || grid[nx][ny].revealed) continue;
+                grid[nx][ny].revealed = true;
+            }
         }
     }
 }

@@ -56,7 +56,8 @@ void initCellMineTexture() {
     const int mineSize = cellSize * 0.5;
     const int gridLineWidth = gridMeasurements.gridLineWidth;
     const int mineOffset = (gridLineWidth + cellSize - mineSize) / 2;
-    const SDL_Color mineColor = colors[COLOR_DARK_GREY].rgb;
+    // TODO Change to COLOR_DARK_GREY
+    const SDL_Color mineColor = colors[COLOR_WHITE].rgb;
 
     SDL_Surface *surface = IMG_Load(mineImagePath);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
