@@ -16,18 +16,26 @@
 void initSDL();
 void closeSDL();
 void exceptArg(char* args[], int n, const char *message);
+void assetArg(int arg, int min, int max, const char *message);
 
 int main(int argc, char* argv[]) {
-    exceptArg(argv, 1, "Provide the number of rows\n");
-    exceptArg(argv, 2, "Provide the number of columns\n");
+    exceptArg(argv, 1, "Provide the number of columns");
+    exceptArg(argv, 2, "Provide the number of rows");
+
+    const int columns = atoi(argv[1]);
+    const int rows = atoi(argv[2]);
+    const int density = argv[3] ? atoi(argv[3]) : 20;
+
+    assetArg(columns, 5, 100, "Number of columns must be between 5 and 10");
+    assetArg(rows, 5, 100, "Number of rows must be between 5 and 10");
+    assetArg(density, 1, 99, "Number of columns must be between 1% and 99%");
+
+    const int minesCount = rows * columns * density / 100;
+    printf("Grid %dx%d\tMines count: %d (%d%%)\n", columns, rows, minesCount, density);
+    createGrid(rows, columns, minesCount);
 
     initSDL();
     initColors();
-
-    const int rows = atoi(argv[1]);
-    const int columns = atoi(argv[2]);
-    const float density = argv[3] ? atof(argv[3]) : 0.2f;
-    createGrid(rows, columns, rows * columns * density);
 
     SDL_Event event;
     bool quit = false;
@@ -85,5 +93,11 @@ void closeSDL() {
 void exceptArg(char *args[], int n, const char *message) {
     if (args[n]) return;
     printf("arg%d: %s\n", n, message);
+    exit(1);
+}
+
+void assetArg(int arg, int min, int max, const char *message) {
+    if (arg >= min && arg <= max) return;
+    printf("%s\n", message);
     exit(1);
 }
