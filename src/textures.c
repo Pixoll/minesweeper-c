@@ -11,7 +11,7 @@
 #include "grid.h"
 #include "util.h"
 
-Texture cellNumbersTextures[7];
+Texture cellNumbersTextures[8];
 SDL_Texture *gridTexture = NULL;
 Texture mineTexture;
 Texture cellMineTexture;
@@ -51,8 +51,8 @@ void initCellNumbersTextures() {
 
     for (CELL_TYPE cell = CELL_1; cell <= CELL_8; cell++) {
         char cellText[2];
-        snprintf(cellText, 2, "%c", cell == CELL_MINE ? 'M' : ('0' + cell));
-        Color cellColor = colors[cell == CELL_MINE ? COLOR_WHITE : (COLOR_GRID_1 + cell - 1)];
+        snprintf(cellText, 2, "%c", '0' + cell);
+        Color cellColor = colors[COLOR_GRID_1 + cell - 1];
         SDL_Surface *textSurface = TTF_RenderText_Solid(fontRubikMediumCellSized, cellText, cellColor.rgb);
         SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
         SDL_Rect cellArea;

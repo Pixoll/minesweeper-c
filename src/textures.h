@@ -2,8 +2,6 @@
 
 #include <SDL2/SDL.h>
 
-#include "grid.h"
-
 #define __TEXTURES_DEFINED
 
 typedef struct Texture {
@@ -12,7 +10,7 @@ typedef struct Texture {
     SDL_Rect area;
 } Texture;
 
-extern Texture cellNumbersTextures[7];
+extern Texture cellNumbersTextures[8];
 extern SDL_Texture *gridTexture;
 extern Texture cellMineTexture;
 
