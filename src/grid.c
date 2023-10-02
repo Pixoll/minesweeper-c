@@ -71,7 +71,7 @@ void calculateGridMeasurements(const int rows, const int columns) {
     const int limitantOffset = limitantWindowSide * 0.025;
     const int cellSize = (limitantWindowSide - (limitantOffset << 1)) / limitantGridSide;
 
-    const int gridLineWidth = cellSize * 0.1;
+    const int gridLineWidth = cellSize * 0.05;
     const int gridWidth = cellSize * columns + gridLineWidth;
     const int gridXOffset = (windowWidth - gridWidth) / 2;
     const int gridHeight = cellSize * rows + gridLineWidth;

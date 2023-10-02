@@ -35,20 +35,26 @@ void initCellTextures() {
 
 void initGridTexture() {
     const int cellSize = gridMeasurements.cellSize;
+    const int gridLineLength = cellSize * 0.6f;
     const int gridLineWidth = gridMeasurements.gridLineWidth;
+    const int gridLineOffset = cellSize * 0.2f + gridLineWidth;
     const int gridXOffset = gridMeasurements.gridXOffset;
     const int gridYOffset = gridMeasurements.gridYOffset;
     const int gridWidth = gridMeasurements.gridWidth;
     const int gridHeight = gridMeasurements.gridHeight;
 
     SDL_Surface *surface = SDL_GetWindowSurface(window);
-    for (int x = gridXOffset; x <= gridXOffset + gridWidth; x += cellSize) {
-        const SDL_Rect gridLine = rectangle(x, gridYOffset, gridLineWidth, gridHeight);
-        SDL_FillRect(surface, &gridLine, colors[COLOR_GREY].value);
-    }
-    for (int y = gridYOffset; y <= gridYOffset + gridHeight; y += cellSize) {
-        const SDL_Rect gridLine = rectangle(gridXOffset, y, gridWidth, gridLineWidth);
-        SDL_FillRect(surface, &gridLine, colors[COLOR_GREY].value);
+    for (int x = gridXOffset; x < gridXOffset + gridWidth - gridLineWidth; x += cellSize) {
+        for (int y = gridYOffset; y < gridYOffset + gridHeight - gridLineWidth; y += cellSize) {
+            if (x > gridXOffset) {
+                const SDL_Rect vertical = rectangle(x, y + gridLineOffset, gridLineWidth, gridLineLength);
+                SDL_FillRect(surface, &vertical, colors[COLOR_GREY].value);
+            }
+            if (y > gridYOffset) {
+                const SDL_Rect horizontal = rectangle(x + gridLineOffset, y, gridLineLength, gridLineWidth);
+                SDL_FillRect(surface, &horizontal, colors[COLOR_GREY].value);
+            }
+        }
     }
 
     gridTexture = SDL_CreateTextureFromSurface(renderer, surface);
