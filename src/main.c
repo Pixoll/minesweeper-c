@@ -10,15 +10,15 @@
 #include "textures.h"
 #include "util.h"
 
-#define WINDOW_FLAGS SDL_WINDOW_SHOWN | SDL_WINDOW_MAXIMIZED
+#define WINDOW_FLAGS SDL_WINDOW_SHOWN | SDL_WINDOW_MAXIMIZED | SDL_WINDOW_RESIZABLE
 #define RENDER_FLAGS SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC
 
 void initSDL();
 void closeSDL();
-void exceptArg(char* args[], int n, const char *message);
+void exceptArg(char *args[], int n, const char *message);
 void assetArg(int arg, int min, int max, const char *message);
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     exceptArg(argv, 1, "Provide the number of columns");
     exceptArg(argv, 2, "Provide the number of rows");
 
@@ -73,7 +73,8 @@ int main(int argc, char* argv[]) {
 void initSDL() {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) throwSDLError("SDL_Init");
 
-    window = SDL_CreateWindow("Minesweeper", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, defaultWindowWidth, defaultWindowHeight, WINDOW_FLAGS);
+    window = SDL_CreateWindow("Minesweeper", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+                              defaultWindowWidth, defaultWindowHeight, WINDOW_FLAGS);
     if (window == NULL) throwSDLError("SDL_CreateWindow");
 
     renderer = SDL_CreateRenderer(window, -1, RENDER_FLAGS);
