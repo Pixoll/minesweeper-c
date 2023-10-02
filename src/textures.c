@@ -11,15 +11,15 @@
 #include "grid.h"
 #include "util.h"
 
-Texture cellTextures[CELL_TYPES];
+Texture cellNumbersTextures[7];
 SDL_Texture *gridTexture = NULL;
 Texture mineTexture;
+Texture cellMineTexture;
 bool texturesReady = false;
 
 const char *mineImagePath = "assets/images/mine.png";
 
 void initMineTexture() {
-    const int mineSize = gridMeasurements.cellSize * 0.5;
     SDL_Surface *surface = IMG_Load(mineImagePath);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
     mineTexture.area = rectangle(0, 0, surface->w, surface->h);
@@ -27,11 +27,29 @@ void initMineTexture() {
     mineTexture.texture = texture;
 }
 
-void initCellTextures() {
+void initCellMineTexture() {
+    const int cellSize = gridMeasurements.cellSize;
+    const int mineSize = cellSize * 0.5;
+    const int gridLineWidth = gridMeasurements.gridLineWidth;
+    const int mineOffset = (gridLineWidth + cellSize - mineSize) / 2;
+    const SDL_Color mineColor = colors[COLOR_DARK_GREY].rgb;
+
+    SDL_Surface *surface = IMG_Load(mineImagePath);
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_Rect area = rectangle(mineOffset, mineOffset, mineSize, mineSize);
+
+    SDL_SetTextureColorMod(texture, mineColor.r, mineColor.g, mineColor.b);
+
+    cellMineTexture.area = area;
+    cellMineTexture.surface = surface;
+    cellMineTexture.texture = texture;
+}
+
+void initCellNumbersTextures() {
     const int cellSize = gridMeasurements.cellSize;
     const int gridLineWidth = gridMeasurements.gridLineWidth;
 
-    for (CELL_TYPE cell = CELL_1; cell < CELL_TYPES; cell++) {
+    for (CELL_TYPE cell = CELL_1; cell <= CELL_8; cell++) {
         char cellText[2];
         snprintf(cellText, 2, "%c", cell == CELL_MINE ? 'M' : ('0' + cell));
         Color cellColor = colors[cell == CELL_MINE ? COLOR_WHITE : (COLOR_GRID_1 + cell - 1)];
@@ -42,7 +60,7 @@ void initCellTextures() {
         cellArea.x = (gridLineWidth + cellSize - cellArea.w) / 2;
         cellArea.y = (gridLineWidth + cellSize - cellArea.h) / 2;
 
-        cellTextures[cell] = (Texture){.area = cellArea, .surface = textSurface, .texture = textTexture};
+        cellNumbersTextures[cell - CELL_1] = (Texture){.area = cellArea, .surface = textSurface, .texture = textTexture};
     }
 }
 
@@ -83,7 +101,8 @@ void initTextures() {
 
     initGridTexture();
     initMineTexture();
-    initCellTextures();
+    initCellMineTexture();
+    initCellNumbersTextures();
 
     texturesReady = true;
 }
@@ -93,9 +112,14 @@ void freeMineTexture() {
     SDL_DestroyTexture(mineTexture.texture);
 }
 
-void freeCellTextures() {
+void freeCellMineTexture() {
+    SDL_FreeSurface(cellMineTexture.surface);
+    SDL_DestroyTexture(cellMineTexture.texture);
+}
+
+void freeCellNumbersTextures() {
     for (CELL_TYPE cell = CELL_1; cell < CELL_TYPES; cell++) {
-        Texture cellTexture = cellTextures[cell];
+        Texture cellTexture = cellNumbersTextures[cell];
         SDL_FreeSurface(cellTexture.surface);
         SDL_DestroyTexture(cellTexture.texture);
     }
@@ -106,7 +130,8 @@ void freeGridTexture() {
 }
 
 void freeTextures() {
-    freeCellTextures();
+    freeCellNumbersTextures();
+    freeCellMineTexture();
     freeMineTexture();
     freeGridTexture();
 }

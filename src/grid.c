@@ -109,7 +109,7 @@ void drawGrid(const int rows, const int columns) {
             const CELL_TYPE cell = grid[i][j].type;
             if (cell == CELL_0) continue;
 
-            Texture cellTexture = cellTextures[cell];
+            Texture cellTexture = cell == CELL_MINE ? cellMineTexture : cellNumbersTextures[cell - CELL_1];
             cellTexture.area.x += x;
             cellTexture.area.y += y;
 
