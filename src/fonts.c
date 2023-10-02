@@ -31,7 +31,7 @@ TTF_Font *getFont(FONT_TYPE type, int size) {
 void initFonts() {
     if (fontsReady) return;
 
-    fontRubikMediumCellSized = getFont(FONT_RUBIK_MEDIUM, gridMeasurements.cellSize);
+    fontRubikMediumCellSized = getFont(FONT_RUBIK_MEDIUM, gridMeasurements.cellSize * 0.5);
 
     fontsReady = true;
 }
