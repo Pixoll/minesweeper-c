@@ -67,8 +67,10 @@ void initGridTexture() {
 
 void initTextures() {
     if (texturesReady) return;
+
     initGridTexture();
     initCellTextures();
+
     texturesReady = true;
 }
 
