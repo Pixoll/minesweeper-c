@@ -13,11 +13,35 @@
 
 Texture cellNumbersTextures[8];
 SDL_Texture *gridTexture = NULL;
+Texture coveredCellTexture;
 Texture mineTexture;
 Texture cellMineTexture;
 bool texturesReady = false;
 
 const char *mineImagePath = "assets/images/mine.png";
+
+void initCoveredCellTexture() {
+    const int cellSize = gridMeasurements.cellSize;
+    const int coveredCellSize = cellSize * 0.9;
+    const int gridLineWidth = gridMeasurements.gridLineWidth;
+    const int coveredCellOffset = (gridLineWidth + cellSize - coveredCellSize) / 2;
+    const Uint32 themeColor = colors[COLOR_THEME].value;
+    SDL_PixelFormat *pixelFormat = SDL_GetWindowSurface(window)->format;
+
+    SDL_Surface *surface = SDL_CreateRGBSurface(0, coveredCellSize, coveredCellSize, 32,
+                                                pixelFormat->Rmask, pixelFormat->Gmask, pixelFormat->Bmask, pixelFormat->Amask);
+    SDL_Rect area = rectangle(0, 0, coveredCellSize, coveredCellSize);
+
+    SDL_FillRect(surface, &area, themeColor);
+    area.x = coveredCellOffset;
+    area.y = coveredCellOffset;
+
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+
+    coveredCellTexture.area = area;
+    coveredCellTexture.surface = surface;
+    coveredCellTexture.texture = texture;
+}
 
 void initMineTexture() {
     SDL_Surface *surface = IMG_Load(mineImagePath);
@@ -66,9 +90,9 @@ void initCellNumbersTextures() {
 
 void initGridTexture() {
     const int cellSize = gridMeasurements.cellSize;
-    const int gridLineLength = cellSize * 0.6f;
+    const int gridLineLength = cellSize * 0.6;
     const int gridLineWidth = gridMeasurements.gridLineWidth;
-    const int gridLineOffset = cellSize * 0.2f + gridLineWidth;
+    const int gridLineOffset = cellSize * 0.2 + gridLineWidth;
     const int gridXOffset = gridMeasurements.gridXOffset;
     const int gridYOffset = gridMeasurements.gridYOffset;
     const int gridWidth = gridMeasurements.gridWidth;
@@ -100,11 +124,17 @@ void initTextures() {
     if (texturesReady) return;
 
     initGridTexture();
+    initCoveredCellTexture();
     initMineTexture();
     initCellMineTexture();
     initCellNumbersTextures();
 
     texturesReady = true;
+}
+
+void freeCoveredCellTexture() {
+    SDL_FreeSurface(coveredCellTexture.surface);
+    SDL_DestroyTexture(coveredCellTexture.texture);
 }
 
 void freeMineTexture() {
@@ -133,5 +163,6 @@ void freeTextures() {
     freeCellNumbersTextures();
     freeCellMineTexture();
     freeMineTexture();
+    freeCoveredCellTexture();
     freeGridTexture();
 }

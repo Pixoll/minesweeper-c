@@ -106,10 +106,10 @@ void drawGrid(const int rows, const int columns) {
         const int x = gridXOffset + cellSize * i;
         for (int j = 0; j < rows; j++) {
             const int y = gridYOffset + cellSize * j;
-            const CELL_TYPE cell = grid[i][j].type;
-            if (cell == CELL_0) continue;
+            const GridCell cell = grid[i][j];
+            if (cell.type == CELL_0 && cell.revealed) continue;
 
-            Texture cellTexture = cell == CELL_MINE ? cellMineTexture : cellNumbersTextures[cell - CELL_1];
+            Texture cellTexture = !cell.revealed ? coveredCellTexture : cellNumbersTextures[cell.type - CELL_1];
             cellTexture.area.x += x;
             cellTexture.area.y += y;
 
