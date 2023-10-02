@@ -44,7 +44,11 @@ void initGridTexture() {
     const int gridHeight = gridMeasurements.gridHeight;
 
     SDL_Surface *surface = SDL_GetWindowSurface(window);
+
     const Uint32 colorGrid = colors[COLOR_LIGHT_GREY].value;
+    const SDL_Rect background = rectangle(0, 0, windowWidth, windowHeight);
+    SDL_FillRect(surface, &background, colors[COLOR_DARK_GREY].value);
+
     for (int x = gridXOffset; x < gridXOffset + gridWidth - gridLineWidth; x += cellSize) {
         for (int y = gridYOffset; y < gridYOffset + gridHeight - gridLineWidth; y += cellSize) {
             if (x > gridXOffset) {
