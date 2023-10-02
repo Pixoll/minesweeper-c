@@ -1,6 +1,7 @@
 #include "textures.h"
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -12,6 +13,7 @@
 
 Texture cellTextures[CELL_TYPES];
 SDL_Texture *gridTexture = NULL;
+Texture mineTexture;
 bool texturesReady = false;
 
 const char *mineImagePath = "assets/images/mine.png";
@@ -19,6 +21,10 @@ const char *mineImagePath = "assets/images/mine.png";
 void initMineTexture() {
     const int mineSize = gridMeasurements.cellSize * 0.5;
     SDL_Surface *surface = IMG_Load(mineImagePath);
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+    mineTexture.area = rectangle(0, 0, surface->w, surface->h);
+    mineTexture.surface = surface;
+    mineTexture.texture = texture;
 }
 
 void initCellTextures() {
@@ -82,6 +88,11 @@ void initTextures() {
     texturesReady = true;
 }
 
+void freeMineTexture() {
+    SDL_FreeSurface(mineTexture.surface);
+    SDL_DestroyTexture(mineTexture.texture);
+}
+
 void freeCellTextures() {
     for (CELL_TYPE cell = CELL_1; cell < CELL_TYPES; cell++) {
         Texture cellTexture = cellTextures[cell];
@@ -96,5 +107,6 @@ void freeGridTexture() {
 
 void freeTextures() {
     freeCellTextures();
+    freeMineTexture();
     freeGridTexture();
 }

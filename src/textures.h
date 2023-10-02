@@ -14,6 +14,7 @@ typedef struct Texture {
 
 extern Texture cellTextures[CELL_TYPES];
 extern SDL_Texture *gridTexture;
+extern Texture mineTexture;
 
 void initTextures();
 void freeTextures();
