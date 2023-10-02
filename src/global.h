@@ -18,10 +18,11 @@ extern int windowWidth;
 extern int windowHeight;
 
 enum COLORS {
-    COLOR_BG,
-    COLOR_ACCENT,
-    COLOR_WHITE,
+    COLOR_THEME,
+    COLOR_DARK_GREY,
     COLOR_GREY,
+    COLOR_LIGHT_GREY,
+    COLOR_WHITE,
     COLOR_GRID_1,
     COLOR_GRID_2,
     COLOR_GRID_3,

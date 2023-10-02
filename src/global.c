@@ -24,10 +24,11 @@ void getWindowSize() {
 
 void initColors() {
     SDL_Surface *surface = SDL_GetWindowSurface(window);
-    colors[COLOR_BG] = mapColor(surface, "#1e1f1c");
-    colors[COLOR_ACCENT] = mapColor(surface, "#d77f37");
+    colors[COLOR_DARK_GREY] = mapColor(surface, "#1e1f1c");
+    colors[COLOR_GREY] = mapColor(surface, "#333333");
+    colors[COLOR_LIGHT_GREY] = mapColor(surface, "#606060");
+    colors[COLOR_THEME] = mapColor(surface, "#d77f37");
     colors[COLOR_WHITE] = mapColor(surface, "#ffffff");
-    colors[COLOR_GREY] = mapColor(surface, "#606060");
     colors[COLOR_GRID_1] = mapColor(surface, "#0000ff");
     colors[COLOR_GRID_2] = mapColor(surface, "#008000");
     colors[COLOR_GRID_3] = mapColor(surface, "#ff0000");

@@ -44,15 +44,16 @@ void initGridTexture() {
     const int gridHeight = gridMeasurements.gridHeight;
 
     SDL_Surface *surface = SDL_GetWindowSurface(window);
+    const Uint32 colorGrid = colors[COLOR_LIGHT_GREY].value;
     for (int x = gridXOffset; x < gridXOffset + gridWidth - gridLineWidth; x += cellSize) {
         for (int y = gridYOffset; y < gridYOffset + gridHeight - gridLineWidth; y += cellSize) {
             if (x > gridXOffset) {
                 const SDL_Rect vertical = rectangle(x, y + gridLineOffset, gridLineWidth, gridLineLength);
-                SDL_FillRect(surface, &vertical, colors[COLOR_GREY].value);
+                SDL_FillRect(surface, &vertical, colorGrid);
             }
             if (y > gridYOffset) {
                 const SDL_Rect horizontal = rectangle(x + gridLineOffset, y, gridLineLength, gridLineWidth);
-                SDL_FillRect(surface, &horizontal, colors[COLOR_GREY].value);
+                SDL_FillRect(surface, &horizontal, colorGrid);
             }
         }
     }
