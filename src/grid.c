@@ -8,13 +8,8 @@
 #include <unistd.h>
 
 #include "global.h"
+#include "textures.h"
 #include "util.h"
-
-typedef struct CellTexture {
-    SDL_Surface *surface;
-    SDL_Texture *texture;
-    SDL_Rect area;
-} CellTexture;
 
 char **grid;
 bool createdGrid = false;
@@ -76,41 +71,12 @@ void drawGrid(const int rows, const int columns) {
     const int gridHeight = cellSize * rows + gridLineWidth;
     const int gridYOffset = (windowHeight - gridHeight) / 2;
 
-    SDL_Surface *surface = SDL_GetWindowSurface(window);
+    TTF_Font *RubikMedium = getFont(FONT_RUBIK_MEDIUM, cellSize);
+    initTextures(RubikMedium, cellSize, gridLineWidth, gridXOffset, gridYOffset, gridWidth, gridHeight);
 
     // Draw grid
-    for (int x = gridXOffset; x <= gridXOffset + gridWidth; x += cellSize) {
-        const SDL_Rect gridLine = rectangle(x, gridYOffset, gridLineWidth, gridHeight);
-        SDL_FillRect(surface, &gridLine, colors[COLOR_GREY].value);
-    }
-    for (int y = gridYOffset; y <= gridYOffset + gridHeight; y += cellSize) {
-        const SDL_Rect gridLine = rectangle(gridXOffset, y, gridWidth, gridLineWidth);
-        SDL_FillRect(surface, &gridLine, colors[COLOR_GREY].value);
-    }
-
-    SDL_Texture *gridTexture = SDL_CreateTextureFromSurface(renderer, surface);
     const SDL_Rect gridArea = rectangle(0, 0, windowWidth, windowHeight);
     SDL_RenderCopy(renderer, gridTexture, NULL, &gridArea);
-    SDL_DestroyTexture(gridTexture);
-
-    TTF_Font *RubikMedium = getFont(FONT_RUBIK_MEDIUM, cellSize);
-
-    // Create cell textures
-    CellTexture cellTextures[CELL_TYPES];
-    for (GRID_CELL cell = CELL_1; cell < CELL_TYPES; cell++) {
-        char cellText[2];
-        snprintf(cellText, 2, "%c", cell == CELL_MINE ? 'M' : ('0' + cell));
-        Color cellColor = colors[cell == CELL_MINE ? COLOR_WHITE : (COLOR_GRID_1 + cell - 1)];
-        SDL_Surface *textSurface = TTF_RenderText_Solid(RubikMedium, cellText, cellColor.rgb);
-        SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
-        SDL_Rect cellArea;
-        TTF_SizeText(RubikMedium, cellText, &cellArea.w, &cellArea.h);
-        cellArea.x = (gridLineWidth + cellSize - cellArea.w) / 2;
-        cellArea.y = (gridLineWidth + cellSize - cellArea.h) / 2;
-
-        cellTextures[cell] = (CellTexture){.area = cellArea, .surface = textSurface, .texture = textTexture};
-        SDL_FreeSurface(textSurface);
-    }
 
     // Draw mines and numbers
     for (int i = 0; i < columns; i++) {
@@ -120,18 +86,12 @@ void drawGrid(const int rows, const int columns) {
             const GRID_CELL cell = grid[i][j];
             if (cell == CELL_0) continue;
 
-            CellTexture cellTexture = cellTextures[cell];
+            Texture cellTexture = cellTextures[cell];
             cellTexture.area.x += x;
             cellTexture.area.y += y;
 
             SDL_RenderCopy(renderer, cellTexture.texture, NULL, &cellTexture.area);
         }
-    }
-
-    // Free cell textures
-    for (GRID_CELL cell = CELL_1; cell < CELL_TYPES; cell++) {
-        CellTexture cellTexture = cellTextures[cell];
-        SDL_DestroyTexture(cellTexture.texture);
     }
 
     TTF_CloseFont(RubikMedium);

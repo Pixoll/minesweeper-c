@@ -18,14 +18,13 @@ void exceptArg(char* args[], int n, const char *message);
 int main(int argc, char* argv[]) {
     exceptArg(argv, 1, "Provide the number of rows\n");
     exceptArg(argv, 2, "Provide the number of columns\n");
-    exceptArg(argv, 3, "Provide the mines density\n");
 
     initSDL();
     initColors();
 
     const int rows = atoi(argv[1]);
     const int columns = atoi(argv[2]);
-    const float density = atof(argv[3]);
+    const float density = argv[3] ? atof(argv[3]) : 0.2f;
     createGrid(rows, columns, rows * columns * density);
 
     SDL_Event event;
