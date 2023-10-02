@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
+#include "fonts.h"
 #include "global.h"
 #include "grid.h"
 #include "util.h"
@@ -13,7 +14,7 @@ Texture cellTextures[CELL_TYPES];
 SDL_Texture *gridTexture = NULL;
 bool texturesReady = false;
 
-void initCellTextures(TTF_Font *RubikMedium) {
+void initCellTextures() {
     const int cellSize = gridMeasurements.cellSize;
     const int gridLineWidth = gridMeasurements.gridLineWidth;
 
@@ -21,10 +22,10 @@ void initCellTextures(TTF_Font *RubikMedium) {
         char cellText[2];
         snprintf(cellText, 2, "%c", cell == CELL_MINE ? 'M' : ('0' + cell));
         Color cellColor = colors[cell == CELL_MINE ? COLOR_WHITE : (COLOR_GRID_1 + cell - 1)];
-        SDL_Surface *textSurface = TTF_RenderText_Solid(RubikMedium, cellText, cellColor.rgb);
+        SDL_Surface *textSurface = TTF_RenderText_Solid(fontRubikMediumCellSized, cellText, cellColor.rgb);
         SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
         SDL_Rect cellArea;
-        TTF_SizeText(RubikMedium, cellText, &cellArea.w, &cellArea.h);
+        TTF_SizeText(fontRubikMediumCellSized, cellText, &cellArea.w, &cellArea.h);
         cellArea.x = (gridLineWidth + cellSize - cellArea.w) / 2;
         cellArea.y = (gridLineWidth + cellSize - cellArea.h) / 2;
 
@@ -53,10 +54,10 @@ void initGridTexture() {
     gridTexture = SDL_CreateTextureFromSurface(renderer, surface);
 }
 
-void initTextures(TTF_Font *RubikMedium) {
+void initTextures() {
     if (texturesReady) return;
     initGridTexture();
-    initCellTextures(RubikMedium);
+    initCellTextures();
     texturesReady = true;
 }
 

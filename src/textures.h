@@ -1,7 +1,6 @@
 #ifndef __TEXTURES_DEFINED
 
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
 
 #include "grid.h"
 
@@ -16,7 +15,7 @@ typedef struct Texture {
 extern Texture cellTextures[CELL_TYPES];
 extern SDL_Texture *gridTexture;
 
-void initTextures(TTF_Font *RubikMedium);
+void initTextures();
 void freeTextures();
 
 #endif

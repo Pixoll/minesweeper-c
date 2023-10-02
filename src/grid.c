@@ -7,6 +7,7 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "fonts.h"
 #include "global.h"
 #include "textures.h"
 #include "util.h"
@@ -91,9 +92,6 @@ void drawGrid(const int rows, const int columns) {
     const int gridXOffset = gridMeasurements.gridXOffset;
     const int gridYOffset = gridMeasurements.gridYOffset;
 
-    TTF_Font *RubikMedium = getFont(FONT_RUBIK_MEDIUM, cellSize);
-    initTextures(RubikMedium);
-
     // Draw grid
     const SDL_Rect gridArea = rectangle(0, 0, windowWidth, windowHeight);
     SDL_RenderCopy(renderer, gridTexture, NULL, &gridArea);
@@ -113,8 +111,6 @@ void drawGrid(const int rows, const int columns) {
             SDL_RenderCopy(renderer, cellTexture.texture, NULL, &cellTexture.area);
         }
     }
-
-    TTF_CloseFont(RubikMedium);
 }
 
 GRID_CELL countSurroundingMines(const int x, const int y, const int rows, const int columns) {

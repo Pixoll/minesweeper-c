@@ -9,15 +9,6 @@
 #define min(a, b) (((a) < (b)) ? (a) : (b))
 // #define pxToPt(px) ((px)*0.75)
 
-enum FONT_TYPE {
-    FONT_RUBIK_LIGHT,
-    FONT_RUBIK_MEDIUM,
-    FONT_RUBIK_REGULAR,
-    FONT_RUBIK_BOLD,
-    FONT_TYPES,
-};
-typedef enum FONT_TYPE FONT_TYPE;
-
 // General purpose
 
 int randomBetween(int min, int max);
@@ -36,7 +27,6 @@ typedef struct Color {
 } Color;
 
 Color mapColor(const SDL_Surface *surface, const char *hexColor);
-TTF_Font *getFont(FONT_TYPE type, int size);
 void throwSDLError(const char *functionName);
 
 #endif

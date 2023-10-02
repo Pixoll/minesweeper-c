@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "fonts.h"
 #include "global.h"
 #include "grid.h"
 #include "textures.h"
@@ -43,15 +44,20 @@ int main(int argc, char* argv[]) {
         }
 
         getWindowSize();
+        calculateGridMeasurements(rows, columns);
+
+        initFonts();
+        initTextures();
+
         SDL_RenderClear(renderer);
 
-        calculateGridMeasurements(rows, columns);
         drawGrid(rows, columns);
 
         SDL_RenderPresent(renderer);
     }
 
     freeTextures();
+    freeFonts();
     closeSDL();
     return 0;
 }

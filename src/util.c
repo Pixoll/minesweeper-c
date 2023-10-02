@@ -8,13 +8,6 @@
 #include <time.h>
 #include <unistd.h>
 
-const char *fontPaths[FONT_TYPES] = {
-    "assets/fonts/Rubik-Light.ttf",
-    "assets/fonts/Rubik-Medium.ttf",
-    "assets/fonts/Rubik-Regular.ttf",
-    "assets/fonts/Rubik-Bold.ttf",
-};
-
 int randomBetween(const int min, const int max) {
     return (rand() % (max - min + 1)) + min;
 }
@@ -44,15 +37,6 @@ Color mapColor(const SDL_Surface *surface, const char *hexColor) {
     color.rgb = (SDL_Color){r, g, b, 255};
     color.value = SDL_MapRGB(surface->format, r, g, b);
     return color;
-}
-
-TTF_Font *getFont(FONT_TYPE type, int size) {
-    TTF_Font *font = TTF_OpenFont(fontPaths[type], size);
-    if (font == NULL) {
-        printf("Error while loading font ID %d\n", type);
-        throwSDLError("TTF_OpenFont");
-    }
-    return font;
 }
 
 void throwSDLError(const char *functionName) {
