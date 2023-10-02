@@ -14,6 +14,13 @@ Texture cellTextures[CELL_TYPES];
 SDL_Texture *gridTexture = NULL;
 bool texturesReady = false;
 
+const char *mineImagePath = "assets/images/mine.png";
+
+void initMineTexture() {
+    const int mineSize = gridMeasurements.cellSize * 0.5;
+    SDL_Surface *surface = IMG_Load(mineImagePath);
+}
+
 void initCellTextures() {
     const int cellSize = gridMeasurements.cellSize;
     const int gridLineWidth = gridMeasurements.gridLineWidth;
@@ -69,6 +76,7 @@ void initTextures() {
     if (texturesReady) return;
 
     initGridTexture();
+    initMineTexture();
     initCellTextures();
 
     texturesReady = true;
