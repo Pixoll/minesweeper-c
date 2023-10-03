@@ -142,8 +142,8 @@ void toggleCellFlag(const int clickX, const int clickY) {
     grid[x][y].flagged = !grid[x][y].flagged;
 }
 
-void revealCellsDFS(int rows, int columns, int x, int y, Coords *group, int *groupSize);
-void revealGroupBorderDFS(int rows, int columns, const Coords *group, int groupSize);
+void revealCellsDFS(int rows, int columns, int x, int y);
+void revealCellBorder(int rows, int columns, int x, int y);
 
 bool revealCell(const int rows, int const columns, const int clickX, const int clickY, const bool firstCell) {
     int x, y;
@@ -155,15 +155,12 @@ bool revealCell(const int rows, int const columns, const int clickX, const int c
     grid[x][y].revealed = true;
     if (cellType != CELL_0) return cellType == CELL_MINE;
 
-    Coords group[rows * columns];
-    int groupSize = 0;
-    revealCellsDFS(rows, columns, x, y, group, &groupSize);
-    revealGroupBorderDFS(rows, columns, group, groupSize);
-
+    revealCellBorder(rows, columns, x, y);
+    revealCellsDFS(rows, columns, x, y);
     return false;
 }
 
-void revealCellsDFS(const int rows, const int columns, const int x, const int y, Coords *group, int *groupSize) {
+void revealCellsDFS(const int rows, const int columns, const int x, const int y) {
     for (int i = -1; i <= 1; i++) {
         const int nx = x + i;
         if (nx < 0 || nx > columns - 1) continue;
@@ -175,28 +172,21 @@ void revealCellsDFS(const int rows, const int columns, const int x, const int y,
             if (ny < 0 || ny > rows - 1 || grid[nx][ny].type != CELL_0 || grid[nx][ny].revealed) continue;
 
             grid[nx][ny].revealed = true;
-
-            group[*groupSize] = (Coords){nx, ny};
-            const int incGroupSize = *groupSize + 1;
-            *groupSize = incGroupSize;
-
-            revealCellsDFS(rows, columns, nx, ny, group, groupSize);
+            revealCellBorder(rows, columns, nx, ny);
+            revealCellsDFS(rows, columns, nx, ny);
         }
     }
 }
 
-void revealGroupBorderDFS(const int rows, const int columns, const Coords *group, const int groupSize) {
-    for (int i = 0; i < groupSize; i++) {
-        const int x = group[i].x;
-        const int y = group[i].y;
-        for (int i = -1; i <= 1; i++) {
-            const int nx = x + i;
-            if (nx < 0 || nx > columns - 1) continue;
-            for (int j = -1; j <= 1; j++) {
-                const int ny = y + j;
-                if (ny < 0 || ny > rows - 1 || grid[nx][ny].revealed) continue;
-                grid[nx][ny].revealed = true;
-            }
+void revealCellBorder(const int rows, const int columns, const int x, const int y) {
+    for (int i = -1; i <= 1; i++) {
+        const int bx = x + i;
+        if (bx < 0 || bx > columns - 1) continue;
+        for (int j = -1; j <= 1; j++) {
+            const int by = y + j;
+            const CELL_TYPE cellType = grid[bx][by].type;
+            if (by < 0 || by > rows - 1 || grid[bx][by].revealed || cellType == CELL_0 || cellType == CELL_MINE) continue;
+            grid[bx][by].revealed = true;
         }
     }
 }
