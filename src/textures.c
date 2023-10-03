@@ -189,8 +189,8 @@ void freeCellFlagTexture() {
 }
 
 void freeCellNumbersTextures() {
-    for (CELL_TYPE cell = CELL_1; cell < CELL_TYPES; cell++) {
-        Texture cellTexture = cellNumbersTextures[cell];
+    for (CELL_TYPE cell = CELL_1; cell <= CELL_8; cell++) {
+        Texture cellTexture = cellNumbersTextures[cell - CELL_1];
         SDL_FreeSurface(cellTexture.surface);
         SDL_DestroyTexture(cellTexture.texture);
     }
