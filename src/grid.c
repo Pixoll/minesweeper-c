@@ -92,7 +92,7 @@ void calculateGridMeasurements(const int rows, const int columns) {
     gridMeasurementsReady = true;
 }
 
-void drawGrid(const int rows, const int columns) {
+void drawGrid(const int rows, const int columns, const bool lost) {
     const int cellSize = gridMeasurements.cellSize;
     const int gridXOffset = gridMeasurements.gridXOffset;
     const int gridYOffset = gridMeasurements.gridYOffset;
@@ -109,9 +109,11 @@ void drawGrid(const int rows, const int columns) {
             const GridCell cell = grid[i][j];
             if (cell.type == CELL_0 && cell.revealed) continue;
 
-            Texture cellTexture = !cell.revealed           ? coveredCellTexture
-                                  : cell.type == CELL_MINE ? cellMineTexture
-                                                           : cellNumbersTextures[cell.type - CELL_1];
+            Texture cellTexture = lost && cell.type == CELL_MINE ? cellMineTexture
+                                  : cell.flagged                 ? cellFlagTexture
+                                  : !cell.revealed               ? coveredCellTexture
+                                  : cell.type == CELL_MINE       ? cellMineTexture
+                                                                 : cellNumbersTextures[cell.type - CELL_1];
             cellTexture.area.x += x;
             cellTexture.area.y += y;
 
@@ -125,27 +127,34 @@ typedef struct Coords {
     int y;
 } Coords;
 
-void revealCellsDFS(int rows, int columns, int x, int y, Coords *group, int *groupSize);
-void revealGroupBorderDFS(int rows, int columns, const Coords *group, int groupSize);
-
-void revealCell(const int rows, int const columns, const int clickX, const int clickY, const bool firstCell) {
+void calculateGridCell(const int clickX, const int clickY, int *x, int *y) {
     const int cellSize = gridMeasurements.cellSize;
     const int gridXOffset = gridMeasurements.gridXOffset;
     const int gridYOffset = gridMeasurements.gridYOffset;
 
-    const int x = (clickX - gridXOffset) / cellSize;
-    const int y = (clickY - gridYOffset) / cellSize;
+    *x = (clickX - gridXOffset) / cellSize;
+    *y = (clickY - gridYOffset) / cellSize;
+}
+
+void revealCellsDFS(int rows, int columns, int x, int y, Coords *group, int *groupSize);
+void revealGroupBorderDFS(int rows, int columns, const Coords *group, int groupSize);
+
+bool revealCell(const int rows, int const columns, const int clickX, const int clickY, const bool firstCell) {
+    int x, y;
+    calculateGridCell(clickX, clickY, &x, &y);
     const CELL_TYPE cellType = grid[x][y].type;
 
-    if (grid[x][y].revealed || (firstCell && cellType == CELL_MINE)) return;
+    if (grid[x][y].revealed || grid[x][y].flagged || (firstCell && cellType == CELL_MINE)) return false;
 
     grid[x][y].revealed = true;
-    if (cellType != CELL_0) return;
+    if (cellType != CELL_0) return cellType == CELL_MINE;
 
     Coords group[rows * columns];
     int groupSize = 0;
     revealCellsDFS(rows, columns, x, y, group, &groupSize);
     revealGroupBorderDFS(rows, columns, group, groupSize);
+
+    return false;
 }
 
 void revealCellsDFS(const int rows, const int columns, const int x, const int y, Coords *group, int *groupSize) {

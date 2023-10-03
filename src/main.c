@@ -1,6 +1,6 @@
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
     SDL_SetRenderDrawColor(renderer, bgColor.r, bgColor.g, bgColor.b, bgColor.a);
 
     SDL_Event event;
-    bool quit = false, firstCell = true;
+    bool quit = false, firstCell = true, lost = false;
     time_t start = time(NULL);
     int frames = 0;
 
@@ -56,11 +56,13 @@ int main(int argc, char *argv[]) {
                     quit = true;
                     break;
                 case SDL_MOUSEBUTTONDOWN: {
+                    if (lost) break;
+                    int clickX, clickY;
+                    SDL_GetMouseState(&clickX, &clickY);
+
                     switch (event.button.button) {
                         case SDL_BUTTON_LEFT: {
-                            int clickX, clickY;
-                            SDL_GetMouseState(&clickX, &clickY);
-                            revealCell(rows, columns, clickX, clickY, firstCell);
+                            lost = revealCell(rows, columns, clickX, clickY, firstCell);
                             firstCell = false;
                             break;
                         }
@@ -81,7 +83,7 @@ int main(int argc, char *argv[]) {
 
         SDL_RenderClear(renderer);
 
-        drawGrid(rows, columns);
+        drawGrid(rows, columns, lost);
 
         SDL_RenderPresent(renderer);
         frames++;
