@@ -14,6 +14,7 @@ extern Texture cellNumbersTextures[8];
 extern SDL_Texture *gridTexture;
 extern Texture coveredCellTexture;
 extern Texture cellMineTexture;
+extern Texture cellFlagTexture;
 
 void initTextures();
 void freeTextures();

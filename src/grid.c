@@ -136,6 +136,12 @@ void calculateGridCell(const int clickX, const int clickY, int *x, int *y) {
     *y = (clickY - gridYOffset) / cellSize;
 }
 
+void toggleCellFlag(const int clickX, const int clickY) {
+    int x, y;
+    calculateGridCell(clickX, clickY, &x, &y);
+    grid[x][y].flagged = !grid[x][y].flagged;
+}
+
 void revealCellsDFS(int rows, int columns, int x, int y, Coords *group, int *groupSize);
 void revealGroupBorderDFS(int rows, int columns, const Coords *group, int groupSize);
 

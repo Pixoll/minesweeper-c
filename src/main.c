@@ -66,6 +66,11 @@ int main(int argc, char *argv[]) {
                             firstCell = false;
                             break;
                         }
+                        case SDL_BUTTON_RIGHT: {
+                            if (firstCell) break;
+                            toggleCellFlag(clickX, clickY);
+                            break;
+                        }
                         default:
                             break;
                     }

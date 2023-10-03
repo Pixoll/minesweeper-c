@@ -16,9 +16,12 @@ SDL_Texture *gridTexture = NULL;
 Texture coveredCellTexture;
 Texture mineTexture;
 Texture cellMineTexture;
+Texture flagTexture;
+Texture cellFlagTexture;
 bool texturesReady = false;
 
 const char *mineImagePath = "assets/images/mine.png";
+const char *flagImagePath = "assets/images/flag.png";
 
 void initCoveredCellTexture() {
     const int cellSize = gridMeasurements.cellSize;
@@ -66,6 +69,33 @@ void initCellMineTexture() {
     cellMineTexture.area = area;
     cellMineTexture.surface = surface;
     cellMineTexture.texture = texture;
+}
+
+void initFlagTexture() {
+    SDL_Surface *surface = IMG_Load(flagImagePath);
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+    flagTexture.area = rectangle(0, 0, surface->w, surface->h);
+    flagTexture.surface = surface;
+    flagTexture.texture = texture;
+}
+
+void initCellFlagTexture() {
+    const int cellSize = gridMeasurements.cellSize;
+    const int flagSize = cellSize * 0.5;
+    const int gridLineWidth = gridMeasurements.gridLineWidth;
+    const int flagOffset = (gridLineWidth + cellSize - flagSize) / 2;
+    // TODO Change to COLOR_DARK_GREY
+    const SDL_Color flagColor = colors[COLOR_WHITE].rgb;
+
+    SDL_Surface *surface = IMG_Load(flagImagePath);
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_Rect area = rectangle(flagOffset, flagOffset, flagSize, flagSize);
+
+    SDL_SetTextureColorMod(texture, flagColor.r, flagColor.g, flagColor.b);
+
+    cellFlagTexture.area = area;
+    cellFlagTexture.surface = surface;
+    cellFlagTexture.texture = texture;
 }
 
 void initCellNumbersTextures() {
@@ -126,6 +156,8 @@ void initTextures() {
     initCoveredCellTexture();
     initMineTexture();
     initCellMineTexture();
+    initFlagTexture();
+    initCellFlagTexture();
     initCellNumbersTextures();
 
     texturesReady = true;
@@ -146,6 +178,16 @@ void freeCellMineTexture() {
     SDL_DestroyTexture(cellMineTexture.texture);
 }
 
+void freeFlagTexture() {
+    SDL_FreeSurface(flagTexture.surface);
+    SDL_DestroyTexture(flagTexture.texture);
+}
+
+void freeCellFlagTexture() {
+    SDL_FreeSurface(cellFlagTexture.surface);
+    SDL_DestroyTexture(cellFlagTexture.texture);
+}
+
 void freeCellNumbersTextures() {
     for (CELL_TYPE cell = CELL_1; cell < CELL_TYPES; cell++) {
         Texture cellTexture = cellNumbersTextures[cell];
@@ -160,6 +202,8 @@ void freeGridTexture() {
 
 void freeTextures() {
     freeCellNumbersTextures();
+    freeCellFlagTexture();
+    freeFlagTexture();
     freeCellMineTexture();
     freeMineTexture();
     freeCoveredCellTexture();
