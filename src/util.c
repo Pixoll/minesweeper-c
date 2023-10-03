@@ -8,6 +8,8 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "global.h"
+
 int randomBetween(const int min, const int max) {
     return (rand() % (max - min + 1)) + min;
 }
@@ -37,6 +39,14 @@ Color mapColor(const SDL_Surface *surface, const char *hexColor) {
     color.rgb = (SDL_Color){r, g, b, 255};
     color.value = SDL_MapRGB(surface->format, r, g, b);
     return color;
+}
+
+SDL_Surface *createSurface(const int width, const int height) {
+    SDL_PixelFormat *pixelFormat = SDL_GetWindowSurface(window)->format;
+
+    SDL_Surface *surface = SDL_CreateRGBSurface(0, width, height, 32, pixelFormat->Rmask,
+                                                pixelFormat->Gmask, pixelFormat->Bmask, pixelFormat->Amask);
+    return surface;
 }
 
 void throwSDLError(const char *functionName) {

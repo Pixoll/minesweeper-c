@@ -26,10 +26,8 @@ void initCoveredCellTexture() {
     const int gridLineWidth = gridMeasurements.gridLineWidth;
     const int coveredCellOffset = (gridLineWidth + cellSize - coveredCellSize) / 2;
     const Uint32 themeColor = colors[COLOR_THEME].value;
-    SDL_PixelFormat *pixelFormat = SDL_GetWindowSurface(window)->format;
 
-    SDL_Surface *surface = SDL_CreateRGBSurface(0, coveredCellSize, coveredCellSize, 32,
-                                                pixelFormat->Rmask, pixelFormat->Gmask, pixelFormat->Bmask, pixelFormat->Amask);
+    SDL_Surface *surface = createSurface(coveredCellSize, coveredCellSize);
     SDL_Rect area = rectangle(0, 0, coveredCellSize, coveredCellSize);
 
     SDL_FillRect(surface, &area, themeColor);

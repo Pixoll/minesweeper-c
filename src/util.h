@@ -27,6 +27,7 @@ typedef struct Color {
 } Color;
 
 Color mapColor(const SDL_Surface *surface, const char *hexColor);
+SDL_Surface *createSurface(int width, int height);
 void throwSDLError(const char *functionName);
 
 #endif
