@@ -1,5 +1,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_image.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,6 +14,8 @@
 
 #define WINDOW_FLAGS SDL_WINDOW_SHOWN | SDL_WINDOW_MAXIMIZED | SDL_WINDOW_RESIZABLE
 #define RENDER_FLAGS SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC
+
+const char *windowIconPath = "assets/images/icon.png";
 
 void initSDL();
 void closeSDL();
@@ -99,6 +102,10 @@ void initSDL() {
     window = SDL_CreateWindow("Minesweeper", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                               defaultWindowWidth, defaultWindowHeight, WINDOW_FLAGS);
     if (window == NULL) throwSDLError("SDL_CreateWindow");
+
+    SDL_Surface *icon = IMG_Load(windowIconPath);
+    SDL_SetWindowIcon(window, icon);
+    SDL_FreeSurface(icon);
 
     renderer = SDL_CreateRenderer(window, -1, RENDER_FLAGS);
     if (renderer == NULL) throwSDLError("SDL_CreateRenderer");
