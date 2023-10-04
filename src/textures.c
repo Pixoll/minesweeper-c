@@ -122,8 +122,8 @@ void initTextures() {
     initTextureFromImage(flagImagePath, &flagTexture);
 
     // TODO Chance color to COLOR_DARK_GREY
-    initCellSizedTextureFromImage(mineImagePath, &mineTexture, COLOR_WHITE);
-    initCellSizedTextureFromImage(flagImagePath, &flagTexture, COLOR_WHITE);
+    initCellSizedTextureFromImage(mineImagePath, &cellMineTexture, COLOR_WHITE);
+    initCellSizedTextureFromImage(flagImagePath, &cellFlagTexture, COLOR_WHITE);
 
     initGridTexture();
     initCoveredCellTexture();
