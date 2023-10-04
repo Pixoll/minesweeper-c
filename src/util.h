@@ -15,10 +15,6 @@
 
 int randomBetween(int min, int max);
 
-// String related
-
-char *substr(const char *buffer, unsigned int start, unsigned int end);
-
 // SDL related
 
 #define rectangle(x, y, width, height) ((SDL_Rect){x, y, width, height})

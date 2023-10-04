@@ -14,28 +14,14 @@ int randomBetween(const int min, const int max) {
     return (rand() % (max - min + 1)) + min;
 }
 
-char *substr(const char *buffer, const unsigned int from, const unsigned int to) {
-    const int ogSize = strlen(buffer);
-    const int start = min(from, to);
-    const int end = min(max(to, from), ogSize);
-    if (start >= ogSize || start == end)
-        return "";
-
-    const int size = end - start + 1;
-    char *result = malloc(size);
-    for (int i = 0; i < size - 1; i++)
-        result[i] = buffer[start + i];
-    result[size - 1] = '\0';
-    return result;
-}
-
 Color mapColor(const SDL_Surface *surface, const char *hexColor) {
-    Color color;
-    const int start = hexColor[0] == '#' ? 1 : 0;
-    const int r = strtol(substr(hexColor, start, start + 2), NULL, 16),
-              g = strtol(substr(hexColor, start + 2, start + 4), NULL, 16),
-              b = strtol(substr(hexColor, start + 4, start + 6), NULL, 16);
+    if (hexColor[0] == '#') hexColor++; // shift left once
+    const int rgb = strtol(hexColor, NULL, 16);
+    const int r = (rgb >> 16) & 0xff;
+    const int g = (rgb >> 8) & 0xff;
+    const int b = rgb & 0xff;
 
+    Color color;
     color.rgb = (SDL_Color){r, g, b, 255};
     color.value = SDL_MapRGB(surface->format, r, g, b);
     return color;
