@@ -49,6 +49,14 @@ SDL_Surface *createSurface(const int width, const int height) {
     return surface;
 }
 
+SDL_Surface *createColoredSurface(const int width, const int height, const COLOR color) {
+    SDL_Surface *surface = createSurface(width, height);
+    SDL_Rect area = rectangle(0, 0, width, height);
+    const Uint32 surfaceColor = colors[color].value;
+    SDL_FillRect(surface, &area, surfaceColor);
+    return surface;
+}
+
 void throwSDLError(const char *functionName) {
     printf("%s() failed: %s\n", functionName, SDL_GetError());
     exit(1);

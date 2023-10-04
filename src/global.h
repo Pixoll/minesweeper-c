@@ -3,8 +3,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
-#include "util.h"
-
 #define __GLOBAL_DEFINED
 
 // #define GAME_FRAME_DURATION (1 / 120)
@@ -17,7 +15,7 @@ extern const int defaultWindowHeight;
 extern int windowWidth;
 extern int windowHeight;
 
-enum COLORS {
+enum COLOR {
     COLOR_THEME,
     COLOR_BLACK,
     COLOR_DARK_GREY,
@@ -34,7 +32,12 @@ enum COLORS {
     COLOR_GRID_8,
     COLORS_AMOUNT,
 };
-typedef enum COLORS COLORS;
+typedef enum COLOR COLOR;
+
+typedef struct Color {
+    SDL_Color rgb;
+    Uint32 value;
+} Color;
 
 extern Color colors[COLORS_AMOUNT];
 

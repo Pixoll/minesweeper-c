@@ -28,74 +28,40 @@ void initCoveredCellTexture() {
     const int coveredCellSize = cellSize * 0.9;
     const int gridLineWidth = gridMeasurements.gridLineWidth;
     const int coveredCellOffset = (gridLineWidth + cellSize - coveredCellSize) / 2;
-    const Uint32 themeColor = colors[COLOR_THEME].value;
 
-    SDL_Surface *surface = createSurface(coveredCellSize, coveredCellSize);
-    SDL_Rect area = rectangle(0, 0, coveredCellSize, coveredCellSize);
-
-    SDL_FillRect(surface, &area, themeColor);
-    area.x = coveredCellOffset;
-    area.y = coveredCellOffset;
-
+    SDL_Surface *surface = createColoredSurface(coveredCellSize, coveredCellSize, COLOR_THEME);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_Rect area = rectangle(coveredCellOffset, coveredCellOffset, coveredCellSize, coveredCellSize);
 
     coveredCellTexture.area = area;
     coveredCellTexture.surface = surface;
     coveredCellTexture.texture = texture;
 }
 
-void initMineTexture() {
-    SDL_Surface *surface = IMG_Load(mineImagePath);
+void initTextureFromImage(const char *imagePath, Texture *destTexture) {
+    SDL_Surface *surface = IMG_Load(imagePath);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-    mineTexture.area = rectangle(0, 0, surface->w, surface->h);
-    mineTexture.surface = surface;
-    mineTexture.texture = texture;
+    destTexture->area = rectangle(0, 0, surface->w, surface->h);
+    destTexture->surface = surface;
+    destTexture->texture = texture;
 }
 
-void initCellMineTexture() {
+void initCellSizedTextureFromImage(const char *imagePath, Texture *destTexture, const COLOR color) {
     const int cellSize = gridMeasurements.cellSize;
-    const int mineSize = cellSize * 0.5;
+    const int textureSize = cellSize * 0.5;
     const int gridLineWidth = gridMeasurements.gridLineWidth;
-    const int mineOffset = (gridLineWidth + cellSize - mineSize) / 2;
-    // TODO Change to COLOR_DARK_GREY
-    const SDL_Color mineColor = colors[COLOR_WHITE].rgb;
+    const int textureOffset = (gridLineWidth + cellSize - textureSize) / 2;
+    const SDL_Color textureColor = colors[color].rgb;
 
-    SDL_Surface *surface = IMG_Load(mineImagePath);
+    SDL_Surface *surface = IMG_Load(imagePath);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-    SDL_Rect area = rectangle(mineOffset, mineOffset, mineSize, mineSize);
+    SDL_Rect area = rectangle(textureOffset, textureOffset, textureSize, textureSize);
 
-    SDL_SetTextureColorMod(texture, mineColor.r, mineColor.g, mineColor.b);
+    SDL_SetTextureColorMod(texture, textureColor.r, textureColor.g, textureColor.b);
 
-    cellMineTexture.area = area;
-    cellMineTexture.surface = surface;
-    cellMineTexture.texture = texture;
-}
-
-void initFlagTexture() {
-    SDL_Surface *surface = IMG_Load(flagImagePath);
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-    flagTexture.area = rectangle(0, 0, surface->w, surface->h);
-    flagTexture.surface = surface;
-    flagTexture.texture = texture;
-}
-
-void initCellFlagTexture() {
-    const int cellSize = gridMeasurements.cellSize;
-    const int flagSize = cellSize * 0.5;
-    const int gridLineWidth = gridMeasurements.gridLineWidth;
-    const int flagOffset = (gridLineWidth + cellSize - flagSize) / 2;
-    // TODO Change to COLOR_DARK_GREY
-    const SDL_Color flagColor = colors[COLOR_WHITE].rgb;
-
-    SDL_Surface *surface = IMG_Load(flagImagePath);
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-    SDL_Rect area = rectangle(flagOffset, flagOffset, flagSize, flagSize);
-
-    SDL_SetTextureColorMod(texture, flagColor.r, flagColor.g, flagColor.b);
-
-    cellFlagTexture.area = area;
-    cellFlagTexture.surface = surface;
-    cellFlagTexture.texture = texture;
+    destTexture->area = area;
+    destTexture->surface = surface;
+    destTexture->texture = texture;
 }
 
 void initCellNumbersTextures() {
@@ -152,12 +118,15 @@ void initGridTexture() {
 void initTextures() {
     if (texturesReady) return;
 
+    initTextureFromImage(mineImagePath, &mineTexture);
+    initTextureFromImage(flagImagePath, &flagTexture);
+
+    // TODO Chance color to COLOR_DARK_GREY
+    initCellSizedTextureFromImage(mineImagePath, &mineTexture, COLOR_WHITE);
+    initCellSizedTextureFromImage(flagImagePath, &flagTexture, COLOR_WHITE);
+
     initGridTexture();
     initCoveredCellTexture();
-    initMineTexture();
-    initCellMineTexture();
-    initFlagTexture();
-    initCellFlagTexture();
     initCellNumbersTextures();
 
     texturesReady = true;
@@ -168,22 +137,16 @@ void freeCoveredCellTexture() {
     SDL_DestroyTexture(coveredCellTexture.texture);
 }
 
-void freeMineTexture() {
+void freeMineTextures() {
     SDL_FreeSurface(mineTexture.surface);
     SDL_DestroyTexture(mineTexture.texture);
-}
-
-void freeCellMineTexture() {
     SDL_FreeSurface(cellMineTexture.surface);
     SDL_DestroyTexture(cellMineTexture.texture);
 }
 
-void freeFlagTexture() {
+void freeFlagTextures() {
     SDL_FreeSurface(flagTexture.surface);
     SDL_DestroyTexture(flagTexture.texture);
-}
-
-void freeCellFlagTexture() {
     SDL_FreeSurface(cellFlagTexture.surface);
     SDL_DestroyTexture(cellFlagTexture.texture);
 }
@@ -202,10 +165,9 @@ void freeGridTexture() {
 
 void freeTextures() {
     freeCellNumbersTextures();
-    freeCellFlagTexture();
-    freeFlagTexture();
-    freeCellMineTexture();
-    freeMineTexture();
     freeCoveredCellTexture();
     freeGridTexture();
+
+    freeFlagTextures();
+    freeMineTextures();
 }

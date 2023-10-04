@@ -3,6 +3,8 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
+#include "global.h"
+
 #define __UTIL_DEFINED
 
 #define max(a, b) (((a) > (b)) ? (a) : (b))
@@ -21,13 +23,9 @@ char *substr(const char *buffer, unsigned int start, unsigned int end);
 
 #define rectangle(x, y, width, height) ((SDL_Rect){x, y, width, height})
 
-typedef struct Color {
-    SDL_Color rgb;
-    Uint32 value;
-} Color;
-
 Color mapColor(const SDL_Surface *surface, const char *hexColor);
 SDL_Surface *createSurface(int width, int height);
+SDL_Surface *createColoredSurface(int width, int height, COLOR color);
 void throwSDLError(const char *functionName);
 
 #endif
