@@ -92,7 +92,18 @@ void calculateGridMeasurements(const int rows, const int columns) {
     gridMeasurementsReady = true;
 }
 
-void drawGrid(const int rows, const int columns, const bool lost) {
+Texture getCellTexture(GridCell cell, const bool clickedMine) {
+    if (clickedMine && cell.type == CELL_MINE) {
+        if (cell.flagged) return cellFlaggedMineTexture;
+        if (cell.revealed) return cellTriggeredMineTexture;
+        return cellCoveredMineTexture;
+    }
+    if (cell.flagged) return cellFlagTexture;
+    if (!cell.revealed) return coveredCellTexture;
+    return cellNumbersTextures[cell.type - CELL_1];
+}
+
+void drawGrid(const int rows, const int columns, const bool clickedMine) {
     const int cellSize = gridMeasurements.cellSize;
     const int gridXOffset = gridMeasurements.gridXOffset;
     const int gridYOffset = gridMeasurements.gridYOffset;
@@ -109,12 +120,7 @@ void drawGrid(const int rows, const int columns, const bool lost) {
             const GridCell cell = grid[i][j];
             if (cell.type == CELL_0 && cell.revealed) continue;
 
-            Texture cellTexture = lost && cell.type == CELL_MINE ? (cell.flagged    ? cellFlaggedMineTexture
-                                                                    : cell.revealed ? cellTriggeredMineTexture
-                                                                                    : cellCoveredMineTexture)
-                                  : cell.flagged                 ? cellFlagTexture
-                                  : !cell.revealed               ? coveredCellTexture
-                                                                 : cellNumbersTextures[cell.type - CELL_1];
+            Texture cellTexture = getCellTexture(cell, clickedMine);
             cellTexture.area.x += x;
             cellTexture.area.y += y;
 
@@ -140,6 +146,7 @@ void calculateGridCell(const int clickX, const int clickY, int *x, int *y) {
 void toggleCellFlag(const int clickX, const int clickY) {
     int x, y;
     calculateGridCell(clickX, clickY, &x, &y);
+    if (grid[x][y].revealed) return;
     grid[x][y].flagged = !grid[x][y].flagged;
 }
 
@@ -193,7 +200,7 @@ void revealCellBorder(const int rows, const int columns, const int x, const int 
 }
 
 CELL_TYPE countSurroundingMines(const int x, const int y, const int rows, const int columns) {
-    int surrounding = 0;
+    CELL_TYPE surrounding = CELL_0;
     for (int i = -1; i <= 1; i++) {
         const int nx = x + i;
         if (nx < 0 || nx > columns - 1) continue;
