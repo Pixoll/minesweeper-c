@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
     SDL_SetRenderDrawColor(renderer, bgColor.r, bgColor.g, bgColor.b, bgColor.a);
 
     SDL_Event event;
-    bool quit = false, firstCell = true, lost = false;
+    bool quit = false, firstCell = true, clickedMine = false;
     time_t start = time(NULL);
     int frames = 0;
 
@@ -56,14 +56,14 @@ int main(int argc, char *argv[]) {
                     quit = true;
                     break;
                 case SDL_MOUSEBUTTONDOWN: {
-                    if (lost) break;
+                    if (clickedMine) break;
                     int clickX, clickY;
                     SDL_GetMouseState(&clickX, &clickY);
 
                     switch (event.button.button) {
                         case SDL_BUTTON_LEFT: {
-                            lost = revealCell(rows, columns, clickX, clickY, firstCell);
-                            firstCell = false;
+                            clickedMine = revealCell(rows, columns, clickX, clickY, firstCell);
+                            if (firstCell && !clickedMine) firstCell = false;
                             break;
                         }
                         case SDL_BUTTON_RIGHT: {
@@ -88,7 +88,7 @@ int main(int argc, char *argv[]) {
 
         SDL_RenderClear(renderer);
 
-        drawGrid(rows, columns, lost);
+        drawGrid(rows, columns, clickedMine);
 
         SDL_RenderPresent(renderer);
         frames++;
