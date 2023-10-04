@@ -37,5 +37,7 @@ void initColors() {
     colors[COLOR_GRID_5] = mapColor(surface, "#ff4d4d");  // #800000
     colors[COLOR_GRID_6] = mapColor(surface, "#b3ffff");  // #008080
     colors[COLOR_GRID_7] = mapColor(surface, "#bfbfbf");  // #808080
-    colors[COLOR_GRID_8] = mapColor(surface, "#ffffff");  // #ffffff
+    colors[COLOR_GRID_8] = mapColor(surface, "#ffffff");
+    colors[COLOR_TRIGGERED_MINE] = mapColor(surface, "#431a0d");
+    colors[COLOR_TRIGGERED_MINE_BG] = mapColor(surface, "#b6350d");
 }

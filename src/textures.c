@@ -17,6 +17,7 @@ Texture coveredCellTexture;
 
 Texture cellCoveredMineTexture;
 Texture cellFlaggedMineTexture;
+Texture cellTriggeredMineTexture;
 Texture cellFlagTexture;
 
 bool texturesReady = false;
@@ -154,6 +155,7 @@ void initTextures() {
     initCellSizedTextureWithBgFromImage(flagImagePath, &cellFlagTexture, COLOR_DARK_GREY, COLOR_LIGHT_GREY);
     initCellSizedTextureWithBgFromImage(mineImagePath, &cellFlaggedMineTexture, COLOR_DARK_GREY, COLOR_LIGHT_GREY);
     initCellSizedTextureWithBgFromImage(mineImagePath, &cellCoveredMineTexture, COLOR_DARK_GREY, COLOR_THEME);
+    initCellSizedTextureWithBgFromImage(mineImagePath, &cellTriggeredMineTexture, COLOR_TRIGGERED_MINE, COLOR_TRIGGERED_MINE_BG);
 
     initGridTexture();
     initCoveredCellTexture();

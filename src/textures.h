@@ -15,6 +15,7 @@ extern SDL_Texture *gridTexture;
 extern Texture coveredCellTexture;
 extern Texture cellCoveredMineTexture;
 extern Texture cellFlaggedMineTexture;
+extern Texture cellTriggeredMineTexture;
 extern Texture cellFlagTexture;
 
 void initTextures();
