@@ -174,6 +174,8 @@ void freeMineTextures() {
     SDL_DestroyTexture(cellFlaggedMineTexture.texture);
     SDL_FreeSurface(cellCoveredMineTexture.surface);
     SDL_DestroyTexture(cellCoveredMineTexture.texture);
+    SDL_FreeSurface(cellTriggeredMineTexture.surface);
+    SDL_DestroyTexture(cellTriggeredMineTexture.texture);
 }
 
 void freeFlagTextures() {
