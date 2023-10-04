@@ -16,12 +16,9 @@ extern int windowWidth;
 extern int windowHeight;
 
 enum COLOR {
+    COLOR_BACKGROUND,
     COLOR_THEME,
-    COLOR_BLACK,
-    COLOR_DARK_GREY,
-    COLOR_GREY,
-    COLOR_LIGHT_GREY,
-    COLOR_WHITE,
+
     COLOR_GRID_1,
     COLOR_GRID_2,
     COLOR_GRID_3,
@@ -30,8 +27,18 @@ enum COLOR {
     COLOR_GRID_6,
     COLOR_GRID_7,
     COLOR_GRID_8,
+
+    COLOR_FLAGGED_CELL,
+    COLOR_FLAGGED_CELL_BG,
     COLOR_TRIGGERED_MINE,
     COLOR_TRIGGERED_MINE_BG,
+
+    COLOR_BLACK,
+    COLOR_DARK_GREY,
+    COLOR_GREY,
+    COLOR_LIGHT_GREY,
+    COLOR_WHITE,
+
     COLORS_AMOUNT,
 };
 typedef enum COLOR COLOR;

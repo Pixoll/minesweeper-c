@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
     initSDL();
     initColors();
 
-    const SDL_Color bgColor = colors[COLOR_DARK_GREY].rgb;
+    const SDL_Color bgColor = colors[COLOR_BACKGROUND].rgb;
     SDL_SetRenderDrawColor(renderer, bgColor.r, bgColor.g, bgColor.b, bgColor.a);
 
     SDL_Event event;

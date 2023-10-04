@@ -131,7 +131,7 @@ void initGridTexture() {
 
     const Uint32 colorGrid = colors[COLOR_LIGHT_GREY].value;
     const SDL_Rect background = rectangle(0, 0, windowWidth, windowHeight);
-    SDL_FillRect(surface, &background, colors[COLOR_DARK_GREY].value);
+    SDL_FillRect(surface, &background, colors[COLOR_BACKGROUND].value);
 
     for (int x = gridXOffset; x < gridXOffset + gridWidth - gridLineWidth; x += cellSize) {
         for (int y = gridYOffset; y < gridYOffset + gridHeight - gridLineWidth; y += cellSize) {
@@ -152,9 +152,9 @@ void initGridTexture() {
 void initTextures() {
     if (texturesReady) return;
 
-    initCellSizedTextureWithBgFromImage(flagImagePath, &cellFlagTexture, COLOR_DARK_GREY, COLOR_LIGHT_GREY);
-    initCellSizedTextureWithBgFromImage(mineImagePath, &cellFlaggedMineTexture, COLOR_DARK_GREY, COLOR_LIGHT_GREY);
-    initCellSizedTextureWithBgFromImage(mineImagePath, &cellCoveredMineTexture, COLOR_DARK_GREY, COLOR_THEME);
+    initCellSizedTextureWithBgFromImage(flagImagePath, &cellFlagTexture, COLOR_FLAGGED_CELL, COLOR_FLAGGED_CELL_BG);
+    initCellSizedTextureWithBgFromImage(mineImagePath, &cellFlaggedMineTexture, COLOR_FLAGGED_CELL, COLOR_FLAGGED_CELL_BG);
+    initCellSizedTextureWithBgFromImage(mineImagePath, &cellCoveredMineTexture, COLOR_BACKGROUND, COLOR_THEME);
     initCellSizedTextureWithBgFromImage(mineImagePath, &cellTriggeredMineTexture, COLOR_TRIGGERED_MINE, COLOR_TRIGGERED_MINE_BG);
 
     initGridTexture();
