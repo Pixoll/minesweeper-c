@@ -15,9 +15,8 @@ Texture cellNumbersTextures[8];
 SDL_Texture *gridTexture = NULL;
 Texture coveredCellTexture;
 
-Texture mineTexture;
-Texture flagTexture;
-Texture cellMineTexture;
+Texture cellCoveredMineTexture;
+Texture cellFlaggedMineTexture;
 Texture cellFlagTexture;
 
 bool texturesReady = false;
@@ -152,12 +151,9 @@ void initGridTexture() {
 void initTextures() {
     if (texturesReady) return;
 
-    initTextureFromImage(mineImagePath, &mineTexture);
-    initTextureFromImage(flagImagePath, &flagTexture);
-
-    // TODO Change color to COLOR_DARK_GREY
-    initCellSizedTextureFromImage(mineImagePath, &cellMineTexture, COLOR_WHITE);
     initCellSizedTextureWithBgFromImage(flagImagePath, &cellFlagTexture, COLOR_DARK_GREY, COLOR_LIGHT_GREY);
+    initCellSizedTextureWithBgFromImage(mineImagePath, &cellFlaggedMineTexture, COLOR_DARK_GREY, COLOR_LIGHT_GREY);
+    initCellSizedTextureWithBgFromImage(mineImagePath, &cellCoveredMineTexture, COLOR_DARK_GREY, COLOR_THEME);
 
     initGridTexture();
     initCoveredCellTexture();
@@ -172,15 +168,13 @@ void freeCoveredCellTexture() {
 }
 
 void freeMineTextures() {
-    SDL_FreeSurface(mineTexture.surface);
-    SDL_DestroyTexture(mineTexture.texture);
-    SDL_FreeSurface(cellMineTexture.surface);
-    SDL_DestroyTexture(cellMineTexture.texture);
+    SDL_FreeSurface(cellFlaggedMineTexture.surface);
+    SDL_DestroyTexture(cellFlaggedMineTexture.texture);
+    SDL_FreeSurface(cellCoveredMineTexture.surface);
+    SDL_DestroyTexture(cellCoveredMineTexture.texture);
 }
 
 void freeFlagTextures() {
-    SDL_FreeSurface(flagTexture.surface);
-    SDL_DestroyTexture(flagTexture.texture);
     SDL_FreeSurface(cellFlagTexture.surface);
     SDL_DestroyTexture(cellFlagTexture.texture);
 }

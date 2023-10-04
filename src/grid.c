@@ -109,10 +109,10 @@ void drawGrid(const int rows, const int columns, const bool lost) {
             const GridCell cell = grid[i][j];
             if (cell.type == CELL_0 && cell.revealed) continue;
 
-            Texture cellTexture = lost && cell.type == CELL_MINE ? cellMineTexture
+            Texture cellTexture = lost && cell.type == CELL_MINE ? (cell.flagged ? cellFlaggedMineTexture
+                                                                                 : cellCoveredMineTexture)
                                   : cell.flagged                 ? cellFlagTexture
                                   : !cell.revealed               ? coveredCellTexture
-                                  : cell.type == CELL_MINE       ? cellMineTexture
                                                                  : cellNumbersTextures[cell.type - CELL_1];
             cellTexture.area.x += x;
             cellTexture.area.y += y;
