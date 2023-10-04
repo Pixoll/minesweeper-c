@@ -14,10 +14,12 @@
 Texture cellNumbersTextures[8];
 SDL_Texture *gridTexture = NULL;
 Texture coveredCellTexture;
+
 Texture mineTexture;
-Texture cellMineTexture;
 Texture flagTexture;
+Texture cellMineTexture;
 Texture cellFlagTexture;
+
 bool texturesReady = false;
 
 const char *mineImagePath = "assets/images/mine.png";
@@ -62,6 +64,38 @@ void initCellSizedTextureFromImage(const char *imagePath, Texture *destTexture, 
     destTexture->area = area;
     destTexture->surface = surface;
     destTexture->texture = texture;
+}
+
+void initCellSizedTextureWithBgFromImage(const char *imagePath, Texture *destTexture, const COLOR imageColor, const COLOR bgColor) {
+    const int cellSize = gridMeasurements.cellSize;
+    const int gridLineWidth = gridMeasurements.gridLineWidth;
+    const int backgroundSize = cellSize * 0.9;
+    const int imageSize = cellSize * 0.5;
+    const int backgroundOffset = (gridLineWidth + cellSize - backgroundSize) / 2;
+    const int imageOffset = (gridLineWidth + cellSize - imageSize) / 2 - backgroundOffset;
+    const SDL_Color imageColorRgb = colors[imageColor].rgb;
+
+    const Uint32 pixelFormat = SDL_GetWindowSurface(window)->format->format;
+    SDL_Texture *finalTexture = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, backgroundSize, backgroundSize);
+    SDL_SetRenderTarget(renderer, finalTexture);
+
+    SDL_Surface *backgroundSurface = createColoredSurface(backgroundSize, backgroundSize, bgColor);
+    SDL_Texture *backgroundTexture = SDL_CreateTextureFromSurface(renderer, backgroundSurface);
+    SDL_RenderCopy(renderer, backgroundTexture, NULL, NULL);
+
+    SDL_Surface *imageSurface = IMG_Load(imagePath);
+    SDL_Texture *imageTexture = SDL_CreateTextureFromSurface(renderer, imageSurface);
+    SDL_Rect imageArea = rectangle(imageOffset, imageOffset, imageSize, imageSize);
+
+    SDL_SetTextureColorMod(imageTexture, imageColorRgb.r, imageColorRgb.g, imageColorRgb.b);
+    SDL_RenderCopy(renderer, imageTexture, NULL, &imageArea);
+
+    SDL_Rect textureArea = rectangle(backgroundOffset, backgroundOffset, backgroundSize, backgroundSize);
+    SDL_SetRenderTarget(renderer, NULL);
+
+    destTexture->surface = NULL;
+    destTexture->texture = finalTexture;
+    destTexture->area = textureArea;
 }
 
 void initCellNumbersTextures() {
@@ -121,9 +155,9 @@ void initTextures() {
     initTextureFromImage(mineImagePath, &mineTexture);
     initTextureFromImage(flagImagePath, &flagTexture);
 
-    // TODO Chance color to COLOR_DARK_GREY
+    // TODO Change color to COLOR_DARK_GREY
     initCellSizedTextureFromImage(mineImagePath, &cellMineTexture, COLOR_WHITE);
-    initCellSizedTextureFromImage(flagImagePath, &cellFlagTexture, COLOR_WHITE);
+    initCellSizedTextureWithBgFromImage(flagImagePath, &cellFlagTexture, COLOR_DARK_GREY, COLOR_LIGHT_GREY);
 
     initGridTexture();
     initCoveredCellTexture();
