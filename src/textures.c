@@ -11,9 +11,13 @@
 #include "grid.h"
 #include "util.h"
 
-Texture cellNumbersTextures[8];
 SDL_Texture *gridTexture = NULL;
-Texture coveredCellTexture;
+
+Texture cellNumbersTextures[8];
+Texture cellCoveredTexture;
+Texture cellInterFillingHorizontalTexture;
+Texture cellInterFillingVerticalTexture;
+Texture cellInterFillingCornerTexture;
 
 Texture cellCoveredMineTexture;
 Texture cellFlaggedMineTexture;
@@ -25,7 +29,14 @@ bool texturesReady = false;
 const char *mineImagePath = "assets/images/mine.png";
 const char *flagImagePath = "assets/images/flag.png";
 
-void initCoveredCellTexture() {
+enum FILLER_TYPE {
+    FILLER_HORIZONTAL,
+    FILLER_VERTICAL,
+    FILLER_CORNER,
+};
+typedef enum FILLER_TYPE FILLER_TYPE;
+
+void initCellCoveredTexture() {
     const int cellSize = gridMeasurements.cellSize;
     const int coveredCellSize = cellSize * 0.9;
     const int gridLineWidth = gridMeasurements.gridLineWidth;
@@ -35,18 +46,37 @@ void initCoveredCellTexture() {
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_Rect area = rectangle(coveredCellOffset, coveredCellOffset, coveredCellSize, coveredCellSize);
 
-    coveredCellTexture.area = area;
-    coveredCellTexture.surface = surface;
-    coveredCellTexture.texture = texture;
+    cellCoveredTexture.area = area;
+    cellCoveredTexture.surface = surface;
+    cellCoveredTexture.texture = texture;
 }
 
-void initTextureFromImage(const char *imagePath, Texture *destTexture) {
-    SDL_Surface *surface = IMG_Load(imagePath);
+void initCellInterFillingTexture(FILLER_TYPE type, COLOR color, Texture *destTexture) {
+    const int cellSize = gridMeasurements.cellSize;
+    const int gridLineWidth = gridMeasurements.gridLineWidth;
+    const int backgroundSize = cellSize * 0.9;
+    const int fillerSize = cellSize * 0.12;
+    const int fillerOppositeOffset = (gridLineWidth + cellSize - backgroundSize) / 2;
+    const int fillerAdjacentOffset = fillerOppositeOffset + backgroundSize;
+
+    SDL_Rect area = type == FILLER_HORIZONTAL ? rectangle(fillerOppositeOffset, fillerAdjacentOffset, backgroundSize, fillerSize)
+                    : type == FILLER_VERTICAL ? rectangle(fillerAdjacentOffset, fillerOppositeOffset, fillerSize, backgroundSize)
+                                              : rectangle(fillerAdjacentOffset, fillerAdjacentOffset, fillerSize, fillerSize);
+    SDL_Surface *surface = createColoredSurface(area.w, area.h, color);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-    destTexture->area = rectangle(0, 0, surface->w, surface->h);
+
+    destTexture->area = area;
     destTexture->surface = surface;
     destTexture->texture = texture;
 }
+
+// void initTextureFromImage(const char *imagePath, Texture *destTexture) {
+//     SDL_Surface *surface = IMG_Load(imagePath);
+//     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+//     destTexture->area = rectangle(0, 0, surface->w, surface->h);
+//     destTexture->surface = surface;
+//     destTexture->texture = texture;
+// }
 
 void initCellSizedTextureFromImage(const char *imagePath, Texture *destTexture, const COLOR color) {
     const int cellSize = gridMeasurements.cellSize;
@@ -158,15 +188,27 @@ void initTextures() {
     initCellSizedTextureWithBgFromImage(mineImagePath, &cellTriggeredMineTexture, COLOR_TRIGGERED_MINE, COLOR_TRIGGERED_MINE_BG);
 
     initGridTexture();
-    initCoveredCellTexture();
+    initCellCoveredTexture();
+    initCellInterFillingTexture(FILLER_HORIZONTAL, COLOR_THEME, &cellInterFillingHorizontalTexture);
+    initCellInterFillingTexture(FILLER_VERTICAL, COLOR_THEME, &cellInterFillingVerticalTexture);
+    initCellInterFillingTexture(FILLER_CORNER, COLOR_THEME, &cellInterFillingCornerTexture);
     initCellNumbersTextures();
 
     texturesReady = true;
 }
 
-void freeCoveredCellTexture() {
-    SDL_FreeSurface(coveredCellTexture.surface);
-    SDL_DestroyTexture(coveredCellTexture.texture);
+void freeCellCoveredTexture() {
+    SDL_FreeSurface(cellCoveredTexture.surface);
+    SDL_DestroyTexture(cellCoveredTexture.texture);
+}
+
+void freeCellInterFillingTextures() {
+    SDL_FreeSurface(cellInterFillingHorizontalTexture.surface);
+    SDL_DestroyTexture(cellInterFillingHorizontalTexture.texture);
+    SDL_FreeSurface(cellInterFillingVerticalTexture.surface);
+    SDL_DestroyTexture(cellInterFillingVerticalTexture.texture);
+    SDL_FreeSurface(cellInterFillingCornerTexture.surface);
+    SDL_DestroyTexture(cellInterFillingCornerTexture.texture);
 }
 
 void freeMineTextures() {
@@ -197,7 +239,7 @@ void freeGridTexture() {
 
 void freeTextures() {
     freeCellNumbersTextures();
-    freeCoveredCellTexture();
+    freeCellCoveredTexture();
     freeGridTexture();
 
     freeFlagTextures();

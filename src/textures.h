@@ -10,9 +10,14 @@ typedef struct Texture {
     SDL_Rect area;
 } Texture;
 
-extern Texture cellNumbersTextures[8];
 extern SDL_Texture *gridTexture;
-extern Texture coveredCellTexture;
+
+extern Texture cellNumbersTextures[8];
+extern Texture cellCoveredTexture;
+extern Texture cellInterFillingHorizontalTexture;
+extern Texture cellInterFillingVerticalTexture;
+extern Texture cellInterFillingCornerTexture;
+
 extern Texture cellCoveredMineTexture;
 extern Texture cellFlaggedMineTexture;
 extern Texture cellTriggeredMineTexture;
