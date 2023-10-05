@@ -179,7 +179,8 @@ bool revealCell(const int clickX, const int clickY, const bool firstCell) {
     if (x == -1 || y == -1) return false;
 
     const CELL_TYPE cellType = grid[x][y].type;
-    if (grid[x][y].revealed || grid[x][y].flagged || (firstCell && cellType == CELL_MINE)) return false;
+    if (grid[x][y].revealed || grid[x][y].flagged) return false;
+    if (firstCell && cellType == CELL_MINE) return true;
 
     grid[x][y].revealed = true;
     if (cellType != CELL_0) return cellType == CELL_MINE;

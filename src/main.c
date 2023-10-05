@@ -63,7 +63,10 @@ int main(int argc, char *argv[]) {
                     switch (event.button.button) {
                         case SDL_BUTTON_LEFT: {
                             clickedMine = revealCell(clickX, clickY, firstCell);
-                            if (firstCell && !clickedMine) firstCell = false;
+                            if (firstCell) {
+                                if (clickedMine) clickedMine = false;
+                                else firstCell = false;
+                            }
                             break;
                         }
                         case SDL_BUTTON_RIGHT: {
@@ -95,7 +98,8 @@ int main(int argc, char *argv[]) {
     }
 
     const float averageFps = (float)frames / (time(NULL) - start);
-    printf("Average runtime FPS: %.2f\n", averageFps);
+    const float averageMsPerFrame = (float)(time(NULL) - start) / frames * 1000;
+    printf("Average runtime FPS: %.2f (%.2fms)\n", averageFps, averageMsPerFrame);
 
     freeTextures();
     freeFonts();
