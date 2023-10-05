@@ -210,13 +210,14 @@ void toggleCellFlag(const int clickX, const int clickY) {
     grid[x][y].flagged = !grid[x][y].flagged;
 }
 
+Coords getSurroundingEmpty(int x, int y);
 void revealCellsDFS(int x, int y);
 void revealCellBorder(int x, int y);
 
 bool revealCell(const int clickX, const int clickY, const bool firstCell) {
     const Coords coords = calculateGridCell(clickX, clickY);
-    const int x = coords.x;
-    const int y = coords.y;
+    int x = coords.x;
+    int y = coords.y;
     if (x == -1 || y == -1) return false;
 
     const CELL_TYPE cellType = grid[x][y].type;
@@ -224,11 +225,42 @@ bool revealCell(const int clickX, const int clickY, const bool firstCell) {
     if (firstCell && cellType == CELL_MINE) return true;
 
     grid[x][y].revealed = true;
-    if (cellType != CELL_0) return cellType == CELL_MINE;
+    if (cellType != CELL_0) {
+        Coords empty = getSurroundingEmpty(x, y);
+        if (empty.x == -1 || empty.y == -1) return cellType == CELL_MINE;
+        x = empty.x;
+        y = empty.y;
+    }
 
     revealCellBorder(x, y);
     revealCellsDFS(x, y);
     return false;
+}
+
+Coords getSurroundingEmpty(const int x, const int y) {
+    const int rows = gridMeasurements.rows;
+    const int columns = gridMeasurements.columns;
+    Coords coords = {-1, -1};
+
+    for (int i = -1; i <= 1; i++) {
+        const int nx = x + i;
+        if (nx < 0 || nx > columns - 1) continue;
+
+        bool found = false;
+        for (int j = -1; j <= 1; j++) {
+            const int ny = y + j;
+            if (ny < 0 || ny > rows - 1 || grid[nx][ny].type != CELL_0 || grid[nx][ny].revealed) continue;
+
+            coords.x = nx;
+            coords.y = ny;
+            found = true;
+            break;
+        }
+
+        if (found) break;
+    }
+
+    return coords;
 }
 
 void revealCellsDFS(const int x, const int y) {
