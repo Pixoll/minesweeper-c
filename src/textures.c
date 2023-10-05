@@ -55,7 +55,7 @@ void initCellInterFillingTexture(FILLER_TYPE type, COLOR color, Texture *destTex
     const int cellSize = gridMeasurements.cellSize;
     const int gridLineWidth = gridMeasurements.gridLineWidth;
     const int backgroundSize = cellSize * 0.9;
-    const int fillerSize = cellSize * 0.12;
+    const int fillerSize = cellSize * 0.15;
     const int fillerOppositeOffset = (gridLineWidth + cellSize - backgroundSize) / 2;
     const int fillerAdjacentOffset = fillerOppositeOffset + backgroundSize;
 
