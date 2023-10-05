@@ -15,9 +15,14 @@ SDL_Texture *gridTexture = NULL;
 
 Texture cellNumbersTextures[8];
 Texture cellCoveredTexture;
+
 Texture cellInterFillingHorizontalTexture;
 Texture cellInterFillingVerticalTexture;
 Texture cellInterFillingCornerTexture;
+
+Texture cellFlaggedInterFillingHorizontalTexture;
+Texture cellFlaggedInterFillingVerticalTexture;
+Texture cellFlaggedInterFillingCornerTexture;
 
 Texture cellCoveredMineTexture;
 Texture cellFlaggedMineTexture;
@@ -187,11 +192,16 @@ void initTextures() {
     initCellSizedTextureWithBgFromImage(mineImagePath, &cellCoveredMineTexture, COLOR_BACKGROUND, COLOR_THEME);
     initCellSizedTextureWithBgFromImage(mineImagePath, &cellTriggeredMineTexture, COLOR_TRIGGERED_MINE, COLOR_TRIGGERED_MINE_BG);
 
-    initGridTexture();
-    initCellCoveredTexture();
     initCellInterFillingTexture(FILLER_HORIZONTAL, COLOR_THEME, &cellInterFillingHorizontalTexture);
     initCellInterFillingTexture(FILLER_VERTICAL, COLOR_THEME, &cellInterFillingVerticalTexture);
     initCellInterFillingTexture(FILLER_CORNER, COLOR_THEME, &cellInterFillingCornerTexture);
+
+    initCellInterFillingTexture(FILLER_HORIZONTAL, COLOR_FLAGGED_CELL_BG, &cellFlaggedInterFillingHorizontalTexture);
+    initCellInterFillingTexture(FILLER_VERTICAL, COLOR_FLAGGED_CELL_BG, &cellFlaggedInterFillingVerticalTexture);
+    initCellInterFillingTexture(FILLER_CORNER, COLOR_FLAGGED_CELL_BG, &cellFlaggedInterFillingCornerTexture);
+
+    initGridTexture();
+    initCellCoveredTexture();
     initCellNumbersTextures();
 
     texturesReady = true;
@@ -209,6 +219,13 @@ void freeCellInterFillingTextures() {
     SDL_DestroyTexture(cellInterFillingVerticalTexture.texture);
     SDL_FreeSurface(cellInterFillingCornerTexture.surface);
     SDL_DestroyTexture(cellInterFillingCornerTexture.texture);
+
+    SDL_FreeSurface(cellFlaggedInterFillingHorizontalTexture.surface);
+    SDL_DestroyTexture(cellFlaggedInterFillingHorizontalTexture.texture);
+    SDL_FreeSurface(cellFlaggedInterFillingVerticalTexture.surface);
+    SDL_DestroyTexture(cellFlaggedInterFillingVerticalTexture.texture);
+    SDL_FreeSurface(cellFlaggedInterFillingCornerTexture.surface);
+    SDL_DestroyTexture(cellFlaggedInterFillingCornerTexture.texture);
 }
 
 void freeMineTextures() {
