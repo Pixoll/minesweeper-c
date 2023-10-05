@@ -62,7 +62,7 @@ int main(int argc, char *argv[]) {
 
                     switch (event.button.button) {
                         case SDL_BUTTON_LEFT: {
-                            clickedMine = revealCell(rows, columns, clickX, clickY, firstCell);
+                            clickedMine = revealCell(clickX, clickY, firstCell);
                             if (firstCell && !clickedMine) firstCell = false;
                             break;
                         }
@@ -81,14 +81,14 @@ int main(int argc, char *argv[]) {
         }
 
         getWindowSize();
-        calculateGridMeasurements(rows, columns);
+        calculateGridMeasurements();
 
         initFonts();
         initTextures();
 
         SDL_RenderClear(renderer);
 
-        drawGrid(rows, columns, clickedMine);
+        drawGrid(clickedMine);
 
         SDL_RenderPresent(renderer);
         frames++;

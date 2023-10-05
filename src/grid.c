@@ -18,7 +18,7 @@ bool createdGrid = false;
 GridMeasurements gridMeasurements;
 bool gridMeasurementsReady = false;
 
-CELL_TYPE countSurroundingMines(int x, int y, int rows, int columns);
+CELL_TYPE countSurroundingMines(int x, int y);
 
 void createGrid(const int rows, const int columns, const int mines) {
     if (createdGrid) {
@@ -39,10 +39,13 @@ void createGrid(const int rows, const int columns, const int mines) {
         }
     }
 
+    gridMeasurements.rows = rows;
+    gridMeasurements.columns = columns;
+
     srand(time(NULL));
 
     int placedMines = 0;
-    // TODO This is bad
+    // TODO Is this bad???
     while (placedMines < mines) {
         const int x = randomBetween(0, columns - 1);
         const int y = randomBetween(0, rows - 1);
@@ -57,7 +60,7 @@ void createGrid(const int rows, const int columns, const int mines) {
         for (int j = 0; j < rows; j++) {
             const CELL_TYPE cell = grid[i][j].type;
             if (cell == CELL_MINE) continue;
-            const CELL_TYPE surrounding = countSurroundingMines(i, j, rows, columns);
+            const CELL_TYPE surrounding = countSurroundingMines(i, j);
             grid[i][j].type = surrounding;
         }
     }
@@ -65,8 +68,11 @@ void createGrid(const int rows, const int columns, const int mines) {
     createdGrid = true;
 }
 
-void calculateGridMeasurements(const int rows, const int columns) {
+void calculateGridMeasurements() {
     if (gridMeasurementsReady) return;
+
+    const int rows = gridMeasurements.rows;
+    const int columns = gridMeasurements.columns;
 
     const float gridRatio = (float)columns / rows;
     const float windowRatio = (float)windowWidth / windowHeight;
@@ -103,7 +109,9 @@ Texture getCellTexture(GridCell cell, const bool clickedMine) {
     return cellNumbersTextures[cell.type - CELL_1];
 }
 
-void drawGrid(const int rows, const int columns, const bool clickedMine) {
+void drawGrid(const bool clickedMine) {
+    const int rows = gridMeasurements.rows;
+    const int columns = gridMeasurements.columns;
     const int cellSize = gridMeasurements.cellSize;
     const int gridXOffset = gridMeasurements.gridXOffset;
     const int gridYOffset = gridMeasurements.gridYOffset;
@@ -134,41 +142,56 @@ typedef struct Coords {
     int y;
 } Coords;
 
-void calculateGridCell(const int clickX, const int clickY, int *x, int *y) {
+Coords calculateGridCell(const int clickX, const int clickY) {
+    const int rows = gridMeasurements.rows;
+    const int columns = gridMeasurements.columns;
     const int cellSize = gridMeasurements.cellSize;
     const int gridXOffset = gridMeasurements.gridXOffset;
     const int gridYOffset = gridMeasurements.gridYOffset;
 
-    *x = (clickX - gridXOffset) / cellSize;
-    *y = (clickY - gridYOffset) / cellSize;
+    float x = (float)(clickX - gridXOffset) / cellSize;
+    float y = (float)(clickY - gridYOffset) / cellSize;
+    if (x < 0 || x > columns - 0.01f || y < 0 || y > rows - 0.01f) {
+        x = -1;
+        y = -1;
+    }
+
+    return (Coords){x, y};
 }
 
 void toggleCellFlag(const int clickX, const int clickY) {
-    int x, y;
-    calculateGridCell(clickX, clickY, &x, &y);
+    const Coords coords = calculateGridCell(clickX, clickY);
+    const int x = coords.x;
+    const int y = coords.y;
+    if (x == -1 || y == -1) return;
+
     if (grid[x][y].revealed) return;
     grid[x][y].flagged = !grid[x][y].flagged;
 }
 
-void revealCellsDFS(int rows, int columns, int x, int y);
-void revealCellBorder(int rows, int columns, int x, int y);
+void revealCellsDFS(int x, int y);
+void revealCellBorder(int x, int y);
 
-bool revealCell(const int rows, int const columns, const int clickX, const int clickY, const bool firstCell) {
-    int x, y;
-    calculateGridCell(clickX, clickY, &x, &y);
+bool revealCell(const int clickX, const int clickY, const bool firstCell) {
+    const Coords coords = calculateGridCell(clickX, clickY);
+    const int x = coords.x;
+    const int y = coords.y;
+    if (x == -1 || y == -1) return false;
+
     const CELL_TYPE cellType = grid[x][y].type;
-
     if (grid[x][y].revealed || grid[x][y].flagged || (firstCell && cellType == CELL_MINE)) return false;
 
     grid[x][y].revealed = true;
     if (cellType != CELL_0) return cellType == CELL_MINE;
 
-    revealCellBorder(rows, columns, x, y);
-    revealCellsDFS(rows, columns, x, y);
+    revealCellBorder(x, y);
+    revealCellsDFS(x, y);
     return false;
 }
 
-void revealCellsDFS(const int rows, const int columns, const int x, const int y) {
+void revealCellsDFS(const int x, const int y) {
+    const int rows = gridMeasurements.rows;
+    const int columns = gridMeasurements.columns;
     for (int i = -1; i <= 1; i++) {
         const int nx = x + i;
         if (nx < 0 || nx > columns - 1) continue;
@@ -180,13 +203,15 @@ void revealCellsDFS(const int rows, const int columns, const int x, const int y)
             if (ny < 0 || ny > rows - 1 || grid[nx][ny].type != CELL_0 || grid[nx][ny].revealed) continue;
 
             grid[nx][ny].revealed = true;
-            revealCellBorder(rows, columns, nx, ny);
-            revealCellsDFS(rows, columns, nx, ny);
+            revealCellBorder(nx, ny);
+            revealCellsDFS(nx, ny);
         }
     }
 }
 
-void revealCellBorder(const int rows, const int columns, const int x, const int y) {
+void revealCellBorder(const int x, const int y) {
+    const int rows = gridMeasurements.rows;
+    const int columns = gridMeasurements.columns;
     for (int i = -1; i <= 1; i++) {
         const int bx = x + i;
         if (bx < 0 || bx > columns - 1) continue;
@@ -199,7 +224,9 @@ void revealCellBorder(const int rows, const int columns, const int x, const int 
     }
 }
 
-CELL_TYPE countSurroundingMines(const int x, const int y, const int rows, const int columns) {
+CELL_TYPE countSurroundingMines(const int x, const int y) {
+    const int rows = gridMeasurements.rows;
+    const int columns = gridMeasurements.columns;
     CELL_TYPE surrounding = CELL_0;
     for (int i = -1; i <= 1; i++) {
         const int nx = x + i;
