@@ -146,35 +146,30 @@ void drawGridInterCellFiller(const int x, const int y, const int column, const i
     const int rows = gridMeasurements.rows;
     const int columns = gridMeasurements.columns;
 
-    const GridCell *right = column < columns - 1 ? &(grid[column + 1][row]) : NULL;
-    const GridCell *bottom = row < rows - 1 ? &(grid[column][row + 1]) : NULL;
-    const GridCell *bottomRight = column < columns - 1 && row < rows - 1 ? &(grid[column + 1][row + 1]) : NULL;
+    bool drawCorner = true;
+    for (int i = 0; i <= 1; i++) {
+        const int nx = column + i;
+        for (int j = 0; j <= 1; j++) {
+            const int ny = row + j;
+            if ((nx == column && ny == row) || nx > columns - 1 || ny > rows - 1) continue;
+            const GridCell cell = grid[nx][ny];
+            if (cell.revealed || cell.flagged) {
+                drawCorner = false;
+                continue;
+            }
 
-    // Vertical
-    if (right && !right->revealed && !right->flagged) {
-        Texture fillterTexture = cellInterFillingVerticalTexture;
-        fillterTexture.area.x += x;
-        fillterTexture.area.y += y;
+            Texture *fillterTexture = i == 1 && j == 0   ? &cellInterFillingVerticalTexture
+                                      : i == 0 && j == 1 ? &cellInterFillingHorizontalTexture
+                                      : drawCorner       ? &cellInterFillingCornerTexture
+                                                         : NULL;
+            if (!fillterTexture) continue;
 
-        SDL_RenderCopy(renderer, fillterTexture.texture, NULL, &fillterTexture.area);
-    }
+            SDL_Rect area = fillterTexture->area;
+            area.x += x;
+            area.y += y;
 
-    // Horizontal
-    if (bottom && !bottom->revealed && !bottom->flagged) {
-        Texture fillterTexture = cellInterFillingHorizontalTexture;
-        fillterTexture.area.x += x;
-        fillterTexture.area.y += y;
-
-        SDL_RenderCopy(renderer, fillterTexture.texture, NULL, &fillterTexture.area);
-    }
-
-    // Corner
-    if (bottomRight && !right->revealed && !right->flagged && !bottom->revealed && !bottom->flagged && !bottomRight->revealed && !bottomRight->flagged) {
-        Texture fillterTexture = cellInterFillingCornerTexture;
-        fillterTexture.area.x += x;
-        fillterTexture.area.y += y;
-
-        SDL_RenderCopy(renderer, fillterTexture.texture, NULL, &fillterTexture.area);
+            SDL_RenderCopy(renderer, fillterTexture->texture, NULL, &area);
+        }
     }
 }
 
