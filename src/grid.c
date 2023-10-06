@@ -109,7 +109,7 @@ Texture getCellTexture(GridCell cell, const bool clickedMine) {
     return cellNumbersTextures[cell.type - CELL_1];
 }
 
-void drawGridInterCellFiller(int x, int y, int column, int row);
+void drawGridFiller(int x, int y, int column, int row, bool flagged);
 
 void drawGrid(const bool clickedMine) {
     const int rows = gridMeasurements.rows;
@@ -127,22 +127,35 @@ void drawGrid(const bool clickedMine) {
         const int x = gridXOffset + cellSize * i;
         for (int j = 0; j < rows; j++) {
             const int y = gridYOffset + cellSize * j;
-            const GridCell current = grid[i][j];
-            if (current.type == CELL_0 && current.revealed) continue;
+            const GridCell cell = grid[i][j];
+            if (cell.type == CELL_0 && cell.revealed) continue;
 
-            Texture cellTexture = getCellTexture(current, clickedMine);
+            Texture cellTexture = getCellTexture(cell, clickedMine);
             cellTexture.area.x += x;
             cellTexture.area.y += y;
 
             SDL_RenderCopy(renderer, cellTexture.texture, NULL, &cellTexture.area);
 
-            if (current.revealed || current.flagged) continue;
-            drawGridInterCellFiller(x, y, i, j);
+            if (cell.revealed) continue;
+            drawGridFiller(x, y, i, j, cell.flagged);
         }
     }
 }
 
-void drawGridInterCellFiller(const int x, const int y, const int column, const int row) {
+Texture getFillerTexture(const int i, const int j, const bool flagged, const bool drawCorner) {
+    if (i == 1 && j == 0) {
+        return flagged ? gridFlaggedFillerVerticalTexture : gridFillerVerticalTexture;
+    }
+    if (i == 0 && j == 1) {
+        return flagged ? gridFlaggedFillerHorizontalTexture : gridFillerHorizontalTexture;
+    }
+    if (drawCorner) {
+        return flagged ? gridFlaggedFillerCornerTexture : gridFillerCornerTexture;
+    }
+    return (Texture){NULL};
+}
+
+void drawGridFiller(const int x, const int y, const int column, const int row, const bool flagged) {
     const int rows = gridMeasurements.rows;
     const int columns = gridMeasurements.columns;
 
@@ -153,22 +166,18 @@ void drawGridInterCellFiller(const int x, const int y, const int column, const i
             const int ny = row + j;
             if ((nx == column && ny == row) || nx > columns - 1 || ny > rows - 1) continue;
             const GridCell cell = grid[nx][ny];
-            if (cell.revealed || cell.flagged) {
+            if (cell.revealed || (flagged ? !cell.flagged : cell.flagged)) {
                 drawCorner = false;
                 continue;
             }
 
-            Texture *fillterTexture = i == 1 && j == 0   ? &gridFillerVerticalTexture
-                                      : i == 0 && j == 1 ? &gridFillerHorizontalTexture
-                                      : drawCorner       ? &gridFillerCornerTexture
-                                                         : NULL;
-            if (!fillterTexture) continue;
+            Texture fillterTexture = getFillerTexture(i, j, flagged, drawCorner);
+            if (!fillterTexture.texture) continue;
 
-            SDL_Rect area = fillterTexture->area;
-            area.x += x;
-            area.y += y;
+            fillterTexture.area.x += x;
+            fillterTexture.area.y += y;
 
-            SDL_RenderCopy(renderer, fillterTexture->texture, NULL, &area);
+            SDL_RenderCopy(renderer, fillterTexture.texture, NULL, &fillterTexture.area);
         }
     }
 }
