@@ -16,13 +16,13 @@ SDL_Texture *gridTexture = NULL;
 Texture cellNumbersTextures[8];
 Texture cellCoveredTexture;
 
-Texture cellInterFillingHorizontalTexture;
-Texture cellInterFillingVerticalTexture;
-Texture cellInterFillingCornerTexture;
+Texture gridFillerHorizontalTexture;
+Texture gridFillerVerticalTexture;
+Texture gridFillerCornerTexture;
 
-Texture cellFlaggedInterFillingHorizontalTexture;
-Texture cellFlaggedInterFillingVerticalTexture;
-Texture cellFlaggedInterFillingCornerTexture;
+Texture gridFlaggedFillerHorizontalTexture;
+Texture gridFlaggedFillerVerticalTexture;
+Texture gridFlaggedFillerCornerTexture;
 
 Texture cellCoveredMineTexture;
 Texture cellFlaggedMineTexture;
@@ -56,7 +56,7 @@ void initCellCoveredTexture() {
     cellCoveredTexture.texture = texture;
 }
 
-void initCellInterFillingTexture(FILLER_TYPE type, COLOR color, Texture *destTexture) {
+void initGridFillerTexture(FILLER_TYPE type, COLOR color, Texture *destTexture) {
     const int cellSize = gridMeasurements.cellSize;
     const int gridLineWidth = gridMeasurements.gridLineWidth;
     const int backgroundSize = cellSize * 0.9;
@@ -192,13 +192,13 @@ void initTextures() {
     initCellSizedTextureWithBgFromImage(mineImagePath, &cellCoveredMineTexture, COLOR_BACKGROUND, COLOR_THEME);
     initCellSizedTextureWithBgFromImage(mineImagePath, &cellTriggeredMineTexture, COLOR_TRIGGERED_MINE, COLOR_TRIGGERED_MINE_BG);
 
-    initCellInterFillingTexture(FILLER_HORIZONTAL, COLOR_THEME, &cellInterFillingHorizontalTexture);
-    initCellInterFillingTexture(FILLER_VERTICAL, COLOR_THEME, &cellInterFillingVerticalTexture);
-    initCellInterFillingTexture(FILLER_CORNER, COLOR_THEME, &cellInterFillingCornerTexture);
+    initGridFillerTexture(FILLER_HORIZONTAL, COLOR_THEME, &gridFillerHorizontalTexture);
+    initGridFillerTexture(FILLER_VERTICAL, COLOR_THEME, &gridFillerVerticalTexture);
+    initGridFillerTexture(FILLER_CORNER, COLOR_THEME, &gridFillerCornerTexture);
 
-    initCellInterFillingTexture(FILLER_HORIZONTAL, COLOR_FLAGGED_CELL_BG, &cellFlaggedInterFillingHorizontalTexture);
-    initCellInterFillingTexture(FILLER_VERTICAL, COLOR_FLAGGED_CELL_BG, &cellFlaggedInterFillingVerticalTexture);
-    initCellInterFillingTexture(FILLER_CORNER, COLOR_FLAGGED_CELL_BG, &cellFlaggedInterFillingCornerTexture);
+    initGridFillerTexture(FILLER_HORIZONTAL, COLOR_FLAGGED_CELL_BG, &gridFlaggedFillerHorizontalTexture);
+    initGridFillerTexture(FILLER_VERTICAL, COLOR_FLAGGED_CELL_BG, &gridFlaggedFillerVerticalTexture);
+    initGridFillerTexture(FILLER_CORNER, COLOR_FLAGGED_CELL_BG, &gridFlaggedFillerCornerTexture);
 
     initGridTexture();
     initCellCoveredTexture();
@@ -212,20 +212,20 @@ void freeCellCoveredTexture() {
     SDL_DestroyTexture(cellCoveredTexture.texture);
 }
 
-void freeCellInterFillingTextures() {
-    SDL_FreeSurface(cellInterFillingHorizontalTexture.surface);
-    SDL_DestroyTexture(cellInterFillingHorizontalTexture.texture);
-    SDL_FreeSurface(cellInterFillingVerticalTexture.surface);
-    SDL_DestroyTexture(cellInterFillingVerticalTexture.texture);
-    SDL_FreeSurface(cellInterFillingCornerTexture.surface);
-    SDL_DestroyTexture(cellInterFillingCornerTexture.texture);
+void freeGridFillerTextures() {
+    SDL_FreeSurface(gridFillerHorizontalTexture.surface);
+    SDL_DestroyTexture(gridFillerHorizontalTexture.texture);
+    SDL_FreeSurface(gridFillerVerticalTexture.surface);
+    SDL_DestroyTexture(gridFillerVerticalTexture.texture);
+    SDL_FreeSurface(gridFillerCornerTexture.surface);
+    SDL_DestroyTexture(gridFillerCornerTexture.texture);
 
-    SDL_FreeSurface(cellFlaggedInterFillingHorizontalTexture.surface);
-    SDL_DestroyTexture(cellFlaggedInterFillingHorizontalTexture.texture);
-    SDL_FreeSurface(cellFlaggedInterFillingVerticalTexture.surface);
-    SDL_DestroyTexture(cellFlaggedInterFillingVerticalTexture.texture);
-    SDL_FreeSurface(cellFlaggedInterFillingCornerTexture.surface);
-    SDL_DestroyTexture(cellFlaggedInterFillingCornerTexture.texture);
+    SDL_FreeSurface(gridFlaggedFillerHorizontalTexture.surface);
+    SDL_DestroyTexture(gridFlaggedFillerHorizontalTexture.texture);
+    SDL_FreeSurface(gridFlaggedFillerVerticalTexture.surface);
+    SDL_DestroyTexture(gridFlaggedFillerVerticalTexture.texture);
+    SDL_FreeSurface(gridFlaggedFillerCornerTexture.surface);
+    SDL_DestroyTexture(gridFlaggedFillerCornerTexture.texture);
 }
 
 void freeMineTextures() {

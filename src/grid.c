@@ -158,9 +158,9 @@ void drawGridInterCellFiller(const int x, const int y, const int column, const i
                 continue;
             }
 
-            Texture *fillterTexture = i == 1 && j == 0   ? &cellInterFillingVerticalTexture
-                                      : i == 0 && j == 1 ? &cellInterFillingHorizontalTexture
-                                      : drawCorner       ? &cellInterFillingCornerTexture
+            Texture *fillterTexture = i == 1 && j == 0   ? &gridFillerVerticalTexture
+                                      : i == 0 && j == 1 ? &gridFillerHorizontalTexture
+                                      : drawCorner       ? &gridFillerCornerTexture
                                                          : NULL;
             if (!fillterTexture) continue;
 

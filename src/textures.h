@@ -12,16 +12,16 @@ typedef struct Texture {
 
 extern SDL_Texture *gridTexture;
 
+extern Texture gridFillerHorizontalTexture;
+extern Texture gridFillerVerticalTexture;
+extern Texture gridFillerCornerTexture;
+
+extern Texture gridFlaggedFillerHorizontalTexture;
+extern Texture gridFlaggedFillerVerticalTexture;
+extern Texture gridFlaggedFillerCornerTexture;
+
 extern Texture cellNumbersTextures[8];
 extern Texture cellCoveredTexture;
-
-extern Texture cellInterFillingHorizontalTexture;
-extern Texture cellInterFillingVerticalTexture;
-extern Texture cellInterFillingCornerTexture;
-
-extern Texture cellFlaggedInterFillingHorizontalTexture;
-extern Texture cellFlaggedInterFillingVerticalTexture;
-extern Texture cellFlaggedInterFillingCornerTexture;
 
 extern Texture cellCoveredMineTexture;
 extern Texture cellFlaggedMineTexture;
