@@ -255,6 +255,7 @@ void getSurroundingUnrevealed(const int x, const int y, Coords *coords, int *cou
 
 int countSurroundingFlagged(int x, int y);
 Coords getSurroundingEmpty(int x, int y);
+void revealNonFlagged(int x, int y, Coords *coords, int *counter, bool *revealedMine);
 void revealCellsDFS(int x, int y);
 void revealCellBorder(int x, int y);
 
@@ -271,46 +272,66 @@ bool revealCell(const int clickX, const int clickY) {
     if (grid[x][y].flagged) return false;
     if (cellType == CELL_MINE) return true;
 
+    Coords revealedCells[9] = {{x, y}};
+    int revealedCellsCount = 1;
     if (grid[x][y].revealed) {
         if (cellType < CELL_1 || cellType > CELL_8) return false;
         const int flaggedCount = countSurroundingFlagged(x, y);
         if (flaggedCount != cellType - CELL_0) return false;
 
-        bool revealedMine = false;
-        for (int i = -1; i <= 1; i++) {
-            const int nx = x + i;
-            if (nx < 0 || nx > columns - 1) continue;
+        bool revealedMine = false, revealedEmpty = false;
+        revealNonFlagged(x, y, revealedCells, &revealedCellsCount, &revealedMine);
+        if (revealedMine) return revealedMine;
+    }
 
-            for (int j = -1; j <= 1; j++) {
-                const int ny = y + j;
-                if (ny < 0 || ny > rows - 1) continue;
-                const GridCell cell = grid[nx][ny];
-                if (cell.revealed || cell.flagged) continue;
-                if (cell.type == CELL_MINE) {
-                    revealedMine = true;
-                    break;
-                }
+    for (int i = 0; i < revealedCellsCount; i++) {
+        int nx = revealedCells[i].x;
+        int ny = revealedCells[i].y;
 
-                grid[nx][ny].revealed = true;
-            }
-
-            if (revealedMine) break;
+        grid[nx][ny].revealed = true;
+        if (cellType != CELL_0) {
+            Coords empty = getSurroundingEmpty(nx, ny);
+            if (empty.x == -1 || empty.y == -1) continue;
+            nx = empty.x;
+            ny = empty.y;
         }
 
-        return revealedMine;
+        revealCellBorder(nx, ny);
+        revealCellsDFS(nx, ny);
     }
 
-    grid[x][y].revealed = true;
-    if (cellType != CELL_0) {
-        Coords empty = getSurroundingEmpty(x, y);
-        if (empty.x == -1 || empty.y == -1) return cellType == CELL_MINE;
-        x = empty.x;
-        y = empty.y;
-    }
-
-    revealCellBorder(x, y);
-    revealCellsDFS(x, y);
     return false;
+}
+
+void revealNonFlagged(const int x, const int y, Coords *coords, int *counter, bool *revealedMine) {
+    const int rows = gridMeasurements.rows;
+    const int columns = gridMeasurements.columns;
+
+    for (int i = -1; i <= 1; i++) {
+        const int nx = x + i;
+        if (nx < 0 || nx > columns - 1) continue;
+
+        for (int j = -1; j <= 1; j++) {
+            const int ny = y + j;
+            if (ny < 0 || ny > rows - 1) continue;
+
+            const GridCell cell = grid[nx][ny];
+            if (cell.revealed || cell.flagged) continue;
+            if (cell.type == CELL_MINE) {
+                *revealedMine = true;
+                break;
+            }
+
+            if (!cell.revealed) {
+                coords[*counter] = (Coords){nx, ny};
+                *counter = *counter + 1;
+            }
+
+            grid[nx][ny].revealed = true;
+        }
+
+        if (*revealedMine) break;
+    }
 }
 
 int countSurroundingFlagged(const int x, const int y) {
