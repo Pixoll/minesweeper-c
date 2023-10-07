@@ -204,29 +204,101 @@ Coords calculateGridCell(const int clickX, const int clickY) {
     return (Coords){x, y};
 }
 
+void getSurroundingUnrevealed(int x, int y, Coords *coords, int *counter);
+
 void toggleCellFlag(const int clickX, const int clickY) {
+    const int rows = gridMeasurements.rows;
+    const int columns = gridMeasurements.columns;
+
     const Coords coords = calculateGridCell(clickX, clickY);
     const int x = coords.x;
     const int y = coords.y;
     if (x == -1 || y == -1) return;
 
-    if (grid[x][y].revealed) return;
-    grid[x][y].flagged = !grid[x][y].flagged;
+    const GridCell cell = grid[x][y];
+    if (!cell.revealed) {
+        grid[x][y].flagged = !grid[x][y].flagged;
+        return;
+    }
+
+    if (cell.type < CELL_1 || cell.type > CELL_8) return;
+
+    Coords unrevealed[9];
+    int unrevealedCount = 0;
+    getSurroundingUnrevealed(x, y, unrevealed, &unrevealedCount);
+
+    if (unrevealedCount != cell.type - CELL_0) return;
+
+    for (int i = 0; i < unrevealedCount; i++) {
+        const int nx = unrevealed[i].x;
+        const int ny = unrevealed[i].y;
+        grid[nx][ny].flagged = true;
+    }
 }
 
+void getSurroundingUnrevealed(const int x, const int y, Coords *coords, int *counter) {
+    const int rows = gridMeasurements.rows;
+    const int columns = gridMeasurements.columns;
+
+    for (int i = -1; i <= 1; i++) {
+        const int nx = x + i;
+        if (nx < 0 || nx > columns - 1) continue;
+
+        for (int j = -1; j <= 1; j++) {
+            const int ny = y + j;
+            if (ny < 0 || ny > rows - 1 || grid[nx][ny].revealed) continue;
+            coords[*counter] = (Coords){nx, ny};
+            *counter = *counter + 1;
+        }
+    }
+}
+
+int countSurroundingFlagged(int x, int y);
 Coords getSurroundingEmpty(int x, int y);
 void revealCellsDFS(int x, int y);
 void revealCellBorder(int x, int y);
 
-bool revealCell(const int clickX, const int clickY, const bool firstCell) {
+bool revealCell(const int clickX, const int clickY) {
+    const int rows = gridMeasurements.rows;
+    const int columns = gridMeasurements.columns;
+
     const Coords coords = calculateGridCell(clickX, clickY);
     int x = coords.x;
     int y = coords.y;
     if (x == -1 || y == -1) return false;
 
     const CELL_TYPE cellType = grid[x][y].type;
-    if (grid[x][y].revealed || grid[x][y].flagged) return false;
-    if (firstCell && cellType == CELL_MINE) return true;
+    if (grid[x][y].flagged) return false;
+    if (cellType == CELL_MINE) return true;
+
+    if (grid[x][y].revealed) {
+        if (cellType < CELL_1 || cellType > CELL_8) return false;
+        const int flaggedCount = countSurroundingFlagged(x, y);
+        if (flaggedCount != cellType - CELL_0) return false;
+
+        bool revealedMine = false;
+        for (int i = -1; i <= 1; i++) {
+            const int nx = x + i;
+            if (nx < 0 || nx > columns - 1) continue;
+
+            for (int j = -1; j <= 1; j++) {
+                const int ny = y + j;
+                if (ny < 0 || ny > rows - 1) continue;
+                const GridCell cell = grid[nx][ny];
+                if (cell.revealed || cell.flagged) continue;
+                if (cell.type == CELL_MINE) {
+                    revealedMine = true;
+                    break;
+                }
+
+                grid[nx][ny].revealed = true;
+            }
+
+            if (revealedMine) break;
+        }
+
+        return revealedMine;
+    }
 
     grid[x][y].revealed = true;
     if (cellType != CELL_0) {
@@ -239,6 +311,25 @@ bool revealCell(const int clickX, const int clickY, const bool firstCell) {
     revealCellBorder(x, y);
     revealCellsDFS(x, y);
     return false;
+}
+
+int countSurroundingFlagged(const int x, const int y) {
+    const int rows = gridMeasurements.rows;
+    const int columns = gridMeasurements.columns;
+
+    int flagged = 0;
+    for (int i = -1; i <= 1; i++) {
+        const int nx = x + i;
+        if (nx < 0 || nx > columns - 1) continue;
+
+        for (int j = -1; j <= 1; j++) {
+            const int ny = y + j;
+            if (ny < 0 || ny > rows - 1 || grid[nx][ny].revealed || !grid[nx][ny].flagged) continue;
+            flagged++;
+        }
+    }
+
+    return flagged;
 }
 
 Coords getSurroundingEmpty(const int x, const int y) {

@@ -62,10 +62,12 @@ int main(int argc, char *argv[]) {
 
                     switch (event.button.button) {
                         case SDL_BUTTON_LEFT: {
-                            clickedMine = revealCell(clickX, clickY, firstCell);
+                            clickedMine = revealCell(clickX, clickY);
                             if (firstCell) {
-                                if (clickedMine) clickedMine = false;
-                                else firstCell = false;
+                                if (clickedMine)
+                                    clickedMine = false;
+                                else
+                                    firstCell = false;
                             }
                             break;
                         }

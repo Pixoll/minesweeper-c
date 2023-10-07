@@ -42,6 +42,6 @@ void createGrid(int rows, int columns, int mines);
 void calculateGridMeasurements();
 void drawGrid(bool clickedMine);
 void toggleCellFlag(int clickX, int clickY);
-bool revealCell(int clickX, int clickY, bool firstCell);
+bool revealCell(int clickX, int clickY);
 
 #endif
