@@ -270,7 +270,10 @@ bool revealCell(const int clickX, const int clickY) {
 
     const CELL_TYPE cellType = grid[x][y].type;
     if (grid[x][y].flagged) return false;
-    if (cellType == CELL_MINE) return true;
+    if (cellType == CELL_MINE) {
+        grid[x][y].revealed = true;
+        return true;
+    }
 
     Coords revealedCells[9] = {{x, y}};
     int revealedCellsCount = 1;
@@ -317,10 +320,6 @@ void revealNonFlagged(const int x, const int y, Coords *coords, int *counter, bo
 
             const GridCell cell = grid[nx][ny];
             if (cell.revealed || cell.flagged) continue;
-            if (cell.type == CELL_MINE) {
-                *revealedMine = true;
-                break;
-            }
 
             if (!cell.revealed) {
                 coords[*counter] = (Coords){nx, ny};
@@ -328,6 +327,11 @@ void revealNonFlagged(const int x, const int y, Coords *coords, int *counter, bo
             }
 
             grid[nx][ny].revealed = true;
+
+            if (cell.type == CELL_MINE) {
+                *revealedMine = true;
+                break;
+            }
         }
 
         if (*revealedMine) break;
