@@ -20,6 +20,11 @@ bool gridMeasurementsReady = false;
 
 CELL_TYPE countSurroundingMines(int x, int y);
 
+typedef struct Coords {
+    int x;
+    int y;
+} Coords;
+
 void createGrid(const int rows, const int columns, const int mines) {
     if (createdGrid) {
         for (int i = 0; i < columns; i++)
@@ -82,13 +87,15 @@ void calculateGridMeasurements() {
     const int limitantOffset = limitantWindowSide * 0.025;
     const int cellSize = (limitantWindowSide - (limitantOffset << 1)) / limitantGridSide;
 
-    const int gridLineWidth = cellSize * 0.025;
+    const int gridLineWidth = cellSize * 0.03;
     const int gridWidth = cellSize * columns + gridLineWidth;
     const int gridXOffset = (windowWidth - gridWidth) / 2;
     const int gridHeight = cellSize * rows + gridLineWidth;
     const int gridYOffset = (windowHeight - gridHeight) / 2;
 
     gridMeasurements.cellSize = cellSize;
+    gridMeasurements.coveredCellSize = cellSize * 0.85;
+    gridMeasurements.gridLineLength = cellSize * 0.65;
     gridMeasurements.gridLineWidth = gridLineWidth;
     gridMeasurements.gridXOffset = gridXOffset;
     gridMeasurements.gridYOffset = gridYOffset;
@@ -137,7 +144,8 @@ void drawGrid(const bool clickedMine) {
             SDL_RenderCopy(renderer, cellTexture.texture, NULL, &cellTexture.area);
 
             if (cell.revealed) continue;
-            drawGridFiller(x, y, i, j, cell.flagged);
+            // TODO Make new filler textures before enabling again
+            // drawGridFiller(x, y, i, j, cell.flagged);
         }
     }
 }
@@ -181,11 +189,6 @@ void drawGridFiller(const int x, const int y, const int column, const int row, c
         }
     }
 }
-
-typedef struct Coords {
-    int x;
-    int y;
-} Coords;
 
 Coords calculateGridCell(const int clickX, const int clickY) {
     const int rows = gridMeasurements.rows;
@@ -259,7 +262,7 @@ void revealNonFlagged(int x, int y, Coords *coords, int *counter, bool *revealed
 void revealCellsDFS(int x, int y);
 void revealCellBorder(int x, int y);
 
-bool revealCell(const int clickX, const int clickY) {
+bool revealCell(const int clickX, const int clickY, const bool firstCell) {
     const int rows = gridMeasurements.rows;
     const int columns = gridMeasurements.columns;
 
@@ -271,7 +274,7 @@ bool revealCell(const int clickX, const int clickY) {
     const CELL_TYPE cellType = grid[x][y].type;
     if (grid[x][y].flagged) return false;
     if (cellType == CELL_MINE) {
-        grid[x][y].revealed = true;
+        if (!firstCell) grid[x][y].revealed = true;
         return true;
     }
 
