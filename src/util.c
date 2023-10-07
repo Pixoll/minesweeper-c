@@ -28,11 +28,15 @@ Color mapColor(const SDL_Surface *surface, const char *hexColor) {
 }
 
 SDL_Surface *createSurface(const int width, const int height) {
-    SDL_PixelFormat *pixelFormat = SDL_GetWindowSurface(window)->format;
-
-    SDL_Surface *surface = SDL_CreateRGBSurface(0, width, height, 32, pixelFormat->Rmask,
-                                                pixelFormat->Gmask, pixelFormat->Bmask, pixelFormat->Amask);
+    const Uint32 pixelFormat = SDL_GetWindowSurface(window)->format->format;
+    SDL_Surface *surface = SDL_CreateRGBSurfaceWithFormat(0, width, height, 32, pixelFormat);
     return surface;
+}
+
+SDL_Texture *createTexture(const int width, const int height, const int access) {
+    const Uint32 pixelFormat = SDL_GetWindowSurface(window)->format->format;
+    SDL_Texture *texture = SDL_CreateTexture(renderer, pixelFormat, access, width, height);
+    return texture;
 }
 
 SDL_Surface *createColoredSurface(const int width, const int height, const COLOR color) {

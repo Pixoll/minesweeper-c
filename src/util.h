@@ -21,6 +21,7 @@ int randomBetween(int min, int max);
 
 Color mapColor(const SDL_Surface *surface, const char *hexColor);
 SDL_Surface *createSurface(int width, int height);
+SDL_Texture *createTexture(int width, int height, int access);
 SDL_Surface *createColoredSurface(int width, int height, COLOR color);
 void throwSDLError(const char *functionName);
 

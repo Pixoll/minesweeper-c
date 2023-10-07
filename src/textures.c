@@ -34,6 +34,8 @@ bool texturesReady = false;
 const char *cellImagePath = "assets/images/cell.png";
 const char *mineImagePath = "assets/images/mine.png";
 const char *flagImagePath = "assets/images/flag.png";
+const char *gridLineHorizontalImagePath = "assets/images/grid_line_horizontal.png";
+const char *gridLineVerticalImagePath = "assets/images/grid_line_vertical.png";
 
 enum FILLER_TYPE {
     FILLER_HORIZONTAL,
@@ -115,8 +117,7 @@ void initCellSizedTextureWithBgFromImage(const char *imagePath, Texture *destTex
     const SDL_Color imageColorRgb = colors[imageColor].rgb;
     const SDL_Color themeColor = colors[cellColor].rgb;
 
-    const Uint32 pixelFormat = SDL_GetWindowSurface(window)->format->format;
-    SDL_Texture *finalTexture = SDL_CreateTexture(renderer, pixelFormat, SDL_TEXTUREACCESS_TARGET, backgroundSize, backgroundSize);
+    SDL_Texture *finalTexture = createTexture(backgroundSize, backgroundSize, SDL_TEXTUREACCESS_TARGET);
     SDL_SetRenderTarget(renderer, finalTexture);
 
     SDL_Surface *backgroundSurface = createColoredSurface(backgroundSize, backgroundSize, COLOR_BACKGROUND);
@@ -171,27 +172,37 @@ void initGridTexture() {
     const int gridYOffset = gridMeasurements.gridYOffset;
     const int gridWidth = gridMeasurements.gridWidth;
     const int gridHeight = gridMeasurements.gridHeight;
+    const SDL_Color colorGrid = colors[COLOR_LIGHT_GREY].rgb;
 
-    SDL_Surface *surface = SDL_GetWindowSurface(window);
+    gridTexture = createTexture(windowWidth, windowHeight, SDL_TEXTUREACCESS_TARGET);
+    SDL_SetRenderTarget(renderer, gridTexture);
 
-    const Uint32 colorGrid = colors[COLOR_LIGHT_GREY].value;
-    const SDL_Rect background = rectangle(0, 0, windowWidth, windowHeight);
-    SDL_FillRect(surface, &background, colors[COLOR_BACKGROUND].value);
+    SDL_Surface *backgroundSurface = createColoredSurface(windowWidth, windowHeight, COLOR_BACKGROUND);
+    SDL_Texture *backgroundTexture = SDL_CreateTextureFromSurface(renderer, backgroundSurface);
+    SDL_RenderCopy(renderer, backgroundTexture, NULL, NULL);
+
+    SDL_Surface *gridLineHSurface = IMG_Load(gridLineHorizontalImagePath);
+    SDL_Texture *gridLineHTexture = SDL_CreateTextureFromSurface(renderer, gridLineHSurface);
+    SDL_SetTextureColorMod(gridLineHTexture, colorGrid.r, colorGrid.g, colorGrid.b);
+
+    SDL_Surface *gridLineVSurface = IMG_Load(gridLineVerticalImagePath);
+    SDL_Texture *gridLineVTexture = SDL_CreateTextureFromSurface(renderer, gridLineVSurface);
+    SDL_SetTextureColorMod(gridLineVTexture, colorGrid.r, colorGrid.g, colorGrid.b);
 
     for (int x = gridXOffset; x < gridXOffset + gridWidth - gridLineWidth; x += cellSize) {
         for (int y = gridYOffset; y < gridYOffset + gridHeight - gridLineWidth; y += cellSize) {
             if (x > gridXOffset) {
                 const SDL_Rect vertical = rectangle(x, y + gridLineOffset, gridLineWidth, gridLineLength);
-                SDL_FillRect(surface, &vertical, colorGrid);
+                SDL_RenderCopy(renderer, gridLineVTexture, NULL, &vertical);
             }
             if (y > gridYOffset) {
                 const SDL_Rect horizontal = rectangle(x + gridLineOffset, y, gridLineLength, gridLineWidth);
-                SDL_FillRect(surface, &horizontal, colorGrid);
+                SDL_RenderCopy(renderer, gridLineHTexture, NULL, &horizontal);
             }
         }
     }
 
-    gridTexture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_SetRenderTarget(renderer, NULL);
 }
 
 void initTextures() {
