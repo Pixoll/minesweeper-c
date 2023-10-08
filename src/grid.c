@@ -142,10 +142,17 @@ void drawGrid(const bool clickedMine) {
             cellTexture.area.y += y;
 
             SDL_RenderCopy(renderer, cellTexture.texture, NULL, &cellTexture.area);
+        }
+    }
 
+    // Draw filler
+    for (int i = 0; i < columns; i++) {
+        const int x = gridXOffset + cellSize * i;
+        for (int j = 0; j < rows; j++) {
+            const int y = gridYOffset + cellSize * j;
+            const GridCell cell = grid[i][j];
             if (cell.revealed) continue;
-            // TODO Make new filler textures before enabling again
-            // drawGridFiller(x, y, i, j, cell.flagged);
+            drawGridFiller(x, y, i, j, cell.flagged);
         }
     }
 }

@@ -34,8 +34,12 @@ bool texturesReady = false;
 const char *cellImagePath = "assets/images/cell.png";
 const char *mineImagePath = "assets/images/mine.png";
 const char *flagImagePath = "assets/images/flag.png";
+
 const char *gridLineHorizontalImagePath = "assets/images/grid_line_horizontal.png";
 const char *gridLineVerticalImagePath = "assets/images/grid_line_vertical.png";
+
+const char *gridFillerHorizontalImagePath = "assets/images/grid_filler_horizontal.png";
+const char *gridFillerVerticalImagePath = "assets/images/grid_filler_vertical.png";
 
 enum FILLER_TYPE {
     FILLER_HORIZONTAL,
@@ -65,16 +69,27 @@ void initCellCoveredTexture() {
 void initGridFillerTexture(FILLER_TYPE type, COLOR color, Texture *destTexture) {
     const int cellSize = gridMeasurements.cellSize;
     const int gridLineWidth = gridMeasurements.gridLineWidth;
-    const int backgroundSize = gridMeasurements.coveredCellSize;
-    const int fillerSize = cellSize - backgroundSize;
-    const int fillerOppositeOffset = (gridLineWidth + fillerSize) / 2;
-    const int fillerAdjacentOffset = fillerOppositeOffset + backgroundSize;
+    const int coveredCellSize = gridMeasurements.coveredCellSize;
+    const int coveredCellOffset = (gridLineWidth + cellSize - coveredCellSize) / 2;
+    const SDL_Color fillerColor = colors[color].rgb;
 
-    SDL_Rect area = type == FILLER_HORIZONTAL ? rectangle(fillerOppositeOffset, fillerAdjacentOffset, backgroundSize, fillerSize)
-                    : type == FILLER_VERTICAL ? rectangle(fillerAdjacentOffset, fillerOppositeOffset, fillerSize, backgroundSize)
-                                              : rectangle(fillerAdjacentOffset, fillerAdjacentOffset, fillerSize, fillerSize);
-    SDL_Surface *surface = createColoredSurface(area.w, area.h, color);
+    SDL_Surface *surface = type == FILLER_HORIZONTAL ? IMG_Load(gridFillerHorizontalImagePath)
+                           : type == FILLER_VERTICAL ? IMG_Load(gridFillerVerticalImagePath)
+                                                     : createColoredSurface(coveredCellSize, coveredCellSize, COLOR_WHITE);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+
+    const int fillerSize = type == FILLER_HORIZONTAL ? (float)surface->h * ((float)coveredCellSize / surface->w)
+                           : type == FILLER_VERTICAL ? (float)surface->w * ((float)coveredCellSize / surface->h)
+                                                     : cellSize - coveredCellSize;
+    const int fillerOppositeOffset = type == FILLER_CORNER
+                                         ? (gridLineWidth + cellSize + coveredCellSize) / 2
+                                         : cellSize + (gridLineWidth - fillerSize) / 2;
+
+    SDL_Rect area = type == FILLER_HORIZONTAL ? rectangle(coveredCellOffset, fillerOppositeOffset, coveredCellSize, fillerSize)
+                    : type == FILLER_VERTICAL ? rectangle(fillerOppositeOffset, coveredCellOffset, fillerSize, coveredCellSize)
+                                              : rectangle(fillerOppositeOffset, fillerOppositeOffset, fillerSize, fillerSize);
+
+    SDL_SetTextureColorMod(texture, fillerColor.r, fillerColor.g, fillerColor.b);
 
     destTexture->area = area;
     destTexture->surface = surface;
