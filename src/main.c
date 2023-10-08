@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
 
     assetArg(columns, 5, 100, "Number of columns must be between 5 and 100");
     assetArg(rows, 5, 100, "Number of rows must be between 5 and 100");
-    assetArg(density, 1, 99, "Number of columns must be between 1% and 99%");
+    assetArg(density, 1, 99, "Mines density must be between 1% and 99%");
 
     const int minesCount = rows * columns * density / 100;
     printf("Grid %dx%d\tMines count: %d (%d%%)\n", columns, rows, minesCount, density);
