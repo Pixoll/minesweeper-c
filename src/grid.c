@@ -32,9 +32,9 @@ void createGrid(const int rows, const int columns, const int mines) {
         free(grid);
     }
 
-    grid = malloc(columns * sizeof(GridCell *));
+    grid = calloc(columns, sizeof(GridCell *));
     for (int i = 0; i < columns; i++) {
-        grid[i] = malloc(rows * sizeof(GridCell));
+        grid[i] = calloc(rows, sizeof(GridCell));
         for (int j = 0; j < rows; j++) {
             grid[i][j] = (GridCell){
                 .type = CELL_0,
@@ -265,7 +265,7 @@ void getSurroundingUnrevealed(const int x, const int y, Coords *coords, int *cou
 
 int countSurroundingFlagged(int x, int y);
 Coords getSurroundingEmpty(int x, int y);
-void revealNonFlagged(int x, int y, Coords *coords, int *counter, bool *revealedMine);
+bool revealNonFlagged(int x, int y, Coords *coords, int *counter);
 void revealCellsDFS(int x, int y);
 void revealCellBorder(int x, int y);
 
@@ -292,8 +292,7 @@ bool revealCell(const int clickX, const int clickY, const bool firstCell) {
         const int flaggedCount = countSurroundingFlagged(x, y);
         if (flaggedCount != cellType - CELL_0) return false;
 
-        bool revealedMine = false, revealedEmpty = false;
-        revealNonFlagged(x, y, revealedCells, &revealedCellsCount, &revealedMine);
+        const bool revealedMine = revealNonFlagged(x, y, revealedCells, &revealedCellsCount);
         if (revealedMine) return revealedMine;
     }
 
@@ -316,9 +315,10 @@ bool revealCell(const int clickX, const int clickY, const bool firstCell) {
     return false;
 }
 
-void revealNonFlagged(const int x, const int y, Coords *coords, int *counter, bool *revealedMine) {
+bool revealNonFlagged(const int x, const int y, Coords *coords, int *counter) {
     const int rows = gridMeasurements.rows;
     const int columns = gridMeasurements.columns;
+    bool revealedMine;
 
     for (int i = -1; i <= 1; i++) {
         const int nx = x + i;
@@ -339,13 +339,15 @@ void revealNonFlagged(const int x, const int y, Coords *coords, int *counter, bo
             grid[nx][ny].revealed = true;
 
             if (cell.type == CELL_MINE) {
-                *revealedMine = true;
+                revealedMine = true;
                 break;
             }
         }
 
-        if (*revealedMine) break;
+        if (revealedMine) break;
     }
+
+    return revealedMine;
 }
 
 int countSurroundingFlagged(const int x, const int y) {
