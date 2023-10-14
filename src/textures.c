@@ -243,46 +243,39 @@ void initTextures() {
     texturesReady = true;
 }
 
+void freeTexture(Texture texture) {
+    SDL_FreeSurface(texture.surface);
+    SDL_DestroyTexture(texture.texture);
+}
+
 void freeCellCoveredTexture() {
-    SDL_FreeSurface(cellCoveredTexture.surface);
-    SDL_DestroyTexture(cellCoveredTexture.texture);
+    freeTexture(cellCoveredTexture);
 }
 
 void freeGridFillerTextures() {
-    SDL_FreeSurface(gridFillerHorizontalTexture.surface);
-    SDL_DestroyTexture(gridFillerHorizontalTexture.texture);
-    SDL_FreeSurface(gridFillerVerticalTexture.surface);
-    SDL_DestroyTexture(gridFillerVerticalTexture.texture);
-    SDL_FreeSurface(gridFillerCornerTexture.surface);
-    SDL_DestroyTexture(gridFillerCornerTexture.texture);
+    freeTexture(gridFillerHorizontalTexture);
+    freeTexture(gridFillerVerticalTexture);
+    freeTexture(gridFillerCornerTexture);
 
-    SDL_FreeSurface(gridFlaggedFillerHorizontalTexture.surface);
-    SDL_DestroyTexture(gridFlaggedFillerHorizontalTexture.texture);
-    SDL_FreeSurface(gridFlaggedFillerVerticalTexture.surface);
-    SDL_DestroyTexture(gridFlaggedFillerVerticalTexture.texture);
-    SDL_FreeSurface(gridFlaggedFillerCornerTexture.surface);
-    SDL_DestroyTexture(gridFlaggedFillerCornerTexture.texture);
+    freeTexture(gridFlaggedFillerHorizontalTexture);
+    freeTexture(gridFlaggedFillerVerticalTexture);
+    freeTexture(gridFlaggedFillerCornerTexture);
 }
 
 void freeMineTextures() {
-    SDL_FreeSurface(cellFlaggedMineTexture.surface);
-    SDL_DestroyTexture(cellFlaggedMineTexture.texture);
-    SDL_FreeSurface(cellCoveredMineTexture.surface);
-    SDL_DestroyTexture(cellCoveredMineTexture.texture);
-    SDL_FreeSurface(cellTriggeredMineTexture.surface);
-    SDL_DestroyTexture(cellTriggeredMineTexture.texture);
+    freeTexture(cellFlaggedMineTexture);
+    freeTexture(cellCoveredMineTexture);
+    freeTexture(cellTriggeredMineTexture);
 }
 
 void freeFlagTextures() {
-    SDL_FreeSurface(cellFlagTexture.surface);
-    SDL_DestroyTexture(cellFlagTexture.texture);
+    freeTexture(cellFlagTexture);
 }
 
 void freeCellNumbersTextures() {
     for (CELL_TYPE cell = CELL_1; cell <= CELL_8; cell++) {
         Texture cellTexture = cellNumbersTextures[cell - CELL_1];
-        SDL_FreeSurface(cellTexture.surface);
-        SDL_DestroyTexture(cellTexture.texture);
+        freeTexture(cellTexture);
     }
 }
 
