@@ -300,13 +300,7 @@ bool revealCell(const int clickX, const int clickY, const bool firstCell) {
         int nx = revealedCells[i].x;
         int ny = revealedCells[i].y;
 
-        grid[nx][ny].revealed = true;
-        if (cellType != CELL_0) {
-            Coords empty = getSurroundingEmpty(nx, ny);
-            if (empty.x == -1 || empty.y == -1) continue;
-            nx = empty.x;
-            ny = empty.y;
-        }
+        if (grid[nx][ny].type != CELL_0) continue;
 
         revealCellBorder(nx, ny);
         revealCellsDFS(nx, ny);
