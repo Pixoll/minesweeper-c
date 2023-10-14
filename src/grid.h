@@ -40,10 +40,17 @@ typedef struct GridMeasurements {
 
 extern GridMeasurements gridMeasurements;
 
-void createGrid(int rows, int columns, int mines);
+typedef struct Coords {
+    int x;
+    int y;
+} Coords;
+
+void createGrid(int rows, int columns);
+void placeGridMines(int count, int x, int y);
 void calculateGridMeasurements();
 void drawGrid(bool clickedMine);
 void toggleCellFlag(int clickX, int clickY);
-bool revealCell(int clickX, int clickY, bool firstCell);
+bool revealCell(int clickX, int clickY);
+Coords calculateGridCell(int clickX, int clickY);
 
 #endif

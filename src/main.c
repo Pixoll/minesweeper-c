@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
 
     const int minesCount = rows * columns * density / 100;
     printf("Grid %dx%d\tMines count: %d (%d%%)\n", columns, rows, minesCount, density);
-    createGrid(rows, columns, minesCount);
+    createGrid(rows, columns);
 
     initSDL();
     initColors();
@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
     SDL_SetRenderDrawColor(renderer, bgColor.r, bgColor.g, bgColor.b, bgColor.a);
 
     SDL_Event event;
-    bool quit = false, firstCell = true, clickedMine = false;
+    bool quit = false, placedMines = false, clickedMine = false;
     time_t start = time(NULL);
     int frames = 0;
 
@@ -59,21 +59,21 @@ int main(int argc, char *argv[]) {
                     if (clickedMine) break;
                     int clickX, clickY;
                     SDL_GetMouseState(&clickX, &clickY);
+                    const Coords cell = calculateGridCell(clickX, clickY);
 
                     switch (event.button.button) {
                         case SDL_BUTTON_LEFT: {
-                            clickedMine = revealCell(clickX, clickY, firstCell);
-                            if (firstCell) {
-                                if (clickedMine)
-                                    clickedMine = false;
-                                else
-                                    firstCell = false;
+                            if (!placedMines) {
+                                placeGridMines(minesCount, cell.x, cell.y);
+                                placedMines = true;
                             }
+
+                            clickedMine = revealCell(cell.x, cell.y);
                             break;
                         }
                         case SDL_BUTTON_RIGHT: {
-                            if (firstCell) break;
-                            toggleCellFlag(clickX, clickY);
+                            if (!placedMines) break;
+                            toggleCellFlag(cell.x, cell.y);
                             break;
                         }
                         default:
