@@ -46,8 +46,7 @@ int main(int argc, char *argv[]) {
 
     SDL_Event event;
     bool quit = false, placedMines = false, clickedMine = false;
-    time_t start = time(NULL);
-    int frames = 0;
+    struct timeval lastFrame = {0, 0};
 
     while (!quit) {
         while (SDL_PollEvent(&event) != 0) {
@@ -96,12 +95,7 @@ int main(int argc, char *argv[]) {
         drawGrid(clickedMine);
 
         SDL_RenderPresent(renderer);
-        frames++;
     }
-
-    const float averageFps = (float)frames / (time(NULL) - start);
-    const float averageMsPerFrame = (float)(time(NULL) - start) / frames * 1000;
-    printf("Average runtime FPS: %.2f (%.2fms)\n", averageFps, averageMsPerFrame);
 
     freeTextures();
     freeFonts();
