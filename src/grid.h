@@ -29,7 +29,7 @@ typedef struct GridMeasurements {
     int rows;
     int columns;
     int cellSize;
-    int coveredCellSize;
+    int cellOffset;
     int gridLineLength;
     int gridLineWidth;
     int gridXOffset;

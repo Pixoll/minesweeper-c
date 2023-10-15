@@ -10,7 +10,7 @@ typedef struct Texture {
     SDL_Rect area;
 } Texture;
 
-extern SDL_Texture *gridTexture;
+extern Texture gridTexture;
 
 extern Texture gridFillerHorizontalTexture;
 extern Texture gridFillerVerticalTexture;

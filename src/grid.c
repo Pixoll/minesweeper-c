@@ -88,17 +88,20 @@ void calculateGridMeasurements() {
     const int limitantGridSide = gridRatio > windowRatio ? columns : rows;
     const int limitantWindowSide = gridRatio > windowRatio ? windowWidth : windowHeight;
     const int limitantOffset = limitantWindowSide * 0.025;
-    const int cellSize = (limitantWindowSide - (limitantOffset << 1)) / limitantGridSide;
+    const int cellSize = (limitantWindowSide - (limitantOffset / 2)) / limitantGridSide;
 
+    const int gridLineLength = cellSize * 0.65;
     const int gridLineWidth = cellSize * 0.03;
     const int gridWidth = cellSize * columns + gridLineWidth;
     const int gridXOffset = (windowWidth - gridWidth) / 2;
     const int gridHeight = cellSize * rows + gridLineWidth;
     const int gridYOffset = (windowHeight - gridHeight) / 2;
 
+    const int cellOffset = gridLineWidth / 2;
+
     gridMeasurements.cellSize = cellSize;
-    gridMeasurements.coveredCellSize = cellSize * 0.85;
-    gridMeasurements.gridLineLength = cellSize * 0.65;
+    gridMeasurements.cellOffset = cellOffset;
+    gridMeasurements.gridLineLength = gridLineLength;
     gridMeasurements.gridLineWidth = gridLineWidth;
     gridMeasurements.gridXOffset = gridXOffset;
     gridMeasurements.gridYOffset = gridYOffset;
@@ -129,8 +132,7 @@ void drawGrid(const bool clickedMine) {
     const int gridYOffset = gridMeasurements.gridYOffset;
 
     // Draw grid
-    const SDL_Rect gridArea = rectangle(0, 0, windowWidth, windowHeight);
-    SDL_RenderCopy(renderer, gridTexture, NULL, &gridArea);
+    SDL_RenderCopy(renderer, gridTexture.texture, NULL, &gridTexture.area);
 
     // Draw cells
     for (int i = 0; i < columns; i++) {
@@ -147,6 +149,9 @@ void drawGrid(const bool clickedMine) {
             SDL_RenderCopy(renderer, cellTexture.texture, NULL, &cellTexture.area);
         }
     }
+
+    // FIXME High GPU usage
+    return;
 
     // Draw filler
     for (int i = 0; i < columns; i++) {

@@ -117,6 +117,8 @@ void initSDL() {
     renderer = SDL_CreateRenderer(window, -1, RENDER_FLAGS);
     if (renderer == NULL) throwSDLError("SDL_CreateRenderer");
 
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+
     const int ttfReady = TTF_Init();
     if (ttfReady != 0) throwSDLError("TTF_Init");
 }
