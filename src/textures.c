@@ -184,7 +184,7 @@ void initGridTexture() {
     const int gridHeight = gridMeasurements.gridHeight;
     const SDL_Color colorGrid = colors[COLOR_LIGHT_GREY].rgb;
 
-    SDL_Texture *finalTexture = createTexture(gridWidth, gridWidth, SDL_TEXTUREACCESS_TARGET);
+    SDL_Texture *finalTexture = createTexture(gridWidth, gridHeight, SDL_TEXTUREACCESS_TARGET);
     SDL_SetRenderTarget(renderer, finalTexture);
     SDL_SetTextureBlendMode(finalTexture, SDL_BLENDMODE_BLEND);
 
