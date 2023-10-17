@@ -111,14 +111,14 @@ void calculateGridMeasurements() {
     gridMeasurementsReady = true;
 }
 
-Texture getCellTexture(GridCell cell, const bool clickedMine) {
+Texture getCellTexture(GridCell cell, const bool clickedMine, TEXTURE_CELL_TYPE type) {
     if (clickedMine && cell.type == CELL_MINE) {
-        if (cell.flagged) return cellFlaggedMineTexture;
-        if (cell.revealed) return cellTriggeredMineTexture;
-        return cellCoveredMineTexture;
+        if (cell.flagged) return cellFlaggedMineTextures[type];
+        if (cell.revealed) return cellTriggeredMineTextures[type];
+        return cellCoveredMineTextures[type];
     }
-    if (cell.flagged) return cellFlagTexture;
-    if (!cell.revealed) return cellCoveredTexture;
+    if (cell.flagged) return cellFlagTextures[type];
+    if (!cell.revealed) return cellCoveredTextures[type];
     return cellNumbersTextures[cell.type - CELL_1];
 }
 
@@ -142,7 +142,8 @@ void drawGrid(const bool clickedMine) {
             const GridCell cell = grid[i][j];
             if (cell.type == CELL_0 && cell.revealed) continue;
 
-            Texture cellTexture = getCellTexture(cell, clickedMine);
+            TEXTURE_CELL_TYPE cellType = TEXTURE_CELL_NO_SIDES; // getCellType(cell);
+            Texture cellTexture = getCellTexture(cell, clickedMine, cellType);
             cellTexture.area.x += x;
             cellTexture.area.y += y;
 

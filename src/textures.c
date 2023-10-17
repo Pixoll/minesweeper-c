@@ -13,8 +13,16 @@
 
 Texture gridTexture;
 
+Texture cellMapTexture;
+const int cellTextureSize = 512;
+
+Texture cellCoveredTextures[TEXTURE_CELL_TYPES];
+Texture cellCoveredMineTextures[TEXTURE_CELL_TYPES];
+Texture cellFlaggedMineTextures[TEXTURE_CELL_TYPES];
+Texture cellTriggeredMineTextures[TEXTURE_CELL_TYPES];
+Texture cellFlagTextures[TEXTURE_CELL_TYPES];
+
 Texture cellNumbersTextures[8];
-Texture cellCoveredTexture;
 
 Texture gridFillerHorizontalTexture;
 Texture gridFillerVerticalTexture;
@@ -24,14 +32,9 @@ Texture gridFlaggedFillerHorizontalTexture;
 Texture gridFlaggedFillerVerticalTexture;
 Texture gridFlaggedFillerCornerTexture;
 
-Texture cellCoveredMineTexture;
-Texture cellFlaggedMineTexture;
-Texture cellTriggeredMineTexture;
-Texture cellFlagTexture;
-
 bool texturesReady = false;
 
-const char *cellImagePath = "assets/images/cell.png";
+const char *cellMapPath = "assets/images/cell_map.png";
 const char *mineImagePath = "assets/images/mine.png";
 const char *flagImagePath = "assets/images/flag.png";
 
@@ -47,23 +50,6 @@ enum FILLER_TYPE {
     FILLER_CORNER,
 };
 typedef enum FILLER_TYPE FILLER_TYPE;
-
-void initCellCoveredTexture() {
-    const int cellSize = gridMeasurements.cellSize;
-    const int gridLineWidth = gridMeasurements.gridLineWidth;
-    const int cellOffset = gridMeasurements.cellOffset;
-    const SDL_Color themeColor = colors[COLOR_THEME].rgb;
-
-    SDL_Surface *surface = IMG_Load(cellImagePath);
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-    SDL_Rect area = rectangle(cellOffset, cellOffset, cellSize, cellSize);
-
-    SDL_SetTextureColorMod(texture, themeColor.r, themeColor.g, themeColor.b);
-
-    cellCoveredTexture.area = area;
-    cellCoveredTexture.surface = surface;
-    cellCoveredTexture.texture = texture;
-}
 
 void initGridFillerTexture(FILLER_TYPE type, COLOR color, Texture *destTexture) {
     const int cellSize = gridMeasurements.cellSize;
@@ -121,37 +107,54 @@ void initGridFillerTexture(FILLER_TYPE type, COLOR color, Texture *destTexture) 
 //     destTexture->texture = texture;
 // }
 
-void initCellSizedTextureWithBgFromImage(const char *imagePath, Texture *destTexture, const float imageScaleWRTCell, const COLOR imageColor, const COLOR cellColor) {
+void initCellMapTexture() {
+    SDL_Surface *surface = IMG_Load(cellMapPath);
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+    cellMapTexture.area = rectangle(0, 0, surface->w, surface->h);
+    cellMapTexture.surface = surface;
+    cellMapTexture.texture = texture;
+}
+
+void initCellTexturesFor(Texture textures[TEXTURE_CELL_TYPES], const char *imagePath, const float imageScaleWRTCell, const COLOR imageColor, const COLOR cellColor) {
     const int cellSize = gridMeasurements.cellSize;
     const int cellOffset = gridMeasurements.cellOffset;
     const int gridLineWidth = gridMeasurements.gridLineWidth;
-    const int imageSize = cellSize * imageScaleWRTCell;
-    const int imageOffset = (gridLineWidth + cellSize - imageSize) / 2 - cellOffset;
-    const SDL_Color imageColorRgb = colors[imageColor].rgb;
-    const SDL_Color themeColor = colors[cellColor].rgb;
+    const SDL_Color cellTextureColor = colors[cellColor].rgb;
 
-    SDL_Texture *finalTexture = createTexture(cellSize, cellSize, SDL_TEXTUREACCESS_TARGET);
-    SDL_SetRenderTarget(renderer, finalTexture);
-    SDL_SetTextureBlendMode(finalTexture, SDL_BLENDMODE_BLEND);
+    for (TEXTURE_CELL_TYPE type = 0; type < TEXTURE_CELL_TYPES; type++) {
+        SDL_Texture *finalTexture = createTexture(cellSize, cellSize, SDL_TEXTUREACCESS_TARGET);
+        SDL_SetRenderTarget(renderer, finalTexture);
+        SDL_SetTextureBlendMode(finalTexture, SDL_BLENDMODE_BLEND);
 
-    SDL_Surface *cellSurface = IMG_Load(cellImagePath);
-    SDL_Texture *cellTexture = SDL_CreateTextureFromSurface(renderer, cellSurface);
-    SDL_SetTextureColorMod(cellTexture, themeColor.r, themeColor.g, themeColor.b);
-    SDL_RenderCopy(renderer, cellTexture, NULL, NULL);
+        const int mapIndex = type * cellTextureSize;
+        const int mapX = mapIndex % cellMapTexture.area.w;
+        const int mapY = mapIndex / cellMapTexture.area.h;
+        const SDL_Rect cellTextureArea = rectangle(mapX, mapY, cellTextureSize, cellTextureSize);
 
-    SDL_Surface *imageSurface = IMG_Load(imagePath);
-    SDL_Texture *imageTexture = SDL_CreateTextureFromSurface(renderer, imageSurface);
-    SDL_Rect imageArea = rectangle(imageOffset, imageOffset, imageSize, imageSize);
+        SDL_SetTextureColorMod(cellMapTexture.texture, cellTextureColor.r, cellTextureColor.g, cellTextureColor.b);
+        SDL_RenderCopy(renderer, cellMapTexture.texture, &cellTextureArea, NULL);
+        SDL_SetTextureColorMod(cellMapTexture.texture, 255, 255, 255);
 
-    SDL_SetTextureColorMod(imageTexture, imageColorRgb.r, imageColorRgb.g, imageColorRgb.b);
-    SDL_RenderCopy(renderer, imageTexture, NULL, &imageArea);
+        if (imagePath != NULL && imageScaleWRTCell != 0) {
+            const int imageSize = cellSize * imageScaleWRTCell;
+            const int imageOffset = (gridLineWidth + cellSize - imageSize) / 2 - cellOffset;
+            const SDL_Color imageColorRgb = colors[imageColor].rgb;
 
-    SDL_Rect textureArea = rectangle(cellOffset, cellOffset, cellSize, cellSize);
-    SDL_SetRenderTarget(renderer, NULL);
+            SDL_Surface *imageSurface = IMG_Load(imagePath);
+            SDL_Texture *imageTexture = SDL_CreateTextureFromSurface(renderer, imageSurface);
+            SDL_Rect imageArea = rectangle(imageOffset, imageOffset, imageSize, imageSize);
 
-    destTexture->surface = NULL;
-    destTexture->texture = finalTexture;
-    destTexture->area = textureArea;
+            SDL_SetTextureColorMod(imageTexture, imageColorRgb.r, imageColorRgb.g, imageColorRgb.b);
+            SDL_RenderCopy(renderer, imageTexture, NULL, &imageArea);
+        }
+
+        SDL_Rect textureArea = rectangle(cellOffset, cellOffset, cellSize, cellSize);
+        SDL_SetRenderTarget(renderer, NULL);
+
+        textures[type].surface = NULL;
+        textures[type].texture = finalTexture;
+        textures[type].area = textureArea;
+    }
 }
 
 void initCellNumbersTextures() {
@@ -221,22 +224,25 @@ void initGridTexture() {
 void initTextures() {
     if (texturesReady) return;
 
-    initCellSizedTextureWithBgFromImage(flagImagePath, &cellFlagTexture, 0.35, COLOR_FLAGGED_CELL, COLOR_FLAGGED_CELL_BG);
-    initCellSizedTextureWithBgFromImage(mineImagePath, &cellFlaggedMineTexture, 0.5, COLOR_FLAGGED_CELL, COLOR_FLAGGED_CELL_BG);
-    initCellSizedTextureWithBgFromImage(mineImagePath, &cellCoveredMineTexture, 0.5, COLOR_BACKGROUND, COLOR_THEME);
-    initCellSizedTextureWithBgFromImage(mineImagePath, &cellTriggeredMineTexture, 0.5, COLOR_TRIGGERED_MINE, COLOR_TRIGGERED_MINE_BG);
-
-    initGridFillerTexture(FILLER_HORIZONTAL, COLOR_THEME, &gridFillerHorizontalTexture);
-    initGridFillerTexture(FILLER_VERTICAL, COLOR_THEME, &gridFillerVerticalTexture);
-    initGridFillerTexture(FILLER_CORNER, COLOR_THEME, &gridFillerCornerTexture);
-
-    initGridFillerTexture(FILLER_HORIZONTAL, COLOR_FLAGGED_CELL_BG, &gridFlaggedFillerHorizontalTexture);
-    initGridFillerTexture(FILLER_VERTICAL, COLOR_FLAGGED_CELL_BG, &gridFlaggedFillerVerticalTexture);
-    initGridFillerTexture(FILLER_CORNER, COLOR_FLAGGED_CELL_BG, &gridFlaggedFillerCornerTexture);
-
     initGridTexture();
-    initCellCoveredTexture();
+
+    initCellMapTexture();
+
+    initCellTexturesFor(cellCoveredTextures, NULL, 0, 0, COLOR_THEME);
+    initCellTexturesFor(cellFlagTextures, flagImagePath, 0.35, COLOR_FLAGGED_CELL, COLOR_FLAGGED_CELL_BG);
+    initCellTexturesFor(cellFlaggedMineTextures, mineImagePath, 0.5, COLOR_FLAGGED_CELL, COLOR_FLAGGED_CELL_BG);
+    initCellTexturesFor(cellCoveredMineTextures, mineImagePath, 0.5, COLOR_BACKGROUND, COLOR_THEME);
+    initCellTexturesFor(cellTriggeredMineTextures, mineImagePath, 0.5, COLOR_TRIGGERED_MINE, COLOR_TRIGGERED_MINE_BG);
+
     initCellNumbersTextures();
+
+    // initGridFillerTexture(FILLER_HORIZONTAL, COLOR_THEME, &gridFillerHorizontalTexture);
+    // initGridFillerTexture(FILLER_VERTICAL, COLOR_THEME, &gridFillerVerticalTexture);
+    // initGridFillerTexture(FILLER_CORNER, COLOR_THEME, &gridFillerCornerTexture);
+
+    // initGridFillerTexture(FILLER_HORIZONTAL, COLOR_FLAGGED_CELL_BG, &gridFlaggedFillerHorizontalTexture);
+    // initGridFillerTexture(FILLER_VERTICAL, COLOR_FLAGGED_CELL_BG, &gridFlaggedFillerVerticalTexture);
+    // initGridFillerTexture(FILLER_CORNER, COLOR_FLAGGED_CELL_BG, &gridFlaggedFillerCornerTexture);
 
     texturesReady = true;
 }
@@ -246,8 +252,9 @@ void freeTexture(Texture texture) {
     SDL_DestroyTexture(texture.texture);
 }
 
-void freeCellCoveredTexture() {
-    freeTexture(cellCoveredTexture);
+void freeCellTexturesFrom(Texture textures[TEXTURE_CELL_TYPES]) {
+    for (TEXTURE_CELL_TYPE type = 0; type < TEXTURE_CELL_TYPES; type++)
+        freeTexture(textures[type]);
 }
 
 void freeGridFillerTextures() {
@@ -260,16 +267,6 @@ void freeGridFillerTextures() {
     freeTexture(gridFlaggedFillerCornerTexture);
 }
 
-void freeMineTextures() {
-    freeTexture(cellFlaggedMineTexture);
-    freeTexture(cellCoveredMineTexture);
-    freeTexture(cellTriggeredMineTexture);
-}
-
-void freeFlagTextures() {
-    freeTexture(cellFlagTexture);
-}
-
 void freeCellNumbersTextures() {
     for (CELL_TYPE cell = CELL_1; cell <= CELL_8; cell++) {
         Texture cellTexture = cellNumbersTextures[cell - CELL_1];
@@ -279,9 +276,14 @@ void freeCellNumbersTextures() {
 
 void freeTextures() {
     freeCellNumbersTextures();
-    freeCellCoveredTexture();
-    freeTexture(gridTexture);
 
-    freeFlagTextures();
-    freeMineTextures();
+    freeCellTexturesFrom(cellCoveredTextures);
+    freeCellTexturesFrom(cellCoveredMineTextures);
+    freeCellTexturesFrom(cellFlaggedMineTextures);
+    freeCellTexturesFrom(cellTriggeredMineTextures);
+    freeCellTexturesFrom(cellFlagTextures);
+
+    freeTexture(cellMapTexture);
+
+    freeTexture(gridTexture);
 }
