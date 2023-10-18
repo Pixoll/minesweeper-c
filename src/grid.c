@@ -122,7 +122,7 @@ Texture getCellTexture(GridCell cell, const bool clickedMine, TEXTURE_CELL_TYPE 
     return cellNumbersTextures[cell.type - CELL_1];
 }
 
-void drawGridFiller(int x, int y, int column, int row, bool flagged);
+TEXTURE_CELL_TYPE getCellType(int x, int y, bool flagged, bool revealed);
 
 void drawGrid(const bool clickedMine) {
     const int rows = gridMeasurements.rows;
@@ -142,7 +142,7 @@ void drawGrid(const bool clickedMine) {
             const GridCell cell = grid[i][j];
             if (cell.type == CELL_0 && cell.revealed) continue;
 
-            TEXTURE_CELL_TYPE cellType = TEXTURE_CELL_NO_SIDES; // getCellType(cell);
+            TEXTURE_CELL_TYPE cellType = getCellType(i, j, cell.flagged, cell.revealed);
             Texture cellTexture = getCellTexture(cell, clickedMine, cellType);
             cellTexture.area.x += x;
             cellTexture.area.y += y;
@@ -150,60 +150,73 @@ void drawGrid(const bool clickedMine) {
             SDL_RenderCopy(renderer, cellTexture.texture, NULL, &cellTexture.area);
         }
     }
-
-    // FIXME High GPU usage
-    return;
-
-    // Draw filler
-    for (int i = 0; i < columns; i++) {
-        const int x = gridXOffset + cellSize * i;
-        for (int j = 0; j < rows; j++) {
-            const int y = gridYOffset + cellSize * j;
-            const GridCell cell = grid[i][j];
-            if (cell.revealed) continue;
-            drawGridFiller(x, y, i, j, cell.flagged);
-        }
-    }
 }
 
-Texture getFillerTexture(const int i, const int j, const bool flagged, const bool drawCorner) {
-    if (i == 1 && j == 0) {
-        return flagged ? gridFlaggedFillerVerticalTexture : gridFillerVerticalTexture;
-    }
-    if (i == 0 && j == 1) {
-        return flagged ? gridFlaggedFillerHorizontalTexture : gridFillerHorizontalTexture;
-    }
-    if (drawCorner) {
-        return flagged ? gridFlaggedFillerCornerTexture : gridFillerCornerTexture;
-    }
-    return (Texture){NULL};
-}
+TEXTURE_CELL_TYPE getCellType(const int x, const int y, const bool flagged, const bool revealed) {
+    if (revealed) return TEXTURE_CELL_NO_SIDES;
 
-void drawGridFiller(const int x, const int y, const int column, const int row, const bool flagged) {
     const int rows = gridMeasurements.rows;
     const int columns = gridMeasurements.columns;
 
-    bool drawCorner = true;
-    for (int i = 0; i <= 1; i++) {
-        const int nx = column + i;
-        for (int j = 0; j <= 1; j++) {
-            const int ny = row + j;
-            if ((nx == column && ny == row) || nx > columns - 1 || ny > rows - 1) continue;
-            const GridCell cell = grid[nx][ny];
-            if (cell.revealed || (flagged ? !cell.flagged : cell.flagged)) {
-                drawCorner = false;
-                continue;
-            }
+    // TODO Proof of concept, make it more efficient
 
-            Texture fillterTexture = getFillerTexture(i, j, flagged, drawCorner);
-            if (!fillterTexture.texture) continue;
+    const bool T = y - 1 >= 0 && !grid[x][y - 1].revealed && flagged == grid[x][y - 1].flagged;
+    const bool B = y + 1 <= rows - 1 && !grid[x][y + 1].revealed && flagged == grid[x][y + 1].flagged;
+    const bool L = x - 1 >= 0 && !grid[x - 1][y].revealed && flagged == grid[x - 1][y].flagged;
+    const bool R = x + 1 <= columns - 1 && !grid[x + 1][y].revealed && flagged == grid[x + 1][y].flagged;
+    const bool TLC = T && L && x - 1 >= 0 && y - 1 >= 0 && !grid[x - 1][y - 1].revealed && flagged == grid[x - 1][y - 1].flagged;
+    const bool TRC = T && R && x + 1 <= columns - 1 && y - 1 >= 0 && !grid[x + 1][y - 1].revealed && flagged == grid[x + 1][y - 1].flagged;
+    const bool BLC = B && L && x - 1 >= 0 && y + 1 <= rows - 1 && !grid[x - 1][y + 1].revealed && flagged == grid[x - 1][y + 1].flagged;
+    const bool BRC = B && R && x + 1 <= columns - 1 && y + 1 <= rows - 1 && !grid[x + 1][y + 1].revealed && flagged == grid[x + 1][y + 1].flagged;
 
-            fillterTexture.area.x += x;
-            fillterTexture.area.y += y;
+    if (!T && B && !L && !R && !TLC && !TRC && !BLC && !BRC) return TEXTURE_CELL_B;
+    if (!T && B && L && !R && !TLC && !TRC && !BLC && !BRC) return TEXTURE_CELL_BL;
+    if (!T && B && L && !R && !TLC && !TRC && BLC && !BRC) return TEXTURE_CELL_BLC;
+    if (!T && B && L && R && !TLC && !TRC && !BLC && !BRC) return TEXTURE_CELL_BLR;
+    if (!T && B && L && R && !TLC && !TRC && BLC && !BRC) return TEXTURE_CELL_BLR_BLC;
+    if (!T && B && L && R && !TLC && !TRC && BLC && BRC) return TEXTURE_CELL_BLR_BLCRC;
+    if (!T && B && L && R && !TLC && !TRC && !BLC && BRC) return TEXTURE_CELL_BLR_BRC;
+    if (!T && B && !L && R && !TLC && !TRC && !BLC && !BRC) return TEXTURE_CELL_BR;
+    if (!T && B && !L && R && !TLC && !TRC && !BLC && BRC) return TEXTURE_CELL_BRC;
+    if (T && B && !L && !R && !TLC && !TRC && !BLC && !BRC) return TEXTURE_CELL_BT;
+    if (!T && !B && L && !R && !TLC && !TRC && !BLC && !BRC) return TEXTURE_CELL_L;
+    if (!T && !B && L && R && !TLC && !TRC && !BLC && !BRC) return TEXTURE_CELL_LR;
+    if (!T && !B && !L && R && !TLC && !TRC && !BLC && !BRC) return TEXTURE_CELL_R;
+    if (T && !B && !L && !R && !TLC && !TRC && !BLC && !BRC) return TEXTURE_CELL_T;
+    if (T && B && L && !R && !TLC && !TRC && !BLC && !BRC) return TEXTURE_CELL_TBL;
+    if (T && B && L && R && !TLC && !TRC && !BLC && !BRC) return TEXTURE_CELL_TBLR;
+    if (T && B && L && R && !TLC && !TRC && BLC && !BRC) return TEXTURE_CELL_TBLR_BLC;
+    if (T && B && L && R && !TLC && !TRC && BLC && BRC) return TEXTURE_CELL_TBLR_BLCRC;
+    if (T && B && L && R && !TLC && !TRC && !BLC && BRC) return TEXTURE_CELL_TBLR_BRC;
+    if (T && B && L && R && TLC && !TRC && !BLC && !BRC) return TEXTURE_CELL_TBLR_TLC;
+    if (T && B && L && R && TLC && TRC && !BLC && !BRC) return TEXTURE_CELL_TBLR_TLCRC;
+    if (T && B && L && R && TLC && TRC && BLC && !BRC) return TEXTURE_CELL_TBLR_TLCRC_BLC;
+    if (T && B && L && R && TLC && TRC && BLC && BRC) return TEXTURE_CELL_TBLR_TLCRC_BLCRC;
+    if (T && B && L && R && TLC && TRC && !BLC && BRC) return TEXTURE_CELL_TBLR_TLCRC_BRC;
+    if (T && B && L && R && TLC && !TRC && BLC && !BRC) return TEXTURE_CELL_TBLR_TLC_BLC;
+    if (T && B && L && R && TLC && !TRC && BLC && BRC) return TEXTURE_CELL_TBLR_TLC_BLCRC;
+    if (T && B && L && R && TLC && !TRC && !BLC && BRC) return TEXTURE_CELL_TBLR_TLC_BRC;
+    if (T && B && L && R && !TLC && TRC && !BLC && !BRC) return TEXTURE_CELL_TBLR_TRC;
+    if (T && B && L && R && !TLC && TRC && BLC && !BRC) return TEXTURE_CELL_TBLR_TRC_BLC;
+    if (T && B && L && R && !TLC && TRC && BLC && BRC) return TEXTURE_CELL_TBLR_TRC_BLCRC;
+    if (T && B && L && R && !TLC && TRC && !BLC && BRC) return TEXTURE_CELL_TBLR_TRC_BRC;
+    if (T && B && L && !R && !TLC && !TRC && BLC && !BRC) return TEXTURE_CELL_TBL_BLC;
+    if (T && B && L && !R && TLC && !TRC && !BLC && !BRC) return TEXTURE_CELL_TBL_TLC;
+    if (T && B && L && !R && TLC && !TRC && BLC && !BRC) return TEXTURE_CELL_TBL_TLC_BLC;
+    if (T && B && !L && R && !TLC && !TRC && !BLC && !BRC) return TEXTURE_CELL_TBR;
+    if (T && B && !L && R && !TLC && !TRC && !BLC && BRC) return TEXTURE_CELL_TBR_BRC;
+    if (T && B && !L && R && !TLC && TRC && !BLC && !BRC) return TEXTURE_CELL_TBR_TRC;
+    if (T && B && !L && R && !TLC && TRC && !BLC && BRC) return TEXTURE_CELL_TBR_TRC_BRC;
+    if (T && !B && L && !R && !TLC && !TRC && !BLC && !BRC) return TEXTURE_CELL_TL;
+    if (T && !B && L && !R && TLC && !TRC && !BLC && !BRC) return TEXTURE_CELL_TLC;
+    if (T && !B && L && R && !TLC && !TRC && !BLC && !BRC) return TEXTURE_CELL_TLR;
+    if (T && !B && L && R && TLC && !TRC && !BLC && !BRC) return TEXTURE_CELL_TLR_TLC;
+    if (T && !B && L && R && TLC && TRC && !BLC && !BRC) return TEXTURE_CELL_TLR_TLCRC;
+    if (T && !B && L && R && !TLC && TRC && !BLC && !BRC) return TEXTURE_CELL_TLR_TRC;
+    if (T && !B && !L && R && !TLC && !TRC && !BLC && !BRC) return TEXTURE_CELL_TR;
+    if (T && !B && !L && R && !TLC && TRC && !BLC && !BRC) return TEXTURE_CELL_TRC;
 
-            SDL_RenderCopy(renderer, fillterTexture.texture, NULL, &fillterTexture.area);
-        }
-    }
+    return TEXTURE_CELL_NO_SIDES;
 }
 
 Coords calculateGridCell(const int clickX, const int clickY) {
