@@ -55,6 +55,24 @@ const TEXTURE_CELL_TYPE textureCellSideTypeOrder[16] = {
     TEXTURE_CELL_TBLR,
 };
 
+const TEXTURE_CELL_TYPE textureCellCornerTypeOrder[15] = {
+    TEXTURE_CELL_TBLR_BRC,
+    TEXTURE_CELL_TBLR_BLC,
+    TEXTURE_CELL_TBLR_BLCRC,
+    TEXTURE_CELL_TBLR_TRC,
+    TEXTURE_CELL_TBLR_TRC_BRC,
+    TEXTURE_CELL_TBLR_TRC_BLC,
+    TEXTURE_CELL_TBLR_TRC_BLCRC,
+    TEXTURE_CELL_TBLR_TLC,
+    TEXTURE_CELL_TBLR_TLC_BRC,
+    TEXTURE_CELL_TBLR_TLC_BLC,
+    TEXTURE_CELL_TBLR_TLC_BLCRC,
+    TEXTURE_CELL_TBLR_TLCRC,
+    TEXTURE_CELL_TBLR_TLCRC_BRC,
+    TEXTURE_CELL_TBLR_TLCRC_BLC,
+    TEXTURE_CELL_TBLR_TLCRC_BLCRC,
+};
+
 // void initTextureFromImage(const char *imagePath, Texture *destTexture) {
 //     SDL_Surface *surface = IMG_Load(imagePath);
 //     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
