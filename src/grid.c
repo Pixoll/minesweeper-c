@@ -179,23 +179,34 @@ TEXTURE_CELL_TYPE getCellType(const int x, const int y, const bool flagged, cons
     if (TLR_BLR_C == 0b0000) return textureCellSideTypeOrder[TBLR];
     if (TBLR == 0b1111) return textureCellCornerTypeOrder[TLR_BLR_C - 1];
 
-    if (TBLR == 0b0101 && TLR_BLR_C == 0b0001) return TEXTURE_CELL_BRC;
-    if (TBLR == 0b0110 && TLR_BLR_C == 0b0010) return TEXTURE_CELL_BLC;
-    if (TBLR == 0b0111 && TLR_BLR_C == 0b0001) return TEXTURE_CELL_BLR_BRC;
-    if (TBLR == 0b0111 && TLR_BLR_C == 0b0010) return TEXTURE_CELL_BLR_BLC;
-    if (TBLR == 0b0111 && TLR_BLR_C == 0b0011) return TEXTURE_CELL_BLR_BLCRC;
-    if (TBLR == 0b1001 && TLR_BLR_C == 0b0100) return TEXTURE_CELL_TRC;
-    if (TBLR == 0b1010 && TLR_BLR_C == 0b1000) return TEXTURE_CELL_TLC;
-    if (TBLR == 0b1011 && TLR_BLR_C == 0b0100) return TEXTURE_CELL_TLR_TRC;
-    if (TBLR == 0b1011 && TLR_BLR_C == 0b1000) return TEXTURE_CELL_TLR_TLC;
-    if (TBLR == 0b1011 && TLR_BLR_C == 0b1100) return TEXTURE_CELL_TLR_TLCRC;
-    if (TBLR == 0b1101 && TLR_BLR_C == 0b0001) return TEXTURE_CELL_TBR_BRC;
-    if (TBLR == 0b1101 && TLR_BLR_C == 0b0100) return TEXTURE_CELL_TBR_TRC;
-    if (TBLR == 0b1101 && TLR_BLR_C == 0b0101) return TEXTURE_CELL_TBR_TRC_BRC;
-    if (TBLR == 0b1110 && TLR_BLR_C == 0b0010) return TEXTURE_CELL_TBL_BLC;
-    if (TBLR == 0b1110 && TLR_BLR_C == 0b1000) return TEXTURE_CELL_TBL_TLC;
-    if (TBLR == 0b1110 && TLR_BLR_C == 0b1010) return TEXTURE_CELL_TBL_TLC_BLC;
+    if (TBLR == 0b0111) {
+        if (TLR_BLR_C == 0b0001) return TEXTURE_CELL_BLR_BRC;
+        if (TLR_BLR_C == 0b0010) return TEXTURE_CELL_BLR_BLC;
+        if (TLR_BLR_C == 0b0011) return TEXTURE_CELL_BLR_BLCRC;
+    }
+    if (TBLR == 0b1011) {
+        if (TLR_BLR_C == 0b0100) return TEXTURE_CELL_TLR_TRC;
+        if (TLR_BLR_C == 0b1000) return TEXTURE_CELL_TLR_TLC;
+        if (TLR_BLR_C == 0b1100) return TEXTURE_CELL_TLR_TLCRC;
+    }
+    if (TBLR == 0b1101) {
+        if (TLR_BLR_C == 0b0001) return TEXTURE_CELL_TBR_BRC;
+        if (TLR_BLR_C == 0b0100) return TEXTURE_CELL_TBR_TRC;
+        if (TLR_BLR_C == 0b0101) return TEXTURE_CELL_TBR_TRC_BRC;
+    }
+    if (TBLR == 0b1110) {
+        if (TLR_BLR_C == 0b0010) return TEXTURE_CELL_TBL_BLC;
+        if (TLR_BLR_C == 0b1000) return TEXTURE_CELL_TBL_TLC;
+        if (TLR_BLR_C == 0b1010) return TEXTURE_CELL_TBL_TLC_BLC;
+    }
 
+    if (TLR_BLR_C == 0b0001) return TEXTURE_CELL_BRC;
+    if (TLR_BLR_C == 0b0010) return TEXTURE_CELL_BLC;
+    if (TLR_BLR_C == 0b0100) return TEXTURE_CELL_TRC;
+    if (TLR_BLR_C == 0b1000) return TEXTURE_CELL_TLC;
+
+    // Impossible to reach? Not reached in huge grid
+    // If so, textureCellCornerTypeOrder[TLR_BLR_C - 1] covers the last 4
     return TEXTURE_CELL_NO_SIDES;
 }
 
