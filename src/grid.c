@@ -1,6 +1,5 @@
 #include "grid.h"
 
-#include <math.h>
 #include <SDL2/SDL_ttf.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -189,7 +188,7 @@ TEXTURE_CELL_TYPE getCellType(const int x, const int y, const bool flagged, cons
     if (TBLR == 0b1101 && verifyCornersWithMask(TLR_BLR_C, 0b0101)) return textureCellCornerTypeOrder[TLR_BLR_C + 17];
     if (TBLR == 0b1110 && verifyCornersWithMask(TLR_BLR_C, 0b1010)) return textureCellCornerTypeOrder[TLR_BLR_C + 18];
 
-    if (isPow2(TLR_BLR_C)) return textureCellCornerTypeOrder[(int)log2(TLR_BLR_C) + 29];
+    if (isPow2(TLR_BLR_C)) return textureCellCornerTypeOrder[intLog2(TLR_BLR_C) + 29];
 
     // Impossible to reach? Not reached in huge grid
     printf("Not impossible to reach\n");

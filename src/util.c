@@ -14,6 +14,12 @@ int randomBetween(const int min, const int max) {
     return (rand() % (max - min + 1)) + min;
 }
 
+int intLog2(int x) {
+    int log2 = 0;
+    while (x >>= 1) log2++;
+    return log2;
+}
+
 Color mapColor(const SDL_Surface *surface, const char *hexColor) {
     if (hexColor[0] == '#') hexColor++; // shift left once
     const int rgb = strtol(hexColor, NULL, 16);

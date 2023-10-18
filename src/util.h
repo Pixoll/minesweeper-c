@@ -15,6 +15,7 @@
 // #define pxToPt(px) ((px)*0.75)
 
 int randomBetween(int min, int max);
+int intLog2(int x);
 
 // SDL related
 
