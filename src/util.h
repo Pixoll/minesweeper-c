@@ -7,11 +7,11 @@
 
 #define __UTIL_DEFINED
 
+// General purpose
+
 #define max(a, b) (((a) > (b)) ? (a) : (b))
 #define min(a, b) (((a) < (b)) ? (a) : (b))
 // #define pxToPt(px) ((px)*0.75)
-
-// General purpose
 
 int randomBetween(int min, int max);
 

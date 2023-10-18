@@ -27,25 +27,25 @@ enum TEXTURE_CELL_TYPE {
     TEXTURE_CELL_R,
     TEXTURE_CELL_T,
     TEXTURE_CELL_TBL,
+    TEXTURE_CELL_TBL_BLC,
+    TEXTURE_CELL_TBL_TLC,
+    TEXTURE_CELL_TBL_TLC_BLC,
     TEXTURE_CELL_TBLR,
     TEXTURE_CELL_TBLR_BLC,
     TEXTURE_CELL_TBLR_BLCRC,
     TEXTURE_CELL_TBLR_BRC,
     TEXTURE_CELL_TBLR_TLC,
+    TEXTURE_CELL_TBLR_TLC_BLC,
+    TEXTURE_CELL_TBLR_TLC_BLCRC,
+    TEXTURE_CELL_TBLR_TLC_BRC,
     TEXTURE_CELL_TBLR_TLCRC,
     TEXTURE_CELL_TBLR_TLCRC_BLC,
     TEXTURE_CELL_TBLR_TLCRC_BLCRC,
     TEXTURE_CELL_TBLR_TLCRC_BRC,
-    TEXTURE_CELL_TBLR_TLC_BLC,
-    TEXTURE_CELL_TBLR_TLC_BLCRC,
-    TEXTURE_CELL_TBLR_TLC_BRC,
     TEXTURE_CELL_TBLR_TRC,
     TEXTURE_CELL_TBLR_TRC_BLC,
     TEXTURE_CELL_TBLR_TRC_BLCRC,
     TEXTURE_CELL_TBLR_TRC_BRC,
-    TEXTURE_CELL_TBL_BLC,
-    TEXTURE_CELL_TBL_TLC,
-    TEXTURE_CELL_TBL_TLC_BLC,
     TEXTURE_CELL_TBR,
     TEXTURE_CELL_TBR_BRC,
     TEXTURE_CELL_TBR_TRC,
@@ -84,14 +84,6 @@ extern Texture cellTriggeredMineTextures[TEXTURE_CELL_TYPES];
 extern Texture cellFlagTextures[TEXTURE_CELL_TYPES];
 
 extern Texture cellNumbersTextures[8];
-
-extern Texture gridFillerHorizontalTexture;
-extern Texture gridFillerVerticalTexture;
-extern Texture gridFillerCornerTexture;
-
-extern Texture gridFlaggedFillerHorizontalTexture;
-extern Texture gridFlaggedFillerVerticalTexture;
-extern Texture gridFlaggedFillerCornerTexture;
 
 void initTextures();
 void freeTextures();

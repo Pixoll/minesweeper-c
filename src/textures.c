@@ -24,14 +24,6 @@ Texture cellFlagTextures[TEXTURE_CELL_TYPES];
 
 Texture cellNumbersTextures[8];
 
-Texture gridFillerHorizontalTexture;
-Texture gridFillerVerticalTexture;
-Texture gridFillerCornerTexture;
-
-Texture gridFlaggedFillerHorizontalTexture;
-Texture gridFlaggedFillerVerticalTexture;
-Texture gridFlaggedFillerCornerTexture;
-
 bool texturesReady = false;
 
 const char *cellMapPath = "assets/images/cell_map.png";
@@ -50,36 +42,6 @@ enum FILLER_TYPE {
     FILLER_CORNER,
 };
 typedef enum FILLER_TYPE FILLER_TYPE;
-
-void initGridFillerTexture(FILLER_TYPE type, COLOR color, Texture *destTexture) {
-    const int cellSize = gridMeasurements.cellSize;
-    const int gridLineWidth = gridMeasurements.gridLineWidth;
-    const int coveredCellSize = cellSize * 0.85;
-    const int coveredCellOffset = (gridLineWidth + cellSize - coveredCellSize) / 2;
-    const SDL_Color fillerColor = colors[color].rgb;
-
-    SDL_Surface *surface = type == FILLER_HORIZONTAL ? IMG_Load(gridFillerHorizontalImagePath)
-                           : type == FILLER_VERTICAL ? IMG_Load(gridFillerVerticalImagePath)
-                                                     : createColoredSurface(coveredCellSize, coveredCellSize, COLOR_WHITE);
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-
-    const int fillerSize = type == FILLER_HORIZONTAL ? (float)surface->h * ((float)coveredCellSize / surface->w)
-                           : type == FILLER_VERTICAL ? (float)surface->w * ((float)coveredCellSize / surface->h)
-                                                     : cellSize - coveredCellSize;
-    const int fillerOppositeOffset = type == FILLER_CORNER
-                                         ? (gridLineWidth + cellSize + coveredCellSize) / 2
-                                         : cellSize + (gridLineWidth - fillerSize) / 2;
-
-    SDL_Rect area = type == FILLER_HORIZONTAL ? rectangle(coveredCellOffset, fillerOppositeOffset, coveredCellSize, fillerSize)
-                    : type == FILLER_VERTICAL ? rectangle(fillerOppositeOffset, coveredCellOffset, fillerSize, coveredCellSize)
-                                              : rectangle(fillerOppositeOffset, fillerOppositeOffset, fillerSize, fillerSize);
-
-    SDL_SetTextureColorMod(texture, fillerColor.r, fillerColor.g, fillerColor.b);
-
-    destTexture->area = area;
-    destTexture->surface = surface;
-    destTexture->texture = texture;
-}
 
 // void initTextureFromImage(const char *imagePath, Texture *destTexture) {
 //     SDL_Surface *surface = IMG_Load(imagePath);
@@ -128,7 +90,7 @@ void initCellTexturesFor(Texture textures[TEXTURE_CELL_TYPES], const char *image
 
         const int mapIndex = type * cellTextureSize;
         const int mapX = mapIndex % cellMapTexture.area.w;
-        const int mapY = mapIndex / cellMapTexture.area.h;
+        const int mapY = (mapIndex / cellMapTexture.area.h) * cellTextureSize;
         const SDL_Rect cellTextureArea = rectangle(mapX, mapY, cellTextureSize, cellTextureSize);
 
         SDL_SetTextureColorMod(cellMapTexture.texture, cellTextureColor.r, cellTextureColor.g, cellTextureColor.b);
@@ -236,14 +198,6 @@ void initTextures() {
 
     initCellNumbersTextures();
 
-    // initGridFillerTexture(FILLER_HORIZONTAL, COLOR_THEME, &gridFillerHorizontalTexture);
-    // initGridFillerTexture(FILLER_VERTICAL, COLOR_THEME, &gridFillerVerticalTexture);
-    // initGridFillerTexture(FILLER_CORNER, COLOR_THEME, &gridFillerCornerTexture);
-
-    // initGridFillerTexture(FILLER_HORIZONTAL, COLOR_FLAGGED_CELL_BG, &gridFlaggedFillerHorizontalTexture);
-    // initGridFillerTexture(FILLER_VERTICAL, COLOR_FLAGGED_CELL_BG, &gridFlaggedFillerVerticalTexture);
-    // initGridFillerTexture(FILLER_CORNER, COLOR_FLAGGED_CELL_BG, &gridFlaggedFillerCornerTexture);
-
     texturesReady = true;
 }
 
@@ -255,16 +209,6 @@ void freeTexture(Texture texture) {
 void freeCellTexturesFrom(Texture textures[TEXTURE_CELL_TYPES]) {
     for (TEXTURE_CELL_TYPE type = 0; type < TEXTURE_CELL_TYPES; type++)
         freeTexture(textures[type]);
-}
-
-void freeGridFillerTextures() {
-    freeTexture(gridFillerHorizontalTexture);
-    freeTexture(gridFillerVerticalTexture);
-    freeTexture(gridFillerCornerTexture);
-
-    freeTexture(gridFlaggedFillerHorizontalTexture);
-    freeTexture(gridFlaggedFillerVerticalTexture);
-    freeTexture(gridFlaggedFillerCornerTexture);
 }
 
 void freeCellNumbersTextures() {
