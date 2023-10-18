@@ -46,7 +46,6 @@ int main(int argc, char *argv[]) {
 
     SDL_Event event;
     bool quit = false, placedMines = false, clickedMine = false;
-    struct timeval lastFrame = {0, 0};
 
     while (!quit) {
         while (SDL_PollEvent(&event) != 0) {
