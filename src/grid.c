@@ -152,6 +152,10 @@ void drawGrid(const bool clickedMine) {
     }
 }
 
+bool verifyCell(const int x, const int y, const bool flagged) {
+    return !grid[x][y].revealed && flagged == grid[x][y].flagged;
+}
+
 TEXTURE_CELL_TYPE getCellType(const int x, const int y, const bool flagged, const bool revealed) {
     if (revealed) return TEXTURE_CELL_NO_SIDES;
 
@@ -160,61 +164,51 @@ TEXTURE_CELL_TYPE getCellType(const int x, const int y, const bool flagged, cons
 
     // TODO Proof of concept, make it more efficient
 
-    const bool T = y - 1 >= 0 && !grid[x][y - 1].revealed && flagged == grid[x][y - 1].flagged;
-    const bool B = y + 1 <= rows - 1 && !grid[x][y + 1].revealed && flagged == grid[x][y + 1].flagged;
-    const bool L = x - 1 >= 0 && !grid[x - 1][y].revealed && flagged == grid[x - 1][y].flagged;
-    const bool R = x + 1 <= columns - 1 && !grid[x + 1][y].revealed && flagged == grid[x + 1][y].flagged;
-    const bool TLC = T && L && x - 1 >= 0 && y - 1 >= 0 && !grid[x - 1][y - 1].revealed && flagged == grid[x - 1][y - 1].flagged;
-    const bool TRC = T && R && x + 1 <= columns - 1 && y - 1 >= 0 && !grid[x + 1][y - 1].revealed && flagged == grid[x + 1][y - 1].flagged;
-    const bool BLC = B && L && x - 1 >= 0 && y + 1 <= rows - 1 && !grid[x - 1][y + 1].revealed && flagged == grid[x - 1][y + 1].flagged;
-    const bool BRC = B && R && x + 1 <= columns - 1 && y + 1 <= rows - 1 && !grid[x + 1][y + 1].revealed && flagged == grid[x + 1][y + 1].flagged;
+    const bool T = y - 1 >= 0 && verifyCell(x, y - 1, flagged);
+    const bool B = y + 1 <= rows - 1 && verifyCell(x, y + 1, flagged);
+    const bool L = x - 1 >= 0 && verifyCell(x - 1, y, flagged);
+    const bool R = x + 1 <= columns - 1 && verifyCell(x + 1, y, flagged);
+    const bool TLC = T && L && verifyCell(x - 1, y - 1, flagged);
+    const bool TRC = T && R && verifyCell(x + 1, y - 1, flagged);
+    const bool BLC = B && L && verifyCell(x - 1, y + 1, flagged);
+    const bool BRC = B && R && verifyCell(x + 1, y + 1, flagged);
 
-    if (!T && B && !L && !R && !TLC && !TRC && !BLC && !BRC) return TEXTURE_CELL_B;
-    if (!T && B && L && !R && !TLC && !TRC && !BLC && !BRC) return TEXTURE_CELL_BL;
-    if (!T && B && L && !R && !TLC && !TRC && BLC && !BRC) return TEXTURE_CELL_BLC;
-    if (!T && B && L && R && !TLC && !TRC && !BLC && !BRC) return TEXTURE_CELL_BLR;
-    if (!T && B && L && R && !TLC && !TRC && BLC && !BRC) return TEXTURE_CELL_BLR_BLC;
-    if (!T && B && L && R && !TLC && !TRC && BLC && BRC) return TEXTURE_CELL_BLR_BLCRC;
-    if (!T && B && L && R && !TLC && !TRC && !BLC && BRC) return TEXTURE_CELL_BLR_BRC;
-    if (!T && B && !L && R && !TLC && !TRC && !BLC && !BRC) return TEXTURE_CELL_BR;
-    if (!T && B && !L && R && !TLC && !TRC && !BLC && BRC) return TEXTURE_CELL_BRC;
-    if (T && B && !L && !R && !TLC && !TRC && !BLC && !BRC) return TEXTURE_CELL_BT;
-    if (!T && !B && L && !R && !TLC && !TRC && !BLC && !BRC) return TEXTURE_CELL_L;
-    if (!T && !B && L && R && !TLC && !TRC && !BLC && !BRC) return TEXTURE_CELL_LR;
-    if (!T && !B && !L && R && !TLC && !TRC && !BLC && !BRC) return TEXTURE_CELL_R;
-    if (T && !B && !L && !R && !TLC && !TRC && !BLC && !BRC) return TEXTURE_CELL_T;
-    if (T && B && L && !R && !TLC && !TRC && !BLC && !BRC) return TEXTURE_CELL_TBL;
-    if (T && B && L && R && !TLC && !TRC && !BLC && !BRC) return TEXTURE_CELL_TBLR;
-    if (T && B && L && R && !TLC && !TRC && BLC && !BRC) return TEXTURE_CELL_TBLR_BLC;
-    if (T && B && L && R && !TLC && !TRC && BLC && BRC) return TEXTURE_CELL_TBLR_BLCRC;
-    if (T && B && L && R && !TLC && !TRC && !BLC && BRC) return TEXTURE_CELL_TBLR_BRC;
-    if (T && B && L && R && TLC && !TRC && !BLC && !BRC) return TEXTURE_CELL_TBLR_TLC;
-    if (T && B && L && R && TLC && TRC && !BLC && !BRC) return TEXTURE_CELL_TBLR_TLCRC;
-    if (T && B && L && R && TLC && TRC && BLC && !BRC) return TEXTURE_CELL_TBLR_TLCRC_BLC;
-    if (T && B && L && R && TLC && TRC && BLC && BRC) return TEXTURE_CELL_TBLR_TLCRC_BLCRC;
-    if (T && B && L && R && TLC && TRC && !BLC && BRC) return TEXTURE_CELL_TBLR_TLCRC_BRC;
-    if (T && B && L && R && TLC && !TRC && BLC && !BRC) return TEXTURE_CELL_TBLR_TLC_BLC;
-    if (T && B && L && R && TLC && !TRC && BLC && BRC) return TEXTURE_CELL_TBLR_TLC_BLCRC;
-    if (T && B && L && R && TLC && !TRC && !BLC && BRC) return TEXTURE_CELL_TBLR_TLC_BRC;
-    if (T && B && L && R && !TLC && TRC && !BLC && !BRC) return TEXTURE_CELL_TBLR_TRC;
-    if (T && B && L && R && !TLC && TRC && BLC && !BRC) return TEXTURE_CELL_TBLR_TRC_BLC;
-    if (T && B && L && R && !TLC && TRC && BLC && BRC) return TEXTURE_CELL_TBLR_TRC_BLCRC;
-    if (T && B && L && R && !TLC && TRC && !BLC && BRC) return TEXTURE_CELL_TBLR_TRC_BRC;
-    if (T && B && L && !R && !TLC && !TRC && BLC && !BRC) return TEXTURE_CELL_TBL_BLC;
-    if (T && B && L && !R && TLC && !TRC && !BLC && !BRC) return TEXTURE_CELL_TBL_TLC;
-    if (T && B && L && !R && TLC && !TRC && BLC && !BRC) return TEXTURE_CELL_TBL_TLC_BLC;
-    if (T && B && !L && R && !TLC && !TRC && !BLC && !BRC) return TEXTURE_CELL_TBR;
-    if (T && B && !L && R && !TLC && !TRC && !BLC && BRC) return TEXTURE_CELL_TBR_BRC;
-    if (T && B && !L && R && !TLC && TRC && !BLC && !BRC) return TEXTURE_CELL_TBR_TRC;
-    if (T && B && !L && R && !TLC && TRC && !BLC && BRC) return TEXTURE_CELL_TBR_TRC_BRC;
-    if (T && !B && L && !R && !TLC && !TRC && !BLC && !BRC) return TEXTURE_CELL_TL;
-    if (T && !B && L && !R && TLC && !TRC && !BLC && !BRC) return TEXTURE_CELL_TLC;
-    if (T && !B && L && R && !TLC && !TRC && !BLC && !BRC) return TEXTURE_CELL_TLR;
-    if (T && !B && L && R && TLC && !TRC && !BLC && !BRC) return TEXTURE_CELL_TLR_TLC;
-    if (T && !B && L && R && TLC && TRC && !BLC && !BRC) return TEXTURE_CELL_TLR_TLCRC;
-    if (T && !B && L && R && !TLC && TRC && !BLC && !BRC) return TEXTURE_CELL_TLR_TRC;
-    if (T && !B && !L && R && !TLC && !TRC && !BLC && !BRC) return TEXTURE_CELL_TR;
-    if (T && !B && !L && R && !TLC && TRC && !BLC && !BRC) return TEXTURE_CELL_TRC;
+    const int TBLR = T << 3 | B << 2 | L << 1 | R;
+    const int TBLRC = TLC << 3 | TRC << 2 | BLC << 1 | BRC;
+
+    if (TBLRC == 0b0000) return textureCellSideTypeOrder[TBLR];
+
+    if (TBLR == 0b0101 && TBLRC == 0b0001) return TEXTURE_CELL_BRC;
+    if (TBLR == 0b0111 && TBLRC == 0b0001) return TEXTURE_CELL_BLR_BRC;
+    if (TBLR == 0b1101 && TBLRC == 0b0001) return TEXTURE_CELL_TBR_BRC;
+    if (TBLR == 0b1111 && TBLRC == 0b0001) return TEXTURE_CELL_TBLR_BRC;
+    if (TBLR == 0b0110 && TBLRC == 0b0010) return TEXTURE_CELL_BLC;
+    if (TBLR == 0b0111 && TBLRC == 0b0010) return TEXTURE_CELL_BLR_BLC;
+    if (TBLR == 0b1110 && TBLRC == 0b0010) return TEXTURE_CELL_TBL_BLC;
+    if (TBLR == 0b1111 && TBLRC == 0b0010) return TEXTURE_CELL_TBLR_BLC;
+    if (TBLR == 0b0111 && TBLRC == 0b0011) return TEXTURE_CELL_BLR_BLCRC;
+    if (TBLR == 0b1111 && TBLRC == 0b0011) return TEXTURE_CELL_TBLR_BLCRC;
+    if (TBLR == 0b1001 && TBLRC == 0b0100) return TEXTURE_CELL_TRC;
+    if (TBLR == 0b1011 && TBLRC == 0b0100) return TEXTURE_CELL_TLR_TRC;
+    if (TBLR == 0b1101 && TBLRC == 0b0100) return TEXTURE_CELL_TBR_TRC;
+    if (TBLR == 0b1111 && TBLRC == 0b0100) return TEXTURE_CELL_TBLR_TRC;
+    if (TBLR == 0b1101 && TBLRC == 0b0101) return TEXTURE_CELL_TBR_TRC_BRC;
+    if (TBLR == 0b1111 && TBLRC == 0b0101) return TEXTURE_CELL_TBLR_TRC_BRC;
+    if (TBLR == 0b1111 && TBLRC == 0b0110) return TEXTURE_CELL_TBLR_TRC_BLC;
+    if (TBLR == 0b1111 && TBLRC == 0b0111) return TEXTURE_CELL_TBLR_TRC_BLCRC;
+    if (TBLR == 0b1010 && TBLRC == 0b1000) return TEXTURE_CELL_TLC;
+    if (TBLR == 0b1011 && TBLRC == 0b1000) return TEXTURE_CELL_TLR_TLC;
+    if (TBLR == 0b1110 && TBLRC == 0b1000) return TEXTURE_CELL_TBL_TLC;
+    if (TBLR == 0b1111 && TBLRC == 0b1000) return TEXTURE_CELL_TBLR_TLC;
+    if (TBLR == 0b1111 && TBLRC == 0b1001) return TEXTURE_CELL_TBLR_TLC_BRC;
+    if (TBLR == 0b1110 && TBLRC == 0b1010) return TEXTURE_CELL_TBL_TLC_BLC;
+    if (TBLR == 0b1111 && TBLRC == 0b1010) return TEXTURE_CELL_TBLR_TLC_BLC;
+    if (TBLR == 0b1111 && TBLRC == 0b1011) return TEXTURE_CELL_TBLR_TLC_BLCRC;
+    if (TBLR == 0b1011 && TBLRC == 0b1100) return TEXTURE_CELL_TLR_TLCRC;
+    if (TBLR == 0b1111 && TBLRC == 0b1100) return TEXTURE_CELL_TBLR_TLCRC;
+    if (TBLR == 0b1111 && TBLRC == 0b1101) return TEXTURE_CELL_TBLR_TLCRC_BRC;
+    if (TBLR == 0b1111 && TBLRC == 0b1110) return TEXTURE_CELL_TBLR_TLCRC_BLC;
+    if (TBLR == 0b1111 && TBLRC == 0b1111) return TEXTURE_CELL_TBLR_TLCRC_BLCRC;
 
     return TEXTURE_CELL_NO_SIDES;
 }

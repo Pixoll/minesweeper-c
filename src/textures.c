@@ -36,12 +36,24 @@ const char *gridLineVerticalImagePath = "assets/images/grid_line_vertical.png";
 const char *gridFillerHorizontalImagePath = "assets/images/grid_filler_horizontal.png";
 const char *gridFillerVerticalImagePath = "assets/images/grid_filler_vertical.png";
 
-enum FILLER_TYPE {
-    FILLER_HORIZONTAL,
-    FILLER_VERTICAL,
-    FILLER_CORNER,
+const TEXTURE_CELL_TYPE textureCellSideTypeOrder[16] = {
+    TEXTURE_CELL_NO_SIDES,
+    TEXTURE_CELL_R,
+    TEXTURE_CELL_L,
+    TEXTURE_CELL_LR,
+    TEXTURE_CELL_B,
+    TEXTURE_CELL_BR,
+    TEXTURE_CELL_BL,
+    TEXTURE_CELL_BLR,
+    TEXTURE_CELL_T,
+    TEXTURE_CELL_TR,
+    TEXTURE_CELL_TL,
+    TEXTURE_CELL_TLR,
+    TEXTURE_CELL_BT,
+    TEXTURE_CELL_TBR,
+    TEXTURE_CELL_TBL,
+    TEXTURE_CELL_TBLR,
 };
-typedef enum FILLER_TYPE FILLER_TYPE;
 
 // void initTextureFromImage(const char *imagePath, Texture *destTexture) {
 //     SDL_Surface *surface = IMG_Load(imagePath);
