@@ -17,7 +17,7 @@ Color colors[COLORS_AMOUNT];
 
 void getWindowSize() {
     if (windowHeight != -1 || windowWidth != -1) return;
-    SDL_GetWindowSizeInPixels(window, &windowWidth, &windowHeight);
+    SDL_GetWindowSize(window, &windowWidth, &windowHeight);
 }
 
 void initColors() {
