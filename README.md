@@ -5,4 +5,4 @@ I'm basing it off of [Minesweeper - The Clean One](https://play.google.com/store
 
 - [x] Cache textures/fonts
 - [x] Reduce VRAM usage (~35% with 8GB, wtf)
-- [ ] Make game more performant in low end machines
+- [x] Make game more performant in low end machines
