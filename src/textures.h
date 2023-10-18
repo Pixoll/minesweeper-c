@@ -76,7 +76,7 @@ enum TEXTURE_CELL_TYPE {
 typedef enum TEXTURE_CELL_TYPE TEXTURE_CELL_TYPE;
 
 extern const TEXTURE_CELL_TYPE textureCellSideTypeOrder[16];
-extern const TEXTURE_CELL_TYPE textureCellCornerTypeOrder[15];
+extern const TEXTURE_CELL_TYPE textureCellCornerTypeOrder[33];
 
 extern Texture gridTexture;
 

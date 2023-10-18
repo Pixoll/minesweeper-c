@@ -1,5 +1,6 @@
 #include "grid.h"
 
+#include <math.h>
 #include <SDL2/SDL_ttf.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -156,13 +157,17 @@ bool verifyCell(const int x, const int y, const bool flagged) {
     return !grid[x][y].revealed && flagged == grid[x][y].flagged;
 }
 
+bool verifyCornersWithMask(const int corners, const int mask) {
+    const bool bitsOutsideOfMask = corners & ~mask;
+    const bool bitsInMask = corners & mask;
+    return !bitsOutsideOfMask && bitsInMask;
+}
+
 TEXTURE_CELL_TYPE getCellType(const int x, const int y, const bool flagged, const bool revealed) {
     if (revealed) return TEXTURE_CELL_NO_SIDES;
 
     const int rows = gridMeasurements.rows;
     const int columns = gridMeasurements.columns;
-
-    // TODO Proof of concept, make it more efficient
 
     const bool T = y - 1 >= 0 && verifyCell(x, y - 1, flagged);
     const bool B = y + 1 <= rows - 1 && verifyCell(x, y + 1, flagged);
@@ -179,34 +184,16 @@ TEXTURE_CELL_TYPE getCellType(const int x, const int y, const bool flagged, cons
     if (TLR_BLR_C == 0b0000) return textureCellSideTypeOrder[TBLR];
     if (TBLR == 0b1111) return textureCellCornerTypeOrder[TLR_BLR_C - 1];
 
-    if (TBLR == 0b0111) {
-        if (TLR_BLR_C == 0b0001) return TEXTURE_CELL_BLR_BRC;
-        if (TLR_BLR_C == 0b0010) return TEXTURE_CELL_BLR_BLC;
-        if (TLR_BLR_C == 0b0011) return TEXTURE_CELL_BLR_BLCRC;
-    }
-    if (TBLR == 0b1011) {
-        if (TLR_BLR_C == 0b0100) return TEXTURE_CELL_TLR_TRC;
-        if (TLR_BLR_C == 0b1000) return TEXTURE_CELL_TLR_TLC;
-        if (TLR_BLR_C == 0b1100) return TEXTURE_CELL_TLR_TLCRC;
-    }
-    if (TBLR == 0b1101) {
-        if (TLR_BLR_C == 0b0001) return TEXTURE_CELL_TBR_BRC;
-        if (TLR_BLR_C == 0b0100) return TEXTURE_CELL_TBR_TRC;
-        if (TLR_BLR_C == 0b0101) return TEXTURE_CELL_TBR_TRC_BRC;
-    }
-    if (TBLR == 0b1110) {
-        if (TLR_BLR_C == 0b0010) return TEXTURE_CELL_TBL_BLC;
-        if (TLR_BLR_C == 0b1000) return TEXTURE_CELL_TBL_TLC;
-        if (TLR_BLR_C == 0b1010) return TEXTURE_CELL_TBL_TLC_BLC;
-    }
+    if (TBLR == 0b0111 && verifyCornersWithMask(TLR_BLR_C, 0b0011)) return textureCellCornerTypeOrder[TLR_BLR_C + 14];
+    if (TBLR == 0b1011 && verifyCornersWithMask(TLR_BLR_C, 0b1100)) return textureCellCornerTypeOrder[TLR_BLR_C + 15];
+    if (TBLR == 0b1101 && verifyCornersWithMask(TLR_BLR_C, 0b0101)) return textureCellCornerTypeOrder[TLR_BLR_C + 17];
+    if (TBLR == 0b1110 && verifyCornersWithMask(TLR_BLR_C, 0b1010)) return textureCellCornerTypeOrder[TLR_BLR_C + 18];
 
-    if (TLR_BLR_C == 0b0001) return TEXTURE_CELL_BRC;
-    if (TLR_BLR_C == 0b0010) return TEXTURE_CELL_BLC;
-    if (TLR_BLR_C == 0b0100) return TEXTURE_CELL_TRC;
-    if (TLR_BLR_C == 0b1000) return TEXTURE_CELL_TLC;
+    if (isPow2(TLR_BLR_C)) return textureCellCornerTypeOrder[(int)log2(TLR_BLR_C) + 29];
 
     // Impossible to reach? Not reached in huge grid
-    // If so, textureCellCornerTypeOrder[TLR_BLR_C - 1] covers the last 4
+    printf("Not impossible to reach\n");
+
     return TEXTURE_CELL_NO_SIDES;
 }
 

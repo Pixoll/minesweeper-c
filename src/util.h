@@ -9,6 +9,7 @@
 
 // General purpose
 
+#define isPow2(a) ((a) > 0 && !((a) & ((a) - 1)))
 #define max(a, b) (((a) > (b)) ? (a) : (b))
 #define min(a, b) (((a) < (b)) ? (a) : (b))
 // #define pxToPt(px) ((px)*0.75)
