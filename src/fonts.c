@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
+#include "global.h"
 #include "grid.h"
 #include "util.h"
 
@@ -16,10 +17,11 @@ const char *fontPaths[FONT_TYPES] = {
 };
 
 TTF_Font *fontRubikMediumCellSized;
+TTF_Font *fontRubikMedium2;
 
 bool fontsReady = false;
 
-TTF_Font *getFont(FONT_TYPE type, int size) {
+TTF_Font *loadFont(FONT_TYPE type, int size) {
     TTF_Font *font = TTF_OpenFont(fontPaths[type], size);
     if (font == NULL) {
         printf("Error while loading font ID %d\n", type);
@@ -31,11 +33,13 @@ TTF_Font *getFont(FONT_TYPE type, int size) {
 void initFonts() {
     if (fontsReady) return;
 
-    fontRubikMediumCellSized = getFont(FONT_RUBIK_MEDIUM, gridMeasurements.cellSize * 0.5);
+    fontRubikMediumCellSized = loadFont(FONT_RUBIK_MEDIUM, game.measurements.cellSize * 0.5);
+    fontRubikMedium2 = loadFont(FONT_RUBIK_MEDIUM, windowHeight * 0.02);
 
     fontsReady = true;
 }
 
 void freeFonts() {
     TTF_CloseFont(fontRubikMediumCellSized);
+    TTF_CloseFont(fontRubikMedium2);
 }

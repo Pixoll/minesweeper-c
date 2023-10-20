@@ -15,6 +15,8 @@ enum FONT_TYPE {
 typedef enum FONT_TYPE FONT_TYPE;
 
 extern TTF_Font *fontRubikMediumCellSized;
+// 2% of window height
+extern TTF_Font *fontRubikMedium2;
 
 void initFonts();
 void freeFonts();

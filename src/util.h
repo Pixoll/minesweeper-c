@@ -16,6 +16,8 @@
 
 int randomBetween(int min, int max);
 int intLog2(int x);
+int intLength(int value);
+char *getTimeString(int seconds);
 
 // SDL related
 

@@ -88,7 +88,10 @@ extern Texture cellFlagTextures[TEXTURE_CELL_TYPES];
 
 extern Texture cellNumbersTextures[8];
 
+extern Texture gameTimeTexture;
+
 void initTextures();
 void freeTextures();
+void updateGameTimeTexture(const char *timeString);
 
 #endif

@@ -4,7 +4,6 @@
 #include <SDL2/SDL_ttf.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <time.h>
 #include <unistd.h>
 
@@ -20,8 +19,32 @@ int intLog2(int x) {
     return log2;
 }
 
+int intLength(int value) {
+    int length = 1;
+    while (value > 9) {
+        length++;
+        value /= 10;
+    }
+    return length;
+}
+
+char *getTimeString(const int seconds) {
+    const int sec = seconds % 60;
+    const int min = seconds / 60;
+
+    const int timeLength = intLength(sec) + intLength(min) + 4;
+    char *timeString = calloc(timeLength, sizeof(char));
+
+    if (min == 0)
+        snprintf(timeString, timeLength, "%dS", sec);
+    else
+        snprintf(timeString, timeLength, "%dM %dS", min, sec);
+
+    return timeString;
+}
+
 Color mapColor(const SDL_Surface *surface, const char *hexColor) {
-    if (hexColor[0] == '#') hexColor++; // shift left once
+    if (hexColor[0] == '#') hexColor++;  // shift left once
     const int rgb = strtol(hexColor, NULL, 16);
     const int r = (rgb >> 16) & 0xff;
     const int g = (rgb >> 8) & 0xff;

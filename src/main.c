@@ -9,6 +9,7 @@
 #include "fonts.h"
 #include "global.h"
 #include "grid.h"
+#include "grid_ui.h"
 #include "textures.h"
 #include "util.h"
 
@@ -91,7 +92,7 @@ int main(int argc, char *argv[]) {
 
         SDL_RenderClear(renderer);
 
-        drawGrid(clickedMine);
+        drawGridUI(clickedMine);
 
         SDL_RenderPresent(renderer);
     }

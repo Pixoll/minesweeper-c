@@ -1,6 +1,7 @@
 #ifndef __GRID_DEFINED
 
 #include <stdbool.h>
+#include <time.h>
 
 #define __GRID_DEFINED
 
@@ -38,7 +39,15 @@ typedef struct GridMeasurements {
     int gridHeight;
 } GridMeasurements;
 
-extern GridMeasurements gridMeasurements;
+typedef struct Game {
+    int totalMines;
+    int flaggedMines;
+    time_t startTime;
+    GridCell **grid;
+    GridMeasurements measurements;
+} Game;
+
+extern Game game;
 
 typedef struct Coords {
     int x;
@@ -48,7 +57,6 @@ typedef struct Coords {
 void createGrid(int rows, int columns);
 void placeGridMines(int count, int x, int y);
 void calculateGridMeasurements();
-void drawGrid(bool clickedMine);
 void toggleCellFlag(int clickX, int clickY);
 bool revealCell(int clickX, int clickY);
 Coords calculateGridCell(int clickX, int clickY);
