@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
     SDL_SetRenderDrawColor(renderer, bgColor.r, bgColor.g, bgColor.b, bgColor.a);
 
     SDL_Event event;
-    bool quit = false, placedMines = false, clickedMine = false;
+    bool quit = false, placedMines = false;
 
     while (!quit) {
         while (SDL_PollEvent(&event) != 0) {
@@ -55,7 +55,7 @@ int main(int argc, char *argv[]) {
                     quit = true;
                     break;
                 case SDL_MOUSEBUTTONDOWN: {
-                    if (clickedMine) break;
+                    if (game.over) break;
                     int clickX, clickY;
                     SDL_GetMouseState(&clickX, &clickY);
                     const Coords cell = calculateGridCell(clickX, clickY);
@@ -67,7 +67,7 @@ int main(int argc, char *argv[]) {
                                 placedMines = true;
                             }
 
-                            clickedMine = revealCell(cell.x, cell.y);
+                            revealCell(cell.x, cell.y);
                             break;
                         }
                         case SDL_BUTTON_RIGHT: {
@@ -92,7 +92,7 @@ int main(int argc, char *argv[]) {
 
         SDL_RenderClear(renderer);
 
-        drawGridUI(clickedMine);
+        drawGridUI();
 
         SDL_RenderPresent(renderer);
     }

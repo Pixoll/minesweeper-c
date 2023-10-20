@@ -10,20 +10,20 @@
 time_t lastGameTimeDrawn = 0;
 int remainingMines = 0;
 
-void drawGrid(bool clickedMine);
+void drawGrid();
 void drawRemainingMines();
 void drawGameTime();
 
-void drawGridUI(const bool clickedMine) {
-    drawGrid(clickedMine);
+void drawGridUI() {
+    drawGrid();
     drawRemainingMines();
     drawGameTime();
 }
 
-Texture getCellTexture(GridCell cell, bool clickedMine, TEXTURE_CELL_TYPE type);
+Texture getCellTexture(GridCell cell, TEXTURE_CELL_TYPE type);
 TEXTURE_CELL_TYPE getCellType(int x, int y, bool flagged, bool revealed);
 
-void drawGrid(const bool clickedMine) {
+void drawGrid() {
     const int rows = game.rows;
     const int columns = game.columns;
     const int cellSize = game.measurements.cellSize;
@@ -42,7 +42,7 @@ void drawGrid(const bool clickedMine) {
             if (cell.type == CELL_0 && cell.revealed) continue;
 
             TEXTURE_CELL_TYPE cellType = getCellType(i, j, cell.flagged, cell.revealed);
-            Texture cellTexture = getCellTexture(cell, clickedMine, cellType);
+            Texture cellTexture = getCellTexture(cell, cellType);
             cellTexture.area.x += x;
             cellTexture.area.y += y;
 
@@ -60,6 +60,7 @@ void drawRemainingMines() {
         updateTextTexture(&remainingMinesTextTexture, remainingString);
     }
 
+    // TODO Icon and text aren't centered with each other, I hate it
     remainingMinesIconTexture.area.x = 10;
     remainingMinesIconTexture.area.y = 10;
     SDL_RenderCopy(renderer, remainingMinesIconTexture.texture, NULL, &remainingMinesIconTexture.area);
@@ -73,7 +74,7 @@ void drawGameTime() {
     if (game.startTime == 0) return;
 
     const time_t now = time(NULL);
-    if (lastGameTimeDrawn < now) {
+    if (!game.over && lastGameTimeDrawn < now) {
         lastGameTimeDrawn = now;
         char *timeString = getTimeString(now - game.startTime);
         updateTextTexture(&gameTimeTextTexture, timeString);
@@ -85,8 +86,8 @@ void drawGameTime() {
     SDL_RenderCopy(renderer, gameTimeTextTexture.texture, NULL, &gameTimeTextTexture.area);
 }
 
-Texture getCellTexture(GridCell cell, const bool clickedMine, TEXTURE_CELL_TYPE type) {
-    if (clickedMine && cell.type == CELL_MINE) {
+Texture getCellTexture(GridCell cell, TEXTURE_CELL_TYPE type) {
+    if (game.over && cell.type == CELL_MINE) {
         if (cell.flagged) return cellFlaggedMineTextures[type];
         if (cell.revealed) return cellTriggeredMineTextures[type];
         return cellCoveredMineTextures[type];

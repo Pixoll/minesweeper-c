@@ -43,6 +43,7 @@ typedef struct Game {
     int totalMines;
     int flaggedMines;
     time_t startTime;
+    bool over;
     GridCell **grid;
     GridMeasurements measurements;
 } Game;
@@ -58,7 +59,7 @@ void createGrid(int rows, int columns, int minesCount);
 void placeGridMines(int x, int y);
 void calculateGridMeasurements();
 void toggleCellFlag(int clickX, int clickY);
-bool revealCell(int clickX, int clickY);
+void revealCell(int clickX, int clickY);
 Coords calculateGridCell(int clickX, int clickY);
 
 #endif
