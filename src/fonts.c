@@ -16,18 +16,18 @@ const char *fontPaths[FONT_TYPES] = {
     "assets/fonts/Rubik-Bold.ttf",
 };
 
-TTF_Font *fontRubikMediumCellSized;
-TTF_Font *fontRubikMedium2;
+Font fontRubikMediumCellSized;
+Font fontRubikMedium2;
 
 bool fontsReady = false;
 
-TTF_Font *loadFont(FONT_TYPE type, int size) {
+Font loadFont(FONT_TYPE type, int size) {
     TTF_Font *font = TTF_OpenFont(fontPaths[type], size);
     if (font == NULL) {
         printf("Error while loading font ID %d\n", type);
         throwSDLError("TTF_OpenFont");
     }
-    return font;
+    return (Font){font, size};
 }
 
 void initFonts() {
@@ -40,6 +40,6 @@ void initFonts() {
 }
 
 void freeFonts() {
-    TTF_CloseFont(fontRubikMediumCellSized);
-    TTF_CloseFont(fontRubikMedium2);
+    TTF_CloseFont(fontRubikMediumCellSized.font);
+    TTF_CloseFont(fontRubikMedium2.font);
 }

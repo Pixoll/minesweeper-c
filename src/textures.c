@@ -24,7 +24,9 @@ Texture cellFlagTextures[TEXTURE_CELL_TYPES];
 
 Texture cellNumbersTextures[8];
 
-Texture gameTimeTexture;
+Texture gameTimeTextTexture;
+Texture remainingMinesTextTexture;
+Texture remainingMinesIconTexture;
 
 bool texturesReady = false;
 
@@ -95,13 +97,13 @@ const TEXTURE_CELL_TYPE textureCellCornerTypeOrder[33] = {
     TEXTURE_CELL_TLC,
 };
 
-// void initTextureFromImage(const char *imagePath, Texture *destTexture) {
-//     SDL_Surface *surface = IMG_Load(imagePath);
-//     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-//     destTexture->area = rectangle(0, 0, surface->w, surface->h);
-//     destTexture->surface = surface;
-//     destTexture->texture = texture;
-// }
+void initTextureFromImage(const char *imagePath, Texture *destTexture) {
+    SDL_Surface *surface = IMG_Load(imagePath);
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+    destTexture->area = rectangle(0, 0, surface->w, surface->h);
+    destTexture->surface = surface;
+    destTexture->texture = texture;
+}
 
 // void initCellSizedTextureFromImage(const char *imagePath, Texture *destTexture, const COLOR color) {
 //     const int cellSize = game.measurements.cellSize;
@@ -179,10 +181,10 @@ void initCellNumbersTextures() {
         char cellText[2];
         snprintf(cellText, 2, "%c", '0' + cell - CELL_0);
         Color cellColor = colors[COLOR_GRID_1 + cell - 1];
-        SDL_Surface *textSurface = TTF_RenderText_Solid(fontRubikMediumCellSized, cellText, cellColor.rgb);
+        SDL_Surface *textSurface = TTF_RenderText_Solid(fontRubikMediumCellSized.font, cellText, cellColor.rgb);
         SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
         SDL_Rect cellArea;
-        TTF_SizeText(fontRubikMediumCellSized, cellText, &cellArea.w, &cellArea.h);
+        TTF_SizeText(fontRubikMediumCellSized.font, cellText, &cellArea.w, &cellArea.h);
         cellArea.x = (gridLineWidth + cellSize - cellArea.w) / 2;
         cellArea.y = (gridLineWidth + cellSize - cellArea.h) / 2;
 
@@ -235,6 +237,13 @@ void initGridTexture() {
     gridTexture.area = gridArea;
 }
 
+void initRemainingMinesIconTexture() {
+    initTextureFromImage(mineImagePath, &remainingMinesIconTexture);
+    const int size = fontRubikMedium2.size;
+    remainingMinesIconTexture.area.w = size;
+    remainingMinesIconTexture.area.h = size;
+}
+
 void initTextures() {
     if (texturesReady) return;
 
@@ -250,24 +259,14 @@ void initTextures() {
 
     initCellNumbersTextures();
 
+    initRemainingMinesIconTexture();
+
     texturesReady = true;
 }
 
 void freeTexture(Texture texture) {
     SDL_FreeSurface(texture.surface);
     SDL_DestroyTexture(texture.texture);
-}
-
-void updateGameTimeTexture(const char *timeString) {
-    if (gameTimeTexture.texture != NULL) freeTexture(gameTimeTexture);
-
-    SDL_Surface *textSurface = TTF_RenderText_Solid(fontRubikMedium2, timeString, colors[COLOR_WHITE].rgb);
-    SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
-    SDL_Rect area = rectangle(0, 0, textSurface->w, textSurface->h);
-
-    gameTimeTexture.surface = textSurface;
-    gameTimeTexture.texture = textTexture;
-    gameTimeTexture.area = area;
 }
 
 void freeCellTexturesFrom(Texture textures[TEXTURE_CELL_TYPES]) {
@@ -294,4 +293,19 @@ void freeTextures() {
     freeTexture(cellMapTexture);
 
     freeTexture(gridTexture);
+
+    freeTexture(gameTimeTextTexture);
+    freeTexture(remainingMinesTextTexture);
+}
+
+void updateTextTexture(Texture *texture, const char *text) {
+    if (texture->texture != NULL) freeTexture(*texture);
+
+    SDL_Surface *textSurface = TTF_RenderText_Solid(fontRubikMedium2.font, text, colors[COLOR_WHITE].rgb);
+    SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+    SDL_Rect area = rectangle(0, 0, textSurface->w, textSurface->h);
+
+    texture->surface = textSurface;
+    texture->texture = textTexture;
+    texture->area = area;
 }

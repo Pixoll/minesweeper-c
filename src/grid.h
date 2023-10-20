@@ -27,8 +27,6 @@ typedef struct GridCell {
 } GridCell;
 
 typedef struct GridMeasurements {
-    int rows;
-    int columns;
     int cellSize;
     int cellOffset;
     int gridLineLength;
@@ -40,6 +38,8 @@ typedef struct GridMeasurements {
 } GridMeasurements;
 
 typedef struct Game {
+    int rows;
+    int columns;
     int totalMines;
     int flaggedMines;
     time_t startTime;
@@ -54,8 +54,8 @@ typedef struct Coords {
     int y;
 } Coords;
 
-void createGrid(int rows, int columns);
-void placeGridMines(int count, int x, int y);
+void createGrid(int rows, int columns, int minesCount);
+void placeGridMines(int x, int y);
 void calculateGridMeasurements();
 void toggleCellFlag(int clickX, int clickY);
 bool revealCell(int clickX, int clickY);

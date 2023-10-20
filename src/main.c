@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
 
     const int minesCount = rows * columns * density / 100;
     printf("Grid %dx%d\tMines count: %d (%d%%)\n", columns, rows, minesCount, density);
-    createGrid(rows, columns);
+    createGrid(rows, columns, minesCount);
 
     initSDL();
     initColors();
@@ -63,7 +63,7 @@ int main(int argc, char *argv[]) {
                     switch (event.button.button) {
                         case SDL_BUTTON_LEFT: {
                             if (!placedMines) {
-                                placeGridMines(minesCount, cell.x, cell.y);
+                                placeGridMines(cell.x, cell.y);
                                 placedMines = true;
                             }
 

@@ -14,9 +14,14 @@ enum FONT_TYPE {
 };
 typedef enum FONT_TYPE FONT_TYPE;
 
-extern TTF_Font *fontRubikMediumCellSized;
+typedef struct Font {
+    TTF_Font *font;
+    int size;
+} Font;
+
+extern Font fontRubikMediumCellSized;
 // 2% of window height
-extern TTF_Font *fontRubikMedium2;
+extern Font fontRubikMedium2;
 
 void initFonts();
 void freeFonts();

@@ -12,14 +12,20 @@
 #include "textures.h"
 #include "util.h"
 
-Game game = {0, 0, 0};
+Game game = {
+    .rows = 0,
+    .columns = 0,
+    .totalMines = 0,
+    .flaggedMines = 0,
+    .startTime = 0,
+};
 
 bool createdGrid = false;
 bool gridMeasurementsReady = false;
 
 CELL_TYPE countSurroundingMines(int x, int y);
 
-void createGrid(const int rows, const int columns) {
+void createGrid(const int rows, const int columns, const int minesCount) {
     if (createdGrid) {
         for (int i = 0; i < columns; i++)
             free(game.grid[i]);
@@ -38,17 +44,18 @@ void createGrid(const int rows, const int columns) {
         }
     }
 
-    game.measurements.rows = rows;
-    game.measurements.columns = columns;
+    game.rows = rows;
+    game.columns = columns;
+    game.totalMines = minesCount;
     createdGrid = true;
 }
 
-void placeGridMines(const int count, const int x, const int y) {
-    const int rows = game.measurements.rows;
-    const int columns = game.measurements.columns;
+void placeGridMines(const int x, const int y) {
+    const int rows = game.rows;
+    const int columns = game.columns;
+    const int count = game.totalMines;
 
     const time_t now = time(NULL);
-    game.totalMines = count;
     game.startTime = now;
 
     srand(now);
@@ -82,8 +89,8 @@ void placeGridMines(const int count, const int x, const int y) {
 void calculateGridMeasurements() {
     if (gridMeasurementsReady) return;
 
-    const int rows = game.measurements.rows;
-    const int columns = game.measurements.columns;
+    const int rows = game.rows;
+    const int columns = game.columns;
 
     const float gridRatio = (float)columns / rows;
     const float windowRatio = (float)windowWidth / windowHeight;
@@ -115,8 +122,8 @@ void calculateGridMeasurements() {
 }
 
 Coords calculateGridCell(const int clickX, const int clickY) {
-    const int rows = game.measurements.rows;
-    const int columns = game.measurements.columns;
+    const int rows = game.rows;
+    const int columns = game.columns;
     const int cellSize = game.measurements.cellSize;
     const int gridXOffset = game.measurements.gridXOffset;
     const int gridYOffset = game.measurements.gridYOffset;
@@ -136,8 +143,8 @@ void getSurroundingUnrevealed(int x, int y, Coords *coords, int *counter);
 void toggleCellFlag(const int x, const int y) {
     if (x == -1 || y == -1) return;
 
-    const int rows = game.measurements.rows;
-    const int columns = game.measurements.columns;
+    const int rows = game.rows;
+    const int columns = game.columns;
     const GridCell cell = game.grid[x][y];
     if (!cell.revealed) {
         game.grid[x][y].flagged = !cell.flagged;
@@ -169,8 +176,8 @@ void toggleCellFlag(const int x, const int y) {
 }
 
 void getSurroundingUnrevealed(const int x, const int y, Coords *coords, int *counter) {
-    const int rows = game.measurements.rows;
-    const int columns = game.measurements.columns;
+    const int rows = game.rows;
+    const int columns = game.columns;
 
     for (int i = -1; i <= 1; i++) {
         const int nx = x + i;
@@ -194,8 +201,8 @@ void revealCellBorder(int x, int y);
 bool revealCell(int x, int y) {
     if (x == -1 || y == -1) return false;
 
-    const int rows = game.measurements.rows;
-    const int columns = game.measurements.columns;
+    const int rows = game.rows;
+    const int columns = game.columns;
     const CELL_TYPE cellType = game.grid[x][y].type;
     if (game.grid[x][y].flagged) return false;
     if (cellType == CELL_MINE) {
@@ -229,8 +236,8 @@ bool revealCell(int x, int y) {
 }
 
 bool revealNonFlagged(const int x, const int y, Coords *coords, int *counter) {
-    const int rows = game.measurements.rows;
-    const int columns = game.measurements.columns;
+    const int rows = game.rows;
+    const int columns = game.columns;
     bool revealedMine;
 
     for (int i = -1; i <= 1; i++) {
@@ -264,8 +271,8 @@ bool revealNonFlagged(const int x, const int y, Coords *coords, int *counter) {
 }
 
 int countSurroundingFlagged(const int x, const int y) {
-    const int rows = game.measurements.rows;
-    const int columns = game.measurements.columns;
+    const int rows = game.rows;
+    const int columns = game.columns;
 
     int flagged = 0;
     for (int i = -1; i <= 1; i++) {
@@ -283,8 +290,8 @@ int countSurroundingFlagged(const int x, const int y) {
 }
 
 Coords getSurroundingEmpty(const int x, const int y) {
-    const int rows = game.measurements.rows;
-    const int columns = game.measurements.columns;
+    const int rows = game.rows;
+    const int columns = game.columns;
     Coords coords = {-1, -1};
 
     for (int i = -1; i <= 1; i++) {
@@ -309,8 +316,8 @@ Coords getSurroundingEmpty(const int x, const int y) {
 }
 
 void revealCellsDFS(const int x, const int y) {
-    const int rows = game.measurements.rows;
-    const int columns = game.measurements.columns;
+    const int rows = game.rows;
+    const int columns = game.columns;
     for (int i = -1; i <= 1; i++) {
         const int nx = x + i;
         if (nx < 0 || nx > columns - 1) continue;
@@ -329,8 +336,8 @@ void revealCellsDFS(const int x, const int y) {
 }
 
 void revealCellBorder(const int x, const int y) {
-    const int rows = game.measurements.rows;
-    const int columns = game.measurements.columns;
+    const int rows = game.rows;
+    const int columns = game.columns;
     for (int i = -1; i <= 1; i++) {
         const int bx = x + i;
         if (bx < 0 || bx > columns - 1) continue;
@@ -344,8 +351,8 @@ void revealCellBorder(const int x, const int y) {
 }
 
 CELL_TYPE countSurroundingMines(const int x, const int y) {
-    const int rows = game.measurements.rows;
-    const int columns = game.measurements.columns;
+    const int rows = game.rows;
+    const int columns = game.columns;
     CELL_TYPE surrounding = CELL_0;
     for (int i = -1; i <= 1; i++) {
         const int nx = x + i;

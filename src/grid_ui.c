@@ -8,12 +8,15 @@
 #include "util.h"
 
 time_t lastGameTimeDrawn = 0;
+int remainingMines = 0;
 
 void drawGrid(bool clickedMine);
+void drawRemainingMines();
 void drawGameTime();
 
 void drawGridUI(const bool clickedMine) {
     drawGrid(clickedMine);
+    drawRemainingMines();
     drawGameTime();
 }
 
@@ -21,8 +24,8 @@ Texture getCellTexture(GridCell cell, bool clickedMine, TEXTURE_CELL_TYPE type);
 TEXTURE_CELL_TYPE getCellType(int x, int y, bool flagged, bool revealed);
 
 void drawGrid(const bool clickedMine) {
-    const int rows = game.measurements.rows;
-    const int columns = game.measurements.columns;
+    const int rows = game.rows;
+    const int columns = game.columns;
     const int cellSize = game.measurements.cellSize;
     const int gridXOffset = game.measurements.gridXOffset;
     const int gridYOffset = game.measurements.gridYOffset;
@@ -48,6 +51,24 @@ void drawGrid(const bool clickedMine) {
     }
 }
 
+void drawRemainingMines() {
+    const int currentRemaining = game.totalMines - game.flaggedMines;
+    if (remainingMines != currentRemaining) {
+        remainingMines = currentRemaining;
+        char remainingString[intLength(currentRemaining) + 1];
+        itoa(currentRemaining, remainingString, 10);
+        updateTextTexture(&remainingMinesTextTexture, remainingString);
+    }
+
+    remainingMinesIconTexture.area.x = 10;
+    remainingMinesIconTexture.area.y = 10;
+    SDL_RenderCopy(renderer, remainingMinesIconTexture.texture, NULL, &remainingMinesIconTexture.area);
+
+    remainingMinesTextTexture.area.x = remainingMinesIconTexture.area.w + 20;
+    remainingMinesTextTexture.area.y = 10;
+    SDL_RenderCopy(renderer, remainingMinesTextTexture.texture, NULL, &remainingMinesTextTexture.area);
+}
+
 void drawGameTime() {
     if (game.startTime == 0) return;
 
@@ -55,13 +76,13 @@ void drawGameTime() {
     if (lastGameTimeDrawn < now) {
         lastGameTimeDrawn = now;
         char *timeString = getTimeString(now - game.startTime);
-        updateGameTimeTexture(timeString);
+        updateTextTexture(&gameTimeTextTexture, timeString);
         free(timeString);
     }
 
-    gameTimeTexture.area.x = 10;
-    gameTimeTexture.area.y = 10;
-    SDL_RenderCopy(renderer, gameTimeTexture.texture, NULL, &gameTimeTexture.area);
+    gameTimeTextTexture.area.x = 10;
+    gameTimeTextTexture.area.y = gameTimeTextTexture.area.h + 20;
+    SDL_RenderCopy(renderer, gameTimeTextTexture.texture, NULL, &gameTimeTextTexture.area);
 }
 
 Texture getCellTexture(GridCell cell, const bool clickedMine, TEXTURE_CELL_TYPE type) {
@@ -88,8 +109,8 @@ bool verifyCornersWithMask(const int corners, const int mask) {
 TEXTURE_CELL_TYPE getCellType(const int x, const int y, const bool flagged, const bool revealed) {
     if (revealed) return TEXTURE_CELL_NO_SIDES;
 
-    const int rows = game.measurements.rows;
-    const int columns = game.measurements.columns;
+    const int rows = game.rows;
+    const int columns = game.columns;
 
     const bool T = y - 1 >= 0 && verifyCell(x, y - 1, flagged);
     const bool B = y + 1 <= rows - 1 && verifyCell(x, y + 1, flagged);

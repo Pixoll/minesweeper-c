@@ -67,7 +67,7 @@ enum TEXTURE_CELL_TYPE {
  * L - Left side
  * R - Right side
  * C - Corner
- * 
+ *
  * E.g. *_TBLR_TLCRC_BLC:
  * - Top Bottom Left Right sides
  * - Top Left Corner, Top Right Corner
@@ -88,10 +88,12 @@ extern Texture cellFlagTextures[TEXTURE_CELL_TYPES];
 
 extern Texture cellNumbersTextures[8];
 
-extern Texture gameTimeTexture;
+extern Texture gameTimeTextTexture;
+extern Texture remainingMinesTextTexture;
+extern Texture remainingMinesIconTexture;
 
 void initTextures();
 void freeTextures();
-void updateGameTimeTexture(const char *timeString);
+void updateTextTexture(Texture *texture, const char *text);
 
 #endif
