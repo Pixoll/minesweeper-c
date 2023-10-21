@@ -62,17 +62,21 @@ int main(int argc, char *argv[]) {
 
                     switch (event.button.button) {
                         case SDL_BUTTON_LEFT: {
-                            if (!placedMines) {
-                                placeGridMines(cell.x, cell.y);
-                                placedMines = true;
-                            }
+                            if (cell.x != -1 && cell.y != -1) {
+                                if (!placedMines) {
+                                    placeGridMines(cell.x, cell.y);
+                                    placedMines = true;
+                                }
 
-                            revealCell(cell.x, cell.y);
+                                revealCell(cell.x, cell.y);
+                            }
                             break;
                         }
                         case SDL_BUTTON_RIGHT: {
-                            if (!placedMines) break;
-                            toggleCellFlag(cell.x, cell.y);
+                            if (cell.x != -1 && cell.y != -1) {
+                                if (!placedMines) break;
+                                toggleCellFlag(cell.x, cell.y);
+                            }
                             break;
                         }
                         default:
