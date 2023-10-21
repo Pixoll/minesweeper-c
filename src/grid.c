@@ -17,8 +17,10 @@ Game game = {
     .columns = 0,
     .totalMines = 0,
     .flaggedMines = 0,
+    .unrevealedCount = 0,
     .startTime = 0,
     .over = false,
+    .won = false,
 };
 
 bool createdGrid = false;
@@ -48,6 +50,7 @@ void createGrid(const int rows, const int columns, const int minesCount) {
     game.rows = rows;
     game.columns = columns;
     game.totalMines = minesCount;
+    game.unrevealedCount = rows * columns;
     createdGrid = true;
 }
 
@@ -198,35 +201,40 @@ Coords getSurroundingEmpty(int x, int y);
 bool revealNonFlagged(int x, int y, Coords *coords, int *counter);
 void revealCellsDFS(int x, int y);
 void revealCellBorder(int x, int y);
+void flagAllUnrevealed();
 
 void revealCell(int x, int y) {
     if (x == -1 || y == -1) return;
 
     const int rows = game.rows;
     const int columns = game.columns;
-    const CELL_TYPE cellType = game.grid[x][y].type;
-    if (game.grid[x][y].flagged) return;
-    if (cellType == CELL_MINE) {
+    const GridCell cell = game.grid[x][y];
+    if (cell.flagged) return;
+    if (cell.type == CELL_MINE) {
         game.grid[x][y].revealed = true;
         game.over = true;
+        game.won = false;
         return;
     }
 
     Coords revealedCells[9] = {{x, y}};
     int revealedCellsCount = 1;
-    if (game.grid[x][y].revealed) {
-        if (cellType < CELL_1 || cellType > CELL_8) return;
+    if (cell.revealed) {
+        if (cell.type < CELL_1 || cell.type > CELL_8) return;
         const int flaggedCount = countSurroundingFlagged(x, y);
-        if (flaggedCount != cellType - CELL_0) return;
+        if (flaggedCount != cell.type - CELL_0) return;
 
         const bool revealedMine = revealNonFlagged(x, y, revealedCells, &revealedCellsCount);
         if (revealedMine) {
             game.over = true;
+            game.won = false;
             return;
         }
+    } else {
+        game.grid[x][y].revealed = true;
+        game.unrevealedCount--;
     }
 
-    game.grid[x][y].revealed = true;
     for (int i = 0; i < revealedCellsCount; i++) {
         int nx = revealedCells[i].x;
         int ny = revealedCells[i].y;
@@ -237,7 +245,26 @@ void revealCell(int x, int y) {
         revealCellsDFS(nx, ny);
     }
 
+    if (game.totalMines == game.unrevealedCount) {
+        game.over = true;
+        game.won = true;
+        flagAllUnrevealed();
+    }
+
     return;
+}
+
+void flagAllUnrevealed() {
+    const int rows = game.rows;
+    const int columns = game.columns;
+
+    for (int i = 0; i < columns; i++) {
+        for (int j = 0; j < rows; j++) {
+            if (game.grid[i][j].revealed || game.grid[i][j].flagged) continue;
+            game.grid[i][j].flagged = true;
+            game.flaggedMines++;
+        }
+    }
 }
 
 bool revealNonFlagged(const int x, const int y, Coords *coords, int *counter) {
@@ -259,6 +286,7 @@ bool revealNonFlagged(const int x, const int y, Coords *coords, int *counter) {
             if (!cell.revealed) {
                 coords[*counter] = (Coords){nx, ny};
                 *counter = *counter + 1;
+                if (cell.type != CELL_MINE) game.unrevealedCount--;
             }
 
             game.grid[nx][ny].revealed = true;
@@ -334,6 +362,7 @@ void revealCellsDFS(const int x, const int y) {
             if (ny < 0 || ny > rows - 1 || game.grid[nx][ny].type != CELL_0 || game.grid[nx][ny].revealed) continue;
 
             game.grid[nx][ny].revealed = true;
+            game.unrevealedCount--;
             revealCellBorder(nx, ny);
             revealCellsDFS(nx, ny);
         }
@@ -351,6 +380,7 @@ void revealCellBorder(const int x, const int y) {
             const CELL_TYPE cellType = game.grid[bx][by].type;
             if (by < 0 || by > rows - 1 || game.grid[bx][by].revealed || cellType == CELL_0 || cellType == CELL_MINE) continue;
             game.grid[bx][by].revealed = true;
+            game.unrevealedCount--;
         }
     }
 }

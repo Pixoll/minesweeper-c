@@ -42,8 +42,10 @@ typedef struct Game {
     int columns;
     int totalMines;
     int flaggedMines;
+    int unrevealedCount;
     time_t startTime;
     bool over;
+    bool won;
     GridCell **grid;
     GridMeasurements measurements;
 } Game;

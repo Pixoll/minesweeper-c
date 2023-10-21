@@ -74,7 +74,7 @@ void drawGameTime() {
     if (game.startTime == 0) return;
 
     const time_t now = time(NULL);
-    if (!game.over && lastGameTimeDrawn < now) {
+    if (lastGameTimeDrawn == 0 || (!game.over && lastGameTimeDrawn < now)) {
         lastGameTimeDrawn = now;
         char *timeString = getTimeString(now - game.startTime);
         updateTextTexture(&gameTimeTextTexture, timeString);
@@ -87,7 +87,7 @@ void drawGameTime() {
 }
 
 Texture getCellTexture(GridCell cell, TEXTURE_CELL_TYPE type) {
-    if (game.over && cell.type == CELL_MINE) {
+    if (game.over && !game.won && cell.type == CELL_MINE) {
         if (cell.flagged) return cellFlaggedMineTextures[type];
         if (cell.revealed) return cellTriggeredMineTextures[type];
         return cellCoveredMineTextures[type];
