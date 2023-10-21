@@ -125,28 +125,28 @@ void calculateGridMeasurements() {
     gridMeasurementsReady = true;
 }
 
-Coords calculateGridCell(const int clickX, const int clickY) {
+GridCoords calculateGridCell(const int clickX, const int clickY) {
     const int rows = game.rows;
     const int columns = game.columns;
     const int cellSize = game.measurements.cellSize;
     const int gridXOffset = game.measurements.gridXOffset;
     const int gridYOffset = game.measurements.gridYOffset;
 
+    bool inside = true;
     float x = (float)(clickX - gridXOffset) / cellSize;
     float y = (float)(clickY - gridYOffset) / cellSize;
     if (x < 0 || x > columns - 0.01f || y < 0 || y > rows - 0.01f) {
         x = -1;
         y = -1;
+        inside = false;
     }
 
-    return (Coords){x, y};
+    return (GridCoords){x, y, inside};
 }
 
-void getSurroundingUnrevealed(int x, int y, Coords *coords, int *counter);
+void getSurroundingUnrevealed(int x, int y, GridCoords *coords, int *counter);
 
 void toggleCellFlag(const int x, const int y) {
-    if (x == -1 || y == -1) return;
-
     const int rows = game.rows;
     const int columns = game.columns;
     const GridCell cell = game.grid[x][y];
@@ -163,7 +163,7 @@ void toggleCellFlag(const int x, const int y) {
 
     if (cell.type < CELL_1 || cell.type > CELL_8) return;
 
-    Coords unrevealed[9];
+    GridCoords unrevealed[9];
     int unrevealedCount = 0;
     getSurroundingUnrevealed(x, y, unrevealed, &unrevealedCount);
 
@@ -179,7 +179,7 @@ void toggleCellFlag(const int x, const int y) {
     }
 }
 
-void getSurroundingUnrevealed(const int x, const int y, Coords *coords, int *counter) {
+void getSurroundingUnrevealed(const int x, const int y, GridCoords *coords, int *counter) {
     const int rows = game.rows;
     const int columns = game.columns;
 
@@ -190,22 +190,20 @@ void getSurroundingUnrevealed(const int x, const int y, Coords *coords, int *cou
         for (int j = -1; j <= 1; j++) {
             const int ny = y + j;
             if (ny < 0 || ny > rows - 1 || game.grid[nx][ny].revealed) continue;
-            coords[*counter] = (Coords){nx, ny};
+            coords[*counter] = (GridCoords){nx, ny};
             *counter = *counter + 1;
         }
     }
 }
 
 int countSurroundingFlagged(int x, int y);
-Coords getSurroundingEmpty(int x, int y);
-bool revealNonFlagged(int x, int y, Coords *coords, int *counter);
+GridCoords getSurroundingEmpty(int x, int y);
+bool revealNonFlagged(int x, int y, GridCoords *coords, int *counter);
 void revealCellsDFS(int x, int y);
 void revealCellBorder(int x, int y);
 void flagAllUnrevealed();
 
 void revealCell(int x, int y) {
-    if (x == -1 || y == -1) return;
-
     const int rows = game.rows;
     const int columns = game.columns;
     const GridCell cell = game.grid[x][y];
@@ -217,7 +215,7 @@ void revealCell(int x, int y) {
         return;
     }
 
-    Coords revealedCells[9] = {{x, y}};
+    GridCoords revealedCells[9] = {{x, y}};
     int revealedCellsCount = 1;
     if (cell.revealed) {
         if (cell.type < CELL_1 || cell.type > CELL_8) return;
@@ -267,7 +265,7 @@ void flagAllUnrevealed() {
     }
 }
 
-bool revealNonFlagged(const int x, const int y, Coords *coords, int *counter) {
+bool revealNonFlagged(const int x, const int y, GridCoords *coords, int *counter) {
     const int rows = game.rows;
     const int columns = game.columns;
     bool revealedMine;
@@ -284,7 +282,7 @@ bool revealNonFlagged(const int x, const int y, Coords *coords, int *counter) {
             if (cell.revealed || cell.flagged) continue;
 
             if (!cell.revealed) {
-                coords[*counter] = (Coords){nx, ny};
+                coords[*counter] = (GridCoords){nx, ny};
                 *counter = *counter + 1;
                 if (cell.type != CELL_MINE) game.unrevealedCount--;
             }
@@ -322,10 +320,10 @@ int countSurroundingFlagged(const int x, const int y) {
     return flagged;
 }
 
-Coords getSurroundingEmpty(const int x, const int y) {
+GridCoords getSurroundingEmpty(const int x, const int y) {
     const int rows = game.rows;
     const int columns = game.columns;
-    Coords coords = {-1, -1};
+    GridCoords coords = {-1, -1};
 
     for (int i = -1; i <= 1; i++) {
         const int nx = x + i;

@@ -52,16 +52,17 @@ typedef struct Game {
 
 extern Game game;
 
-typedef struct Coords {
+typedef struct GridCoords {
     int x;
     int y;
-} Coords;
+    bool inside;
+} GridCoords;
 
 void createGrid(int rows, int columns, int minesCount);
 void placeGridMines(int x, int y);
 void calculateGridMeasurements();
 void toggleCellFlag(int clickX, int clickY);
 void revealCell(int clickX, int clickY);
-Coords calculateGridCell(int clickX, int clickY);
+GridCoords calculateGridCell(int clickX, int clickY);
 
 #endif

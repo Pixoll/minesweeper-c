@@ -58,24 +58,24 @@ int main(int argc, char *argv[]) {
                     if (game.over) break;
                     int clickX, clickY;
                     SDL_GetMouseState(&clickX, &clickY);
-                    const Coords cell = calculateGridCell(clickX, clickY);
+                    const GridCoords coords = calculateGridCell(clickX, clickY);
 
                     switch (event.button.button) {
                         case SDL_BUTTON_LEFT: {
-                            if (cell.x != -1 && cell.y != -1) {
+                            if (coords.inside) {
                                 if (!placedMines) {
-                                    placeGridMines(cell.x, cell.y);
+                                    placeGridMines(coords.x, coords.y);
                                     placedMines = true;
                                 }
 
-                                revealCell(cell.x, cell.y);
+                                revealCell(coords.x, coords.y);
                             }
                             break;
                         }
                         case SDL_BUTTON_RIGHT: {
-                            if (cell.x != -1 && cell.y != -1) {
+                            if (coords.inside) {
                                 if (!placedMines) break;
-                                toggleCellFlag(cell.x, cell.y);
+                                toggleCellFlag(coords.x, coords.y);
                             }
                             break;
                         }
