@@ -2,6 +2,9 @@
 
 #include <SDL2/SDL.h>
 
+#include "fonts.h"
+#include "global.h"
+
 #define __TEXTURES_DEFINED
 
 typedef struct Texture {
@@ -94,6 +97,6 @@ extern Texture remainingMinesIconTexture;
 
 void initTextures();
 void freeTextures();
-void updateTextTexture(Texture *texture, const char *text);
+void updateTextTexture(Texture *texture, Font font, COLOR color, const char *text);
 
 #endif

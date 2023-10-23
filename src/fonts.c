@@ -16,7 +16,8 @@ const char *fontPaths[FONT_TYPES] = {
 };
 
 Font fontRubikMediumCellSized;
-Font fontRubikMedium2;
+Font fontRubikMediumPrimary;
+Font fontRubikMediumSecondary;
 
 bool fontsReady = false;
 
@@ -33,12 +34,14 @@ void initFonts() {
     if (fontsReady) return;
 
     fontRubikMediumCellSized = loadFont(FONT_RUBIK_MEDIUM, game.measurements.cellSize * 0.5);
-    fontRubikMedium2 = loadFont(FONT_RUBIK_MEDIUM, windowHeight * 0.02);
+    fontRubikMediumPrimary = loadFont(FONT_RUBIK_MEDIUM, windowHeight * 0.02);
+    fontRubikMediumSecondary = loadFont(FONT_RUBIK_MEDIUM, windowHeight * 0.01875);
 
     fontsReady = true;
 }
 
 void freeFonts() {
     TTF_CloseFont(fontRubikMediumCellSized.font);
-    TTF_CloseFont(fontRubikMedium2.font);
+    TTF_CloseFont(fontRubikMediumPrimary.font);
+    TTF_CloseFont(fontRubikMediumSecondary.font);
 }

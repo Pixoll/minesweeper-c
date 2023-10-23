@@ -57,7 +57,7 @@ void drawRemainingMines() {
         remainingMines = currentRemaining;
         char remainingString[intLength(currentRemaining) + 1];
         itoa(currentRemaining, remainingString, 10);
-        updateTextTexture(&remainingMinesTextTexture, remainingString);
+        updateTextTexture(&remainingMinesTextTexture, fontRubikMediumPrimary, COLOR_WHITE, remainingString);
     }
 
     // TODO Icon and text aren't centered with each other, I hate it
@@ -77,7 +77,7 @@ void drawGameTime() {
     if (lastGameTimeDrawn == 0 || (!game.over && lastGameTimeDrawn < now)) {
         lastGameTimeDrawn = now;
         char *timeString = getTimeString(now - game.startTime);
-        updateTextTexture(&gameTimeTextTexture, timeString);
+        updateTextTexture(&gameTimeTextTexture, fontRubikMediumSecondary, COLOR_LIGHTER_GREY, timeString);
         free(timeString);
     }
 

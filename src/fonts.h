@@ -19,8 +19,8 @@ typedef struct Font {
 } Font;
 
 extern Font fontRubikMediumCellSized;
-// 2% of window height
-extern Font fontRubikMedium2;
+extern Font fontRubikMediumPrimary;
+extern Font fontRubikMediumSecondary;
 
 void initFonts();
 void freeFonts();

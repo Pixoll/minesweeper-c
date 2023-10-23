@@ -43,5 +43,6 @@ void initColors() {
     colors[COLOR_DARK_GREY] = mapColor(surface, "#1e1f1c");
     colors[COLOR_GREY] = mapColor(surface, "#333333");
     colors[COLOR_LIGHT_GREY] = mapColor(surface, "#606060");
+    colors[COLOR_LIGHTER_GREY] = mapColor(surface, "#cfcfcf");
     colors[COLOR_WHITE] = mapColor(surface, "#ffffff");
 }

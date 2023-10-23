@@ -239,7 +239,7 @@ void initGridTexture() {
 
 void initRemainingMinesIconTexture() {
     initTextureFromImage(mineImagePath, &remainingMinesIconTexture);
-    const int size = fontRubikMedium2.size;
+    const int size = fontRubikMediumPrimary.size;
     remainingMinesIconTexture.area.w = size;
     remainingMinesIconTexture.area.h = size;
 }
@@ -298,10 +298,10 @@ void freeTextures() {
     freeTexture(remainingMinesTextTexture);
 }
 
-void updateTextTexture(Texture *texture, const char *text) {
+void updateTextTexture(Texture *texture, Font font, COLOR color, const char *text) {
     if (texture->texture != NULL) freeTexture(*texture);
 
-    SDL_Surface *textSurface = TTF_RenderText_Solid(fontRubikMedium2.font, text, colors[COLOR_WHITE].rgb);
+    SDL_Surface *textSurface = TTF_RenderText_Solid(font.font, text, colors[color].rgb);
     SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
     SDL_Rect area = rectangle(0, 0, textSurface->w, textSurface->h);
 
