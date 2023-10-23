@@ -1,15 +1,11 @@
 #include "grid.h"
 
-#include <SDL2/SDL_ttf.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <unistd.h>
 
-#include "fonts.h"
 #include "global.h"
-#include "textures.h"
 #include "util.h"
 
 Game game = {

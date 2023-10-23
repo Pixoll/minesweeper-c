@@ -1,6 +1,5 @@
 #ifndef __FONTS_DEFINED
 
-#include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
 #define __FONTS_DEFINED
