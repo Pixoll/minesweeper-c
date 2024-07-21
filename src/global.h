@@ -39,6 +39,7 @@ enum COLOR {
 
     COLORS_AMOUNT,
 };
+
 typedef enum COLOR COLOR;
 
 typedef struct Color {

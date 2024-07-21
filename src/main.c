@@ -54,7 +54,9 @@ int main(int argc, char *argv[]) {
                     quit = true;
                     break;
                 case SDL_MOUSEBUTTONDOWN: {
-                    if (game.over) break;
+                    if (game.over)
+                        break;
+
                     int clickX, clickY;
                     SDL_GetMouseState(&clickX, &clickY);
                     const GridCoords coords = calculateGridCell(clickX, clickY);
@@ -73,7 +75,8 @@ int main(int argc, char *argv[]) {
                         }
                         case SDL_BUTTON_RIGHT: {
                             if (coords.inside) {
-                                if (!placedMines) break;
+                                if (!placedMines)
+                                    break;
                                 toggleCellFlag(coords.x, coords.y);
                             }
                             break;
@@ -107,23 +110,33 @@ int main(int argc, char *argv[]) {
 }
 
 void initSDL() {
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) throwSDLError("SDL_Init");
+    if (SDL_Init(SDL_INIT_VIDEO) < 0)
+        throwSDLError("SDL_Init");
 
-    window = SDL_CreateWindow("Minesweeper", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                              defaultWindowWidth, defaultWindowHeight, WINDOW_FLAGS);
-    if (window == NULL) throwSDLError("SDL_CreateWindow");
+    window = SDL_CreateWindow(
+        "Minesweeper",
+        SDL_WINDOWPOS_CENTERED,
+        SDL_WINDOWPOS_CENTERED,
+        defaultWindowWidth,
+        defaultWindowHeight,
+        WINDOW_FLAGS
+    );
+    if (window == NULL)
+        throwSDLError("SDL_CreateWindow");
 
     SDL_Surface *icon = IMG_Load(windowIconPath);
     SDL_SetWindowIcon(window, icon);
     SDL_FreeSurface(icon);
 
     renderer = SDL_CreateRenderer(window, -1, RENDER_FLAGS);
-    if (renderer == NULL) throwSDLError("SDL_CreateRenderer");
+    if (renderer == NULL)
+        throwSDLError("SDL_CreateRenderer");
 
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
     const int ttfReady = TTF_Init();
-    if (ttfReady != 0) throwSDLError("TTF_Init");
+    if (ttfReady != 0)
+        throwSDLError("TTF_Init");
 }
 
 void closeSDL() {
@@ -134,13 +147,17 @@ void closeSDL() {
 }
 
 void exceptArg(char *args[], const int n, const char *message) {
-    if (args[n]) return;
+    if (args[n])
+        return;
+
     printf("arg%d: %s\n", n, message);
     exit(1);
 }
 
 void assetArg(const int arg, const int min, const int max, const char *message) {
-    if (arg >= min && arg <= max) return;
+    if (arg >= min && arg <= max)
+        return;
+
     printf("%s\n", message);
     exit(1);
 }

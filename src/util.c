@@ -14,7 +14,9 @@ int randomBetween(const int min, const int max) {
 
 int intLog2(int x) {
     int log2 = 0;
-    while (x >>= 1) log2++;
+    while (x >>= 1)
+        log2++;
+
     return log2;
 }
 
@@ -43,14 +45,16 @@ char *getTimeString(const int seconds) {
 }
 
 Color mapColor(const SDL_Surface *surface, const char *hexColor) {
-    if (hexColor[0] == '#') hexColor++;  // shift left once
+    if (hexColor[0] == '#')
+        hexColor++;  // shift left once
+
     const int rgb = strtol(hexColor, NULL, 16);
     const int r = rgb >> 16 & 0xff;
     const int g = rgb >> 8 & 0xff;
     const int b = rgb & 0xff;
 
     Color color;
-    color.rgb = (SDL_Color){r, g, b, 255};
+    color.rgb = SDL_Color{r, g, b, 255};
     color.value = SDL_MapRGB(surface->format, r, g, b);
     return color;
 }

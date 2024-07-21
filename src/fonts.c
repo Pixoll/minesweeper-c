@@ -27,11 +27,12 @@ Font loadFont(const FONT_TYPE type, const int size) {
         printf("Error while loading font ID %d\n", type);
         throwSDLError("TTF_OpenFont");
     }
-    return (Font){font, size};
+    return Font{font, size};
 }
 
 void initFonts() {
-    if (fontsReady) return;
+    if (fontsReady)
+        return;
 
     fontRubikMediumCellSized = loadFont(FONT_RUBIK_MEDIUM, game.measurements.cellSize * 0.5);
     fontRubikMediumPrimary = loadFont(FONT_RUBIK_MEDIUM, windowHeight * 0.02);

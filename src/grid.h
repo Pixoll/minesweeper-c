@@ -16,6 +16,7 @@ enum CELL_TYPE {
     CELL_MINE,
     CELL_TYPES,
 };
+
 typedef enum CELL_TYPE CELL_TYPE;
 
 typedef struct GridCell {

@@ -131,7 +131,13 @@ void initCellMapTexture() {
     cellMapTexture.texture = texture;
 }
 
-void initCellTexturesFor(Texture textures[TEXTURE_CELL_TYPES], const char *imagePath, const float imageScaleWRTCell, const COLOR imageColor, const COLOR cellColor) {
+void initCellTexturesFor(
+    Texture textures[TEXTURE_CELL_TYPES],
+    const char *imagePath,
+    const float imageScaleWRTCell,
+    const COLOR imageColor,
+    const COLOR cellColor
+) {
     const int cellSize = game.measurements.cellSize;
     const int cellOffset = game.measurements.cellOffset;
     const int gridLineWidth = game.measurements.gridLineWidth;
@@ -188,7 +194,11 @@ void initCellNumbersTextures() {
         cellArea.x = (gridLineWidth + cellSize - cellArea.w) / 2;
         cellArea.y = (gridLineWidth + cellSize - cellArea.h) / 2;
 
-        cellNumbersTextures[cell - CELL_1] = (Texture){.area = cellArea, .surface = textSurface, .texture = textTexture};
+        cellNumbersTextures[cell - CELL_1] = Texture{
+            .area = cellArea,
+            .surface = textSurface,
+            .texture = textTexture
+        };
     }
 }
 
@@ -245,7 +255,8 @@ void initRemainingMinesIconTexture() {
 }
 
 void initTextures() {
-    if (texturesReady) return;
+    if (texturesReady)
+        return;
 
     initGridTexture();
 
@@ -299,7 +310,8 @@ void freeTextures() {
 }
 
 void updateTextTexture(Texture *texture, const Font font, const COLOR color, const char *text) {
-    if (texture->texture != NULL) freeTexture(*texture);
+    if (texture->texture != NULL)
+        freeTexture(*texture);
 
     SDL_Surface *textSurface = TTF_RenderText_Solid(font.font, text, colors[color].rgb);
     SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);

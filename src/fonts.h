@@ -9,6 +9,7 @@ enum FONT_TYPE {
     FONT_RUBIK_BOLD,
     FONT_TYPES,
 };
+
 typedef enum FONT_TYPE FONT_TYPE;
 
 typedef struct Font {

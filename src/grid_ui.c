@@ -36,10 +36,13 @@ void drawGrid() {
     // Draw cells
     for (int i = 0; i < columns; i++) {
         const int x = gridXOffset + cellSize * i;
+
         for (int j = 0; j < rows; j++) {
             const int y = gridYOffset + cellSize * j;
             const GridCell cell = game.grid[i][j];
-            if (cell.type == CELL_0 && cell.revealed) continue;
+
+            if (cell.type == CELL_0 && cell.revealed)
+                continue;
 
             const TEXTURE_CELL_TYPE cellType = getCellType(i, j, cell.flagged, cell.revealed);
             Texture cellTexture = getCellTexture(cell, cellType);
@@ -53,6 +56,7 @@ void drawGrid() {
 
 void drawRemainingMines() {
     const int currentRemaining = game.totalMines - game.flaggedMines;
+
     if (remainingMines != currentRemaining) {
         remainingMines = currentRemaining;
         char remainingString[intLength(currentRemaining) + 1];
@@ -71,7 +75,8 @@ void drawRemainingMines() {
 }
 
 void drawGameTime() {
-    if (game.startTime == 0) return;
+    if (game.startTime == 0)
+        return;
 
     const time_t now = time(NULL);
     if (lastGameTimeDrawn == 0 || (!game.over && lastGameTimeDrawn < now)) {
@@ -88,12 +93,21 @@ void drawGameTime() {
 
 Texture getCellTexture(const GridCell cell, const TEXTURE_CELL_TYPE type) {
     if (game.over && !game.won && cell.type == CELL_MINE) {
-        if (cell.flagged) return cellFlaggedMineTextures[type];
-        if (cell.revealed) return cellTriggeredMineTextures[type];
+        if (cell.flagged)
+            return cellFlaggedMineTextures[type];
+
+        if (cell.revealed)
+            return cellTriggeredMineTextures[type];
+
         return cellCoveredMineTextures[type];
     }
-    if (cell.flagged) return cellFlagTextures[type];
-    if (!cell.revealed) return cellCoveredTextures[type];
+
+    if (cell.flagged)
+        return cellFlagTextures[type];
+
+    if (!cell.revealed)
+        return cellCoveredTextures[type];
+
     return cellNumbersTextures[cell.type - CELL_1];
 }
 
@@ -108,7 +122,8 @@ bool verifyCornersWithMask(const int corners, const int mask) {
 }
 
 TEXTURE_CELL_TYPE getCellType(const int x, const int y, const bool flagged, const bool revealed) {
-    if (revealed) return TEXTURE_CELL_NO_SIDES;
+    if (revealed)
+        return TEXTURE_CELL_NO_SIDES;
 
     const int rows = game.rows;
     const int columns = game.columns;
@@ -125,15 +140,22 @@ TEXTURE_CELL_TYPE getCellType(const int x, const int y, const bool flagged, cons
     const int TBLR = T << 3 | B << 2 | L << 1 | R;
     const int TLR_BLR_C = TLC << 3 | TRC << 2 | BLC << 1 | BRC;
 
-    if (TLR_BLR_C == 0b0000) return textureCellSideTypeOrder[TBLR];
-    if (TBLR == 0b1111) return textureCellCornerTypeOrder[TLR_BLR_C - 1];
+    if (TLR_BLR_C == 0b0000)
+        return textureCellSideTypeOrder[TBLR];
+    if (TBLR == 0b1111)
+        return textureCellCornerTypeOrder[TLR_BLR_C - 1];
 
-    if (TBLR == 0b0111 && verifyCornersWithMask(TLR_BLR_C, 0b0011)) return textureCellCornerTypeOrder[TLR_BLR_C + 14];
-    if (TBLR == 0b1011 && verifyCornersWithMask(TLR_BLR_C, 0b1100)) return textureCellCornerTypeOrder[TLR_BLR_C + 15];
-    if (TBLR == 0b1101 && verifyCornersWithMask(TLR_BLR_C, 0b0101)) return textureCellCornerTypeOrder[TLR_BLR_C + 17];
-    if (TBLR == 0b1110 && verifyCornersWithMask(TLR_BLR_C, 0b1010)) return textureCellCornerTypeOrder[TLR_BLR_C + 18];
+    if (TBLR == 0b0111 && verifyCornersWithMask(TLR_BLR_C, 0b0011))
+        return textureCellCornerTypeOrder[TLR_BLR_C + 14];
+    if (TBLR == 0b1011 && verifyCornersWithMask(TLR_BLR_C, 0b1100))
+        return textureCellCornerTypeOrder[TLR_BLR_C + 15];
+    if (TBLR == 0b1101 && verifyCornersWithMask(TLR_BLR_C, 0b0101))
+        return textureCellCornerTypeOrder[TLR_BLR_C + 17];
+    if (TBLR == 0b1110 && verifyCornersWithMask(TLR_BLR_C, 0b1010))
+        return textureCellCornerTypeOrder[TLR_BLR_C + 18];
 
-    if (isPow2(TLR_BLR_C)) return textureCellCornerTypeOrder[intLog2(TLR_BLR_C) + 29];
+    if (isPow2(TLR_BLR_C))
+        return textureCellCornerTypeOrder[intLog2(TLR_BLR_C) + 29];
 
     // Impossible to reach? Not reached in huge grid
     printf("Not impossible to reach\n");

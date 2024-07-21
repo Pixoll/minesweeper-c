@@ -16,7 +16,9 @@ int windowHeight = -1;
 Color colors[COLORS_AMOUNT];
 
 void getWindowSize() {
-    if (windowHeight != -1 || windowWidth != -1) return;
+    if (windowHeight != -1 || windowWidth != -1)
+        return;
+
     SDL_GetWindowSize(window, &windowWidth, &windowHeight);
 }
 

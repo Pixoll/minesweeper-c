@@ -18,7 +18,7 @@ char *getTimeString(int seconds);
 
 // SDL related
 
-#define rectangle(x, y, width, height) ((SDL_Rect){x, y, width, height})
+#define rectangle(x, y, width, height) (SDL_Rect{x, y, width, height})
 
 Color mapColor(const SDL_Surface *surface, const char *hexColor);
 SDL_Surface *createSurface(int width, int height);
