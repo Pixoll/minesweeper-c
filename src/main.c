@@ -133,13 +133,13 @@ void closeSDL() {
     SDL_Quit();
 }
 
-void exceptArg(char *args[], int n, const char *message) {
+void exceptArg(char *args[], const int n, const char *message) {
     if (args[n]) return;
     printf("arg%d: %s\n", n, message);
     exit(1);
 }
 
-void assetArg(int arg, int min, int max, const char *message) {
+void assetArg(const int arg, const int min, const int max, const char *message) {
     if (arg >= min && arg <= max) return;
     printf("%s\n", message);
     exit(1);

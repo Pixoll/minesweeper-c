@@ -21,7 +21,7 @@ void getWindowSize() {
 }
 
 void initColors() {
-    SDL_Surface *surface = SDL_GetWindowSurface(window);
+    const SDL_Surface *surface = SDL_GetWindowSurface(window);
     colors[COLOR_THEME] = mapColor(surface, "#d77f37");
     colors[COLOR_BACKGROUND] = mapColor(surface, "#333333");
 

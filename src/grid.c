@@ -97,7 +97,7 @@ void calculateGridMeasurements() {
 
     const int limitantGridSide = gridRatio > windowRatio ? columns : rows;
     const int limitantWindowSide = gridRatio > windowRatio ? windowWidth : windowHeight;
-    const int cellSize = (limitantWindowSide * 0.975) / limitantGridSide;
+    const int cellSize = limitantWindowSide * 0.975 / limitantGridSide;
 
     const int gridLineLength = cellSize * 0.65;
     const int gridLineWidth = cellSize * 0.03;
@@ -142,8 +142,6 @@ GridCoords calculateGridCell(const int clickX, const int clickY) {
 void getSurroundingUnrevealed(int x, int y, GridCoords *coords, int *counter);
 
 void toggleCellFlag(const int x, const int y) {
-    const int rows = game.rows;
-    const int columns = game.columns;
     const GridCell cell = game.grid[x][y];
     if (!cell.revealed) {
         game.grid[x][y].flagged = !cell.flagged;
@@ -198,9 +196,7 @@ void revealCellsDFS(int x, int y);
 void revealCellBorder(int x, int y);
 void flagAllUnrevealed();
 
-void revealCell(int x, int y) {
-    const int rows = game.rows;
-    const int columns = game.columns;
+void revealCell(const int x, const int y) {
     const GridCell cell = game.grid[x][y];
     if (cell.flagged) return;
     if (cell.type == CELL_MINE) {
@@ -229,8 +225,8 @@ void revealCell(int x, int y) {
     }
 
     for (int i = 0; i < revealedCellsCount; i++) {
-        int nx = revealedCells[i].x;
-        int ny = revealedCells[i].y;
+        const int nx = revealedCells[i].x;
+        const int ny = revealedCells[i].y;
 
         if (game.grid[nx][ny].type != CELL_0) continue;
 
@@ -243,8 +239,6 @@ void revealCell(int x, int y) {
         game.won = true;
         flagAllUnrevealed();
     }
-
-    return;
 }
 
 void flagAllUnrevealed() {
@@ -263,7 +257,7 @@ void flagAllUnrevealed() {
 bool revealNonFlagged(const int x, const int y, GridCoords *coords, int *counter) {
     const int rows = game.rows;
     const int columns = game.columns;
-    bool revealedMine;
+    bool revealedMine = false;
 
     for (int i = -1; i <= 1; i++) {
         const int nx = x + i;
@@ -276,11 +270,9 @@ bool revealNonFlagged(const int x, const int y, GridCoords *coords, int *counter
             const GridCell cell = game.grid[nx][ny];
             if (cell.revealed || cell.flagged) continue;
 
-            if (!cell.revealed) {
-                coords[*counter] = (GridCoords){nx, ny};
-                *counter = *counter + 1;
-                if (cell.type != CELL_MINE) game.unrevealedCount--;
-            }
+            coords[*counter] = (GridCoords){nx, ny};
+            *counter = *counter + 1;
+            if (cell.type != CELL_MINE) game.unrevealedCount--;
 
             game.grid[nx][ny].revealed = true;
 

@@ -21,7 +21,7 @@ Font fontRubikMediumSecondary;
 
 bool fontsReady = false;
 
-Font loadFont(FONT_TYPE type, int size) {
+Font loadFont(const FONT_TYPE type, const int size) {
     TTF_Font *font = TTF_OpenFont(fontPaths[type], size);
     if (font == NULL) {
         printf("Error while loading font ID %d\n", type);

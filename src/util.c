@@ -9,7 +9,7 @@
 #include "global.h"
 
 int randomBetween(const int min, const int max) {
-    return (rand() % (max - min + 1)) + min;
+    return rand() % (max - min + 1) + min;
 }
 
 int intLog2(int x) {
@@ -45,8 +45,8 @@ char *getTimeString(const int seconds) {
 Color mapColor(const SDL_Surface *surface, const char *hexColor) {
     if (hexColor[0] == '#') hexColor++;  // shift left once
     const int rgb = strtol(hexColor, NULL, 16);
-    const int r = (rgb >> 16) & 0xff;
-    const int g = (rgb >> 8) & 0xff;
+    const int r = rgb >> 16 & 0xff;
+    const int g = rgb >> 8 & 0xff;
     const int b = rgb & 0xff;
 
     Color color;
@@ -69,7 +69,7 @@ SDL_Texture *createTexture(const int width, const int height, const int access) 
 
 SDL_Surface *createColoredSurface(const int width, const int height, const COLOR color) {
     SDL_Surface *surface = createSurface(width, height);
-    SDL_Rect area = rectangle(0, 0, width, height);
+    const SDL_Rect area = rectangle(0, 0, width, height);
     const Uint32 surfaceColor = colors[color].value;
     SDL_FillRect(surface, &area, surfaceColor);
     return surface;

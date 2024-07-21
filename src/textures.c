@@ -144,7 +144,7 @@ void initCellTexturesFor(Texture textures[TEXTURE_CELL_TYPES], const char *image
 
         const int mapIndex = type * cellTextureSize;
         const int mapX = mapIndex % cellMapTexture.area.w;
-        const int mapY = (mapIndex / cellMapTexture.area.h) * cellTextureSize;
+        const int mapY = mapIndex / cellMapTexture.area.h * cellTextureSize;
         const SDL_Rect cellTextureArea = rectangle(mapX, mapY, cellTextureSize, cellTextureSize);
 
         SDL_SetTextureColorMod(cellMapTexture.texture, cellTextureColor.r, cellTextureColor.g, cellTextureColor.b);
@@ -164,7 +164,7 @@ void initCellTexturesFor(Texture textures[TEXTURE_CELL_TYPES], const char *image
             SDL_RenderCopy(renderer, imageTexture, NULL, &imageArea);
         }
 
-        SDL_Rect textureArea = rectangle(cellOffset, cellOffset, cellSize, cellSize);
+        const SDL_Rect textureArea = rectangle(cellOffset, cellOffset, cellSize, cellSize);
         SDL_SetRenderTarget(renderer, NULL);
 
         textures[type].surface = NULL;
@@ -180,7 +180,7 @@ void initCellNumbersTextures() {
     for (CELL_TYPE cell = CELL_1; cell <= CELL_8; cell++) {
         char cellText[2];
         snprintf(cellText, 2, "%c", '0' + cell - CELL_0);
-        Color cellColor = colors[COLOR_GRID_1 + cell - 1];
+        const Color cellColor = colors[COLOR_GRID_1 + cell - 1];
         SDL_Surface *textSurface = TTF_RenderText_Solid(fontRubikMediumCellSized.font, cellText, cellColor.rgb);
         SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
         SDL_Rect cellArea;
@@ -264,7 +264,7 @@ void initTextures() {
     texturesReady = true;
 }
 
-void freeTexture(Texture texture) {
+void freeTexture(const Texture texture) {
     SDL_FreeSurface(texture.surface);
     SDL_DestroyTexture(texture.texture);
 }
@@ -276,7 +276,7 @@ void freeCellTexturesFrom(Texture textures[TEXTURE_CELL_TYPES]) {
 
 void freeCellNumbersTextures() {
     for (CELL_TYPE cell = CELL_1; cell <= CELL_8; cell++) {
-        Texture cellTexture = cellNumbersTextures[cell - CELL_1];
+        const Texture cellTexture = cellNumbersTextures[cell - CELL_1];
         freeTexture(cellTexture);
     }
 }
@@ -298,12 +298,12 @@ void freeTextures() {
     freeTexture(remainingMinesTextTexture);
 }
 
-void updateTextTexture(Texture *texture, Font font, COLOR color, const char *text) {
+void updateTextTexture(Texture *texture, const Font font, const COLOR color, const char *text) {
     if (texture->texture != NULL) freeTexture(*texture);
 
     SDL_Surface *textSurface = TTF_RenderText_Solid(font.font, text, colors[color].rgb);
     SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
-    SDL_Rect area = rectangle(0, 0, textSurface->w, textSurface->h);
+    const SDL_Rect area = rectangle(0, 0, textSurface->w, textSurface->h);
 
     texture->surface = textSurface;
     texture->texture = textTexture;

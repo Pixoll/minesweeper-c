@@ -41,7 +41,7 @@ void drawGrid() {
             const GridCell cell = game.grid[i][j];
             if (cell.type == CELL_0 && cell.revealed) continue;
 
-            TEXTURE_CELL_TYPE cellType = getCellType(i, j, cell.flagged, cell.revealed);
+            const TEXTURE_CELL_TYPE cellType = getCellType(i, j, cell.flagged, cell.revealed);
             Texture cellTexture = getCellTexture(cell, cellType);
             cellTexture.area.x += x;
             cellTexture.area.y += y;
@@ -86,7 +86,7 @@ void drawGameTime() {
     SDL_RenderCopy(renderer, gameTimeTextTexture.texture, NULL, &gameTimeTextTexture.area);
 }
 
-Texture getCellTexture(GridCell cell, TEXTURE_CELL_TYPE type) {
+Texture getCellTexture(const GridCell cell, const TEXTURE_CELL_TYPE type) {
     if (game.over && !game.won && cell.type == CELL_MINE) {
         if (cell.flagged) return cellFlaggedMineTextures[type];
         if (cell.revealed) return cellTriggeredMineTextures[type];

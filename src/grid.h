@@ -61,8 +61,8 @@ typedef struct GridCoords {
 void createGrid(int rows, int columns, int minesCount);
 void placeGridMines(int x, int y);
 void calculateGridMeasurements();
-void toggleCellFlag(int clickX, int clickY);
-void revealCell(int clickX, int clickY);
+void toggleCellFlag(int x, int y);
+void revealCell(int x, int y);
 GridCoords calculateGridCell(int clickX, int clickY);
 
 #endif
