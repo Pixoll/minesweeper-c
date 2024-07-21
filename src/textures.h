@@ -1,6 +1,6 @@
 #ifndef __TEXTURES_DEFINED
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #include "fonts.h"
 #include "global.h"

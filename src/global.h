@@ -1,6 +1,6 @@
 #ifndef __GLOBAL_DEFINED
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #define __GLOBAL_DEFINED
 
