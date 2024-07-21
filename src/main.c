@@ -12,9 +12,6 @@
 #include "textures.h"
 #include "util.h"
 
-#define WINDOW_FLAGS SDL_WINDOW_SHOWN | SDL_WINDOW_MAXIMIZED | SDL_WINDOW_RESIZABLE
-#define RENDER_FLAGS SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC
-
 const char *windowIconPath = "assets/images/icon.png";
 
 void initSDL();
@@ -119,7 +116,7 @@ void initSDL() {
         SDL_WINDOWPOS_CENTERED,
         defaultWindowWidth,
         defaultWindowHeight,
-        WINDOW_FLAGS
+        SDL_WINDOW_SHOWN | SDL_WINDOW_MAXIMIZED | SDL_WINDOW_RESIZABLE
     );
     if (window == NULL)
         throwSDLError("SDL_CreateWindow");
@@ -128,7 +125,7 @@ void initSDL() {
     SDL_SetWindowIcon(window, icon);
     SDL_FreeSurface(icon);
 
-    renderer = SDL_CreateRenderer(window, -1, RENDER_FLAGS);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (renderer == NULL)
         throwSDLError("SDL_CreateRenderer");
 

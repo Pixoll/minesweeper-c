@@ -100,7 +100,7 @@ const TEXTURE_CELL_TYPE textureCellCornerTypeOrder[33] = {
 void initTextureFromImage(const char *imagePath, Texture *destTexture) {
     SDL_Surface *surface = IMG_Load(imagePath);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-    destTexture->area = rectangle(0, 0, surface->w, surface->h);
+    destTexture->area = SDL_Rect{0, 0, surface->w, surface->h};
     destTexture->surface = surface;
     destTexture->texture = texture;
 }
@@ -114,7 +114,7 @@ void initTextureFromImage(const char *imagePath, Texture *destTexture) {
 
 //     SDL_Surface *surface = IMG_Load(imagePath);
 //     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-//     SDL_Rect area = rectangle(textureOffset, textureOffset, textureSize, textureSize);
+//     SDL_Rect area = SDL_Rect{textureOffset, textureOffset, textureSize, textureSize};
 
 //     SDL_SetTextureColorMod(texture, textureColor.r, textureColor.g, textureColor.b);
 
@@ -126,7 +126,7 @@ void initTextureFromImage(const char *imagePath, Texture *destTexture) {
 void initCellMapTexture() {
     SDL_Surface *surface = IMG_Load(cellMapPath);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-    cellMapTexture.area = rectangle(0, 0, surface->w, surface->h);
+    cellMapTexture.area = SDL_Rect{0, 0, surface->w, surface->h};
     cellMapTexture.surface = surface;
     cellMapTexture.texture = texture;
 }
@@ -151,7 +151,7 @@ void initCellTexturesFor(
         const int mapIndex = type * cellTextureSize;
         const int mapX = mapIndex % cellMapTexture.area.w;
         const int mapY = mapIndex / cellMapTexture.area.h * cellTextureSize;
-        const SDL_Rect cellTextureArea = rectangle(mapX, mapY, cellTextureSize, cellTextureSize);
+        const SDL_Rect cellTextureArea = SDL_Rect{mapX, mapY, cellTextureSize, cellTextureSize};
 
         SDL_SetTextureColorMod(cellMapTexture.texture, cellTextureColor.r, cellTextureColor.g, cellTextureColor.b);
         SDL_RenderCopy(renderer, cellMapTexture.texture, &cellTextureArea, NULL);
@@ -164,13 +164,13 @@ void initCellTexturesFor(
 
             SDL_Surface *imageSurface = IMG_Load(imagePath);
             SDL_Texture *imageTexture = SDL_CreateTextureFromSurface(renderer, imageSurface);
-            SDL_Rect imageArea = rectangle(imageOffset, imageOffset, imageSize, imageSize);
+            SDL_Rect imageArea = SDL_Rect{imageOffset, imageOffset, imageSize, imageSize};
 
             SDL_SetTextureColorMod(imageTexture, imageColorRgb.r, imageColorRgb.g, imageColorRgb.b);
             SDL_RenderCopy(renderer, imageTexture, NULL, &imageArea);
         }
 
-        const SDL_Rect textureArea = rectangle(cellOffset, cellOffset, cellSize, cellSize);
+        const SDL_Rect textureArea = SDL_Rect{cellOffset, cellOffset, cellSize, cellSize};
         SDL_SetRenderTarget(renderer, NULL);
 
         textures[type].surface = NULL;
@@ -228,11 +228,11 @@ void initGridTexture() {
     for (int x = 0; x < gridWidth - gridLineWidth; x += cellSize) {
         for (int y = 0; y < gridHeight - gridLineWidth; y += cellSize) {
             if (x > 0) {
-                const SDL_Rect vertical = rectangle(x, y + gridLineOffset, gridLineWidth, gridLineLength);
+                const SDL_Rect vertical = SDL_Rect{x, y + gridLineOffset, gridLineWidth, gridLineLength};
                 SDL_RenderCopy(renderer, gridLineVTexture, NULL, &vertical);
             }
             if (y > 0) {
-                const SDL_Rect horizontal = rectangle(x + gridLineOffset, y, gridLineLength, gridLineWidth);
+                const SDL_Rect horizontal = SDL_Rect{x + gridLineOffset, y, gridLineLength, gridLineWidth};
                 SDL_RenderCopy(renderer, gridLineHTexture, NULL, &horizontal);
             }
         }
@@ -240,7 +240,7 @@ void initGridTexture() {
 
     SDL_SetRenderTarget(renderer, NULL);
 
-    const SDL_Rect gridArea = rectangle(gridXOffset, gridYOffset, gridWidth, gridHeight);
+    const SDL_Rect gridArea = SDL_Rect{gridXOffset, gridYOffset, gridWidth, gridHeight};
 
     gridTexture.surface = NULL;
     gridTexture.texture = finalTexture;
@@ -315,7 +315,7 @@ void updateTextTexture(Texture *texture, const Font font, const COLOR color, con
 
     SDL_Surface *textSurface = TTF_RenderText_Solid(font.font, text, colors[color].rgb);
     SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
-    const SDL_Rect area = rectangle(0, 0, textSurface->w, textSurface->h);
+    const SDL_Rect area = SDL_Rect{0, 0, textSurface->w, textSurface->h};
 
     texture->surface = textSurface;
     texture->texture = textTexture;

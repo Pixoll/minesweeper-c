@@ -6,19 +6,15 @@
 
 // General purpose
 
-#define isPow2(a) ((a) > 0 && !((a) & ((a) - 1)))
-#define max(a, b) (((a) > (b)) ? (a) : (b))
-#define min(a, b) (((a) < (b)) ? (a) : (b))
 // #define pxToPt(px) ((px)*0.75)
 
 int randomBetween(int min, int max);
+int isPow2(int x);
 int intLog2(int x);
 int intLength(int value);
 char *getTimeString(int seconds);
 
 // SDL related
-
-#define rectangle(x, y, width, height) (SDL_Rect{x, y, width, height})
 
 Color mapColor(const SDL_Surface *surface, const char *hexColor);
 SDL_Surface *createSurface(int width, int height);

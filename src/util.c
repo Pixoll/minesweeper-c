@@ -12,6 +12,10 @@ int randomBetween(const int min, const int max) {
     return rand() % (max - min + 1) + min;
 }
 
+inline int isPow2(const int x) {
+    return x > 0 && !(x & (x - 1));
+}
+
 int intLog2(int x) {
     int log2 = 0;
     while (x >>= 1)
@@ -73,7 +77,7 @@ SDL_Texture *createTexture(const int width, const int height, const int access) 
 
 SDL_Surface *createColoredSurface(const int width, const int height, const COLOR color) {
     SDL_Surface *surface = createSurface(width, height);
-    const SDL_Rect area = rectangle(0, 0, width, height);
+    const SDL_Rect area = SDL_Rect{0, 0, width, height};
     const Uint32 surfaceColor = colors[color].value;
     SDL_FillRect(surface, &area, surfaceColor);
     return surface;
