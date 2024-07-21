@@ -35,7 +35,7 @@ void createGrid(const int rows, const int columns, const int minesCount) {
     for (int i = 0; i < columns; i++) {
         game.grid[i] = calloc(rows, sizeof(GridCell));
         for (int j = 0; j < rows; j++) {
-            game.grid[i][j] = GridCell{
+            game.grid[i][j] = (GridCell){
                 .type = CELL_0,
                 .flagged = false,
                 .revealed = false,
@@ -140,7 +140,7 @@ GridCoords calculateGridCell(const int clickX, const int clickY) {
         inside = false;
     }
 
-    return GridCoords{x, y, inside};
+    return (GridCoords){x, y, inside};
 }
 
 void getSurroundingUnrevealed(int x, int y, GridCoords *coords, int *counter);
@@ -196,7 +196,7 @@ void getSurroundingUnrevealed(const int x, const int y, GridCoords *coords, int 
             if (ny < 0 || ny > rows - 1 || game.grid[nx][ny].revealed)
                 continue;
 
-            coords[*counter] = GridCoords{nx, ny};
+            coords[*counter] = (GridCoords){nx, ny};
             *counter = *counter + 1;
         }
     }
@@ -300,7 +300,7 @@ bool revealNonFlagged(const int x, const int y, GridCoords *coords, int *counter
             if (cell.revealed || cell.flagged)
                 continue;
 
-            coords[*counter] = GridCoords{nx, ny};
+            coords[*counter] = (GridCoords){nx, ny};
             *counter = *counter + 1;
 
             if (cell.type != CELL_MINE)

@@ -58,7 +58,7 @@ Color mapColor(const SDL_Surface *surface, const char *hexColor) {
     const int b = rgb & 0xff;
 
     Color color;
-    color.rgb = SDL_Color{r, g, b, 255};
+    color.rgb = (SDL_Color){r, g, b, 255};
     color.value = SDL_MapRGB(surface->format, r, g, b);
     return color;
 }
@@ -77,7 +77,7 @@ SDL_Texture *createTexture(const int width, const int height, const int access) 
 
 SDL_Surface *createColoredSurface(const int width, const int height, const COLOR color) {
     SDL_Surface *surface = createSurface(width, height);
-    const SDL_Rect area = SDL_Rect{0, 0, width, height};
+    const SDL_Rect area = (SDL_Rect){0, 0, width, height};
     const Uint32 surfaceColor = colors[color].value;
     SDL_FillRect(surface, &area, surfaceColor);
     return surface;
