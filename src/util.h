@@ -1,10 +1,8 @@
-#ifndef __UTIL_DEFINED
+#pragma once
 
 #include <SDL.h>
 
 #include "global.h"
-
-#define __UTIL_DEFINED
 
 // General purpose
 
@@ -27,5 +25,3 @@ SDL_Surface *createSurface(int width, int height);
 SDL_Texture *createTexture(int width, int height, int access);
 SDL_Surface *createColoredSurface(int width, int height, COLOR color);
 void throwSDLError(const char *functionName);
-
-#endif

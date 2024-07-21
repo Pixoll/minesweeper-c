@@ -1,7 +1,3 @@
-#ifndef __GRID_UI_DEFINED
-
-#define __GRID_DEFINED
+#pragma once
 
 void drawGridUI();
-
-#endif

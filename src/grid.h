@@ -1,9 +1,7 @@
-#ifndef __GRID_DEFINED
+#pragma once
 
 #include <stdbool.h>
 #include <time.h>
-
-#define __GRID_DEFINED
 
 enum CELL_TYPE {
     CELL_0,
@@ -64,5 +62,3 @@ void calculateGridMeasurements();
 void toggleCellFlag(int x, int y);
 void revealCell(int x, int y);
 GridCoords calculateGridCell(int clickX, int clickY);
-
-#endif

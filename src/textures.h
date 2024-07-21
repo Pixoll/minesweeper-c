@@ -1,11 +1,9 @@
-#ifndef __TEXTURES_DEFINED
+#pragma once
 
 #include <SDL.h>
 
 #include "fonts.h"
 #include "global.h"
-
-#define __TEXTURES_DEFINED
 
 typedef struct Texture {
     SDL_Surface *surface;
@@ -98,5 +96,3 @@ extern Texture remainingMinesIconTexture;
 void initTextures();
 void freeTextures();
 void updateTextTexture(Texture *texture, Font font, COLOR color, const char *text);
-
-#endif

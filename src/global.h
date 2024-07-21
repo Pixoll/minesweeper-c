@@ -1,8 +1,6 @@
-#ifndef __GLOBAL_DEFINED
+#pragma once
 
-#include <SDL.h>
-
-#define __GLOBAL_DEFINED
+#include <SDL.h>}
 
 // #define GAME_FRAME_DURATION (1 / 120)
 
@@ -51,6 +49,4 @@ typedef struct Color {
 extern Color colors[COLORS_AMOUNT];
 
 void getWindowSize();
-void initColors();
-
-#endif
+void initColors();}

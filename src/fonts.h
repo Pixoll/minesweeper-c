@@ -1,8 +1,6 @@
-#ifndef __FONTS_DEFINED
+#pragma once
 
 #include <SDL_ttf.h>
-
-#define __FONTS_DEFINED
 
 enum FONT_TYPE {
     FONT_RUBIK_LIGHT,
@@ -24,5 +22,3 @@ extern Font fontRubikMediumSecondary;
 
 void initFonts();
 void freeFonts();
-
-#endif
