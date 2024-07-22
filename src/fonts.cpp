@@ -1,12 +1,11 @@
-#include "fonts.h"
+#include "fonts.hpp"
 
+#include <cstdio>
 #include <SDL_ttf.h>
-#include <stdbool.h>
-#include <stdio.h>
 
-#include "global.h"
-#include "grid.h"
-#include "util.h"
+#include "global.hpp"
+#include "grid.hpp"
+#include "util.hpp"
 
 const char *fontPaths[FONT_TYPES] = {
     "assets/fonts/Rubik-Light.ttf",
@@ -23,11 +22,11 @@ bool fontsReady = false;
 
 Font loadFont(const FONT_TYPE type, const int size) {
     TTF_Font *font = TTF_OpenFont(fontPaths[type], size);
-    if (font == NULL) {
+    if (font == nullptr) {
         printf("Error while loading font ID %d\n", type);
         throwSDLError("TTF_OpenFont");
     }
-    return (Font){font, size};
+    return Font{font, size};
 }
 
 void initFonts() {

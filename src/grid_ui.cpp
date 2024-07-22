@@ -1,11 +1,10 @@
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 
-#include "global.h"
-#include "grid.h"
-#include "textures.h"
-#include "util.h"
+#include "global.hpp"
+#include "grid.hpp"
+#include "textures.hpp"
+#include "util.hpp"
 
 time_t lastGameTimeDrawn = 0;
 int remainingMines = 0;
@@ -31,7 +30,7 @@ void drawGrid() {
     const int gridYOffset = game.measurements.gridYOffset;
 
     // Draw grid
-    SDL_RenderCopy(renderer, gridTexture.texture, NULL, &gridTexture.area);
+    SDL_RenderCopy(renderer, gridTexture.texture, nullptr, &gridTexture.area);
 
     // Draw cells
     for (int i = 0; i < columns; i++) {
@@ -49,7 +48,7 @@ void drawGrid() {
             cellTexture.area.x += x;
             cellTexture.area.y += y;
 
-            SDL_RenderCopy(renderer, cellTexture.texture, NULL, &cellTexture.area);
+            SDL_RenderCopy(renderer, cellTexture.texture, nullptr, &cellTexture.area);
         }
     }
 }
@@ -67,18 +66,18 @@ void drawRemainingMines() {
     // TODO Icon and text aren't centered with each other, I hate it
     remainingMinesIconTexture.area.x = 10;
     remainingMinesIconTexture.area.y = 10;
-    SDL_RenderCopy(renderer, remainingMinesIconTexture.texture, NULL, &remainingMinesIconTexture.area);
+    SDL_RenderCopy(renderer, remainingMinesIconTexture.texture, nullptr, &remainingMinesIconTexture.area);
 
     remainingMinesTextTexture.area.x = remainingMinesIconTexture.area.w + 20;
     remainingMinesTextTexture.area.y = 10;
-    SDL_RenderCopy(renderer, remainingMinesTextTexture.texture, NULL, &remainingMinesTextTexture.area);
+    SDL_RenderCopy(renderer, remainingMinesTextTexture.texture, nullptr, &remainingMinesTextTexture.area);
 }
 
 void drawGameTime() {
     if (game.startTime == 0)
         return;
 
-    const time_t now = time(NULL);
+    const time_t now = time(nullptr);
     if (lastGameTimeDrawn == 0 || (!game.over && lastGameTimeDrawn < now)) {
         lastGameTimeDrawn = now;
         char *timeString = getTimeString(now - game.startTime);
@@ -88,7 +87,7 @@ void drawGameTime() {
 
     gameTimeTextTexture.area.x = 10;
     gameTimeTextTexture.area.y = gameTimeTextTexture.area.h + 20;
-    SDL_RenderCopy(renderer, gameTimeTextTexture.texture, NULL, &gameTimeTextTexture.area);
+    SDL_RenderCopy(renderer, gameTimeTextTexture.texture, nullptr, &gameTimeTextTexture.area);
 }
 
 Texture getCellTexture(const GridCell cell, const TEXTURE_CELL_TYPE type) {

@@ -1,16 +1,15 @@
+#include <cstdio>
+#include <cstdlib>
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
 
-#include "fonts.h"
-#include "global.h"
-#include "grid.h"
-#include "grid_ui.h"
-#include "textures.h"
-#include "util.h"
+#include "fonts.hpp"
+#include "global.hpp"
+#include "grid.hpp"
+#include "grid_ui.hpp"
+#include "textures.hpp"
+#include "util.hpp"
 
 const char *windowIconPath = "assets/images/icon.png";
 
@@ -56,25 +55,25 @@ int main(int argc, char *argv[]) {
 
                     int clickX, clickY;
                     SDL_GetMouseState(&clickX, &clickY);
-                    const GridCoords coords = calculateGridCell(clickX, clickY);
+                    const auto [x, y, inside] = calculateGridCell(clickX, clickY);
 
                     switch (event.button.button) {
                         case SDL_BUTTON_LEFT: {
-                            if (coords.inside) {
+                            if (inside) {
                                 if (!placedMines) {
-                                    placeGridMines(coords.x, coords.y);
+                                    placeGridMines(x, y);
                                     placedMines = true;
                                 }
 
-                                revealCell(coords.x, coords.y);
+                                revealCell(x, y);
                             }
                             break;
                         }
                         case SDL_BUTTON_RIGHT: {
-                            if (coords.inside) {
+                            if (inside) {
                                 if (!placedMines)
                                     break;
-                                toggleCellFlag(coords.x, coords.y);
+                                toggleCellFlag(x, y);
                             }
                             break;
                         }
@@ -118,7 +117,7 @@ void initSDL() {
         defaultWindowHeight,
         SDL_WINDOW_SHOWN | SDL_WINDOW_MAXIMIZED | SDL_WINDOW_RESIZABLE
     );
-    if (window == NULL)
+    if (window == nullptr)
         throwSDLError("SDL_CreateWindow");
 
     SDL_Surface *icon = IMG_Load(windowIconPath);
@@ -126,7 +125,7 @@ void initSDL() {
     SDL_FreeSurface(icon);
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    if (renderer == NULL)
+    if (renderer == nullptr)
         throwSDLError("SDL_CreateRenderer");
 
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);

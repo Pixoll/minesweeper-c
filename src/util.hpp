@@ -2,7 +2,7 @@
 
 #include <SDL.h>
 
-#include "global.h"
+#include "global.hpp"
 
 // General purpose
 

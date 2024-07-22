@@ -1,7 +1,6 @@
 #pragma once
 
-#include <stdbool.h>
-#include <time.h>
+#include <ctime>
 
 enum CELL_TYPE {
     CELL_0,
@@ -17,7 +16,7 @@ enum CELL_TYPE {
     CELL_TYPES,
 };
 
-typedef enum CELL_TYPE CELL_TYPE;
+typedef CELL_TYPE CELL_TYPE;
 
 typedef struct GridCell {
     CELL_TYPE type;

@@ -1,20 +1,19 @@
-#include "textures.h"
+#include "textures.hpp"
 
+#include <cstdio>
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
-#include <stdbool.h>
-#include <stdio.h>
 
-#include "fonts.h"
-#include "global.h"
-#include "grid.h"
-#include "util.h"
+#include "fonts.hpp"
+#include "global.hpp"
+#include "grid.hpp"
+#include "util.hpp"
 
 Texture gridTexture;
 
 Texture cellMapTexture;
-const int cellTextureSize = 512;
+constexpr int cellTextureSize = 512;
 
 Texture cellCoveredTextures[TEXTURE_CELL_TYPES];
 Texture cellCoveredMineTextures[TEXTURE_CELL_TYPES];
@@ -30,15 +29,15 @@ Texture remainingMinesIconTexture;
 
 bool texturesReady = false;
 
-const char *cellMapPath = "assets/images/cell_map.png";
-const char *mineImagePath = "assets/images/mine.png";
-const char *flagImagePath = "assets/images/flag.png";
+auto cellMapPath = "assets/images/cell_map.png";
+auto mineImagePath = "assets/images/mine.png";
+auto flagImagePath = "assets/images/flag.png";
 
-const char *gridLineHorizontalImagePath = "assets/images/grid_line_horizontal.png";
-const char *gridLineVerticalImagePath = "assets/images/grid_line_vertical.png";
+auto gridLineHorizontalImagePath = "assets/images/grid_line_horizontal.png";
+auto gridLineVerticalImagePath = "assets/images/grid_line_vertical.png";
 
-const char *gridFillerHorizontalImagePath = "assets/images/grid_filler_horizontal.png";
-const char *gridFillerVerticalImagePath = "assets/images/grid_filler_vertical.png";
+auto gridFillerHorizontalImagePath = "assets/images/grid_filler_horizontal.png";
+auto gridFillerVerticalImagePath = "assets/images/grid_filler_vertical.png";
 
 const TEXTURE_CELL_TYPE textureCellSideTypeOrder[16] = {
     TEXTURE_CELL_NO_SIDES,
@@ -85,8 +84,8 @@ const TEXTURE_CELL_TYPE textureCellCornerTypeOrder[33] = {
     TEXTURE_CELL_TBR_TRC,
     TEXTURE_CELL_TBR_TRC_BRC,
     TEXTURE_CELL_TLR_TLC,
-    0,
-    0,
+    TEXTURE_CELL_NO_SIDES,
+    TEXTURE_CELL_NO_SIDES,
     TEXTURE_CELL_TBL_TLC,
     TEXTURE_CELL_TLR_TLCRC,
     TEXTURE_CELL_TBL_TLC_BLC,
@@ -100,7 +99,7 @@ const TEXTURE_CELL_TYPE textureCellCornerTypeOrder[33] = {
 void initTextureFromImage(const char *imagePath, Texture *destTexture) {
     SDL_Surface *surface = IMG_Load(imagePath);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-    destTexture->area = (SDL_Rect){0, 0, surface->w, surface->h};
+    destTexture->area = SDL_Rect{0, 0, surface->w, surface->h};
     destTexture->surface = surface;
     destTexture->texture = texture;
 }
@@ -126,7 +125,7 @@ void initTextureFromImage(const char *imagePath, Texture *destTexture) {
 void initCellMapTexture() {
     SDL_Surface *surface = IMG_Load(cellMapPath);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-    cellMapTexture.area = (SDL_Rect){0, 0, surface->w, surface->h};
+    cellMapTexture.area = SDL_Rect{0, 0, surface->w, surface->h};
     cellMapTexture.surface = surface;
     cellMapTexture.texture = texture;
 }
@@ -143,7 +142,7 @@ void initCellTexturesFor(
     const int gridLineWidth = game.measurements.gridLineWidth;
     const SDL_Color cellTextureColor = colors[cellColor].rgb;
 
-    for (TEXTURE_CELL_TYPE type = 0; type < TEXTURE_CELL_TYPES; type++) {
+    for (int type = 0; type < TEXTURE_CELL_TYPES; type++) {
         SDL_Texture *finalTexture = createTexture(cellSize, cellSize, SDL_TEXTUREACCESS_TARGET);
         SDL_SetRenderTarget(renderer, finalTexture);
         SDL_SetTextureBlendMode(finalTexture, SDL_BLENDMODE_BLEND);
@@ -151,29 +150,29 @@ void initCellTexturesFor(
         const int mapIndex = type * cellTextureSize;
         const int mapX = mapIndex % cellMapTexture.area.w;
         const int mapY = mapIndex / cellMapTexture.area.h * cellTextureSize;
-        const SDL_Rect cellTextureArea = (SDL_Rect){mapX, mapY, cellTextureSize, cellTextureSize};
+        const auto cellTextureArea = SDL_Rect{mapX, mapY, cellTextureSize, cellTextureSize};
 
         SDL_SetTextureColorMod(cellMapTexture.texture, cellTextureColor.r, cellTextureColor.g, cellTextureColor.b);
-        SDL_RenderCopy(renderer, cellMapTexture.texture, &cellTextureArea, NULL);
+        SDL_RenderCopy(renderer, cellMapTexture.texture, &cellTextureArea, nullptr);
         SDL_SetTextureColorMod(cellMapTexture.texture, 255, 255, 255);
 
-        if (imagePath != NULL && imageScaleWRTCell != 0) {
+        if (imagePath != nullptr && imageScaleWRTCell != 0) {
             const int imageSize = cellSize * imageScaleWRTCell;
             const int imageOffset = (gridLineWidth + cellSize - imageSize) / 2 - cellOffset;
             const SDL_Color imageColorRgb = colors[imageColor].rgb;
 
             SDL_Surface *imageSurface = IMG_Load(imagePath);
             SDL_Texture *imageTexture = SDL_CreateTextureFromSurface(renderer, imageSurface);
-            SDL_Rect imageArea = (SDL_Rect){imageOffset, imageOffset, imageSize, imageSize};
+            auto imageArea = SDL_Rect{imageOffset, imageOffset, imageSize, imageSize};
 
             SDL_SetTextureColorMod(imageTexture, imageColorRgb.r, imageColorRgb.g, imageColorRgb.b);
-            SDL_RenderCopy(renderer, imageTexture, NULL, &imageArea);
+            SDL_RenderCopy(renderer, imageTexture, nullptr, &imageArea);
         }
 
-        const SDL_Rect textureArea = (SDL_Rect){cellOffset, cellOffset, cellSize, cellSize};
-        SDL_SetRenderTarget(renderer, NULL);
+        const auto textureArea = SDL_Rect{cellOffset, cellOffset, cellSize, cellSize};
+        SDL_SetRenderTarget(renderer, nullptr);
 
-        textures[type].surface = NULL;
+        textures[type].surface = nullptr;
         textures[type].texture = finalTexture;
         textures[type].area = textureArea;
     }
@@ -183,21 +182,21 @@ void initCellNumbersTextures() {
     const int cellSize = game.measurements.cellSize;
     const int gridLineWidth = game.measurements.gridLineWidth;
 
-    for (CELL_TYPE cell = CELL_1; cell <= CELL_8; cell++) {
+    for (int cell = CELL_1; cell <= CELL_8; cell++) {
         char cellText[2];
         snprintf(cellText, 2, "%c", '0' + cell - CELL_0);
-        const Color cellColor = colors[COLOR_GRID_1 + cell - 1];
-        SDL_Surface *textSurface = TTF_RenderText_Solid(fontRubikMediumCellSized.font, cellText, cellColor.rgb);
+        const auto [rgb, value] = colors[COLOR_GRID_1 + cell - 1];
+        SDL_Surface *textSurface = TTF_RenderText_Solid(fontRubikMediumCellSized.font, cellText, rgb);
         SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
         SDL_Rect cellArea;
         TTF_SizeText(fontRubikMediumCellSized.font, cellText, &cellArea.w, &cellArea.h);
         cellArea.x = (gridLineWidth + cellSize - cellArea.w) / 2;
         cellArea.y = (gridLineWidth + cellSize - cellArea.h) / 2;
 
-        cellNumbersTextures[cell - CELL_1] = (Texture){
-            .area = cellArea,
+        cellNumbersTextures[cell - CELL_1] = Texture{
             .surface = textSurface,
-            .texture = textTexture
+            .texture = textTexture,
+            .area = cellArea,
         };
     }
 }
@@ -211,7 +210,7 @@ void initGridTexture() {
     const int gridYOffset = game.measurements.gridYOffset;
     const int gridWidth = game.measurements.gridWidth;
     const int gridHeight = game.measurements.gridHeight;
-    const SDL_Color colorGrid = colors[COLOR_LIGHT_GREY].rgb;
+    const auto [r, g, b, a] = colors[COLOR_LIGHT_GREY].rgb;
 
     SDL_Texture *finalTexture = createTexture(gridWidth, gridHeight, SDL_TEXTUREACCESS_TARGET);
     SDL_SetRenderTarget(renderer, finalTexture);
@@ -219,30 +218,30 @@ void initGridTexture() {
 
     SDL_Surface *gridLineHSurface = IMG_Load(gridLineHorizontalImagePath);
     SDL_Texture *gridLineHTexture = SDL_CreateTextureFromSurface(renderer, gridLineHSurface);
-    SDL_SetTextureColorMod(gridLineHTexture, colorGrid.r, colorGrid.g, colorGrid.b);
+    SDL_SetTextureColorMod(gridLineHTexture, r, g, b);
 
     SDL_Surface *gridLineVSurface = IMG_Load(gridLineVerticalImagePath);
     SDL_Texture *gridLineVTexture = SDL_CreateTextureFromSurface(renderer, gridLineVSurface);
-    SDL_SetTextureColorMod(gridLineVTexture, colorGrid.r, colorGrid.g, colorGrid.b);
+    SDL_SetTextureColorMod(gridLineVTexture, r, g, b);
 
     for (int x = 0; x < gridWidth - gridLineWidth; x += cellSize) {
         for (int y = 0; y < gridHeight - gridLineWidth; y += cellSize) {
             if (x > 0) {
-                const SDL_Rect vertical = (SDL_Rect){x, y + gridLineOffset, gridLineWidth, gridLineLength};
-                SDL_RenderCopy(renderer, gridLineVTexture, NULL, &vertical);
+                const auto vertical = SDL_Rect{x, y + gridLineOffset, gridLineWidth, gridLineLength};
+                SDL_RenderCopy(renderer, gridLineVTexture, nullptr, &vertical);
             }
             if (y > 0) {
-                const SDL_Rect horizontal = (SDL_Rect){x + gridLineOffset, y, gridLineLength, gridLineWidth};
-                SDL_RenderCopy(renderer, gridLineHTexture, NULL, &horizontal);
+                const auto horizontal = SDL_Rect{x + gridLineOffset, y, gridLineLength, gridLineWidth};
+                SDL_RenderCopy(renderer, gridLineHTexture, nullptr, &horizontal);
             }
         }
     }
 
-    SDL_SetRenderTarget(renderer, NULL);
+    SDL_SetRenderTarget(renderer, nullptr);
 
-    const SDL_Rect gridArea = (SDL_Rect){gridXOffset, gridYOffset, gridWidth, gridHeight};
+    const auto gridArea = SDL_Rect{gridXOffset, gridYOffset, gridWidth, gridHeight};
 
-    gridTexture.surface = NULL;
+    gridTexture.surface = nullptr;
     gridTexture.texture = finalTexture;
     gridTexture.area = gridArea;
 }
@@ -262,7 +261,7 @@ void initTextures() {
 
     initCellMapTexture();
 
-    initCellTexturesFor(cellCoveredTextures, NULL, 0, 0, COLOR_THEME);
+    initCellTexturesFor(cellCoveredTextures, nullptr, 0, COLOR_BACKGROUND, COLOR_THEME);
     initCellTexturesFor(cellFlagTextures, flagImagePath, 0.35, COLOR_FLAGGED_CELL, COLOR_FLAGGED_CELL_BG);
     initCellTexturesFor(cellFlaggedMineTextures, mineImagePath, 0.5, COLOR_FLAGGED_CELL, COLOR_FLAGGED_CELL_BG);
     initCellTexturesFor(cellCoveredMineTextures, mineImagePath, 0.5, COLOR_BACKGROUND, COLOR_THEME);
@@ -275,18 +274,18 @@ void initTextures() {
     texturesReady = true;
 }
 
-void freeTexture(const Texture texture) {
+void freeTexture(const Texture &texture) {
     SDL_FreeSurface(texture.surface);
     SDL_DestroyTexture(texture.texture);
 }
 
 void freeCellTexturesFrom(Texture textures[TEXTURE_CELL_TYPES]) {
-    for (TEXTURE_CELL_TYPE type = 0; type < TEXTURE_CELL_TYPES; type++)
+    for (int type = 0; type < TEXTURE_CELL_TYPES; type++)
         freeTexture(textures[type]);
 }
 
 void freeCellNumbersTextures() {
-    for (CELL_TYPE cell = CELL_1; cell <= CELL_8; cell++) {
+    for (int cell = CELL_1; cell <= CELL_8; cell++) {
         const Texture cellTexture = cellNumbersTextures[cell - CELL_1];
         freeTexture(cellTexture);
     }
@@ -310,12 +309,12 @@ void freeTextures() {
 }
 
 void updateTextTexture(Texture *texture, const Font font, const COLOR color, const char *text) {
-    if (texture->texture != NULL)
+    if (texture->texture != nullptr)
         freeTexture(*texture);
 
     SDL_Surface *textSurface = TTF_RenderText_Solid(font.font, text, colors[color].rgb);
     SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
-    const SDL_Rect area = (SDL_Rect){0, 0, textSurface->w, textSurface->h};
+    const auto area = SDL_Rect{0, 0, textSurface->w, textSurface->h};
 
     texture->surface = textSurface;
     texture->texture = textTexture;

@@ -10,7 +10,7 @@ enum FONT_TYPE {
     FONT_TYPES,
 };
 
-typedef enum FONT_TYPE FONT_TYPE;
+typedef FONT_TYPE FONT_TYPE;
 
 typedef struct Font {
     TTF_Font *font;

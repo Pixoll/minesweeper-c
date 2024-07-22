@@ -2,8 +2,8 @@
 
 #include <SDL.h>
 
-#include "fonts.h"
-#include "global.h"
+#include "fonts.hpp"
+#include "global.hpp"
 
 typedef struct Texture {
     SDL_Surface *surface;

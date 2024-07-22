@@ -1,18 +1,18 @@
-#include "util.h"
+#include "util.hpp"
 
+#include <cstdio>
+#include <cstdlib>
+#include <ctime>
 #include <SDL.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
 #include <unistd.h>
 
-#include "global.h"
+#include "global.hpp"
 
 int randomBetween(const int min, const int max) {
     return rand() % (max - min + 1) + min;
 }
 
-inline int isPow2(const int x) {
+int isPow2(const int x) {
     return x > 0 && !(x & (x - 1));
 }
 
@@ -38,7 +38,7 @@ char *getTimeString(const int seconds) {
     const int min = seconds / 60;
 
     const int timeLength = intLength(sec) + intLength(min) + 4;
-    char *timeString = calloc(timeLength, sizeof(char));
+    auto timeString = new char [timeLength];
 
     if (min == 0)
         snprintf(timeString, timeLength, "%dS", sec);
@@ -52,13 +52,13 @@ Color mapColor(const SDL_Surface *surface, const char *hexColor) {
     if (hexColor[0] == '#')
         hexColor++;  // shift left once
 
-    const int rgb = strtol(hexColor, NULL, 16);
-    const int r = rgb >> 16 & 0xff;
-    const int g = rgb >> 8 & 0xff;
-    const int b = rgb & 0xff;
+    const int rgb = strtol(hexColor, nullptr, 16);
+    const Uint8 r = rgb >> 16 & 0xff;
+    const Uint8 g = rgb >> 8 & 0xff;
+    const Uint8 b = rgb & 0xff;
 
     Color color;
-    color.rgb = (SDL_Color){r, g, b, 255};
+    color.rgb = SDL_Color{r, g, b, 255};
     color.value = SDL_MapRGB(surface->format, r, g, b);
     return color;
 }
@@ -77,7 +77,7 @@ SDL_Texture *createTexture(const int width, const int height, const int access) 
 
 SDL_Surface *createColoredSurface(const int width, const int height, const COLOR color) {
     SDL_Surface *surface = createSurface(width, height);
-    const SDL_Rect area = (SDL_Rect){0, 0, width, height};
+    const auto area = SDL_Rect{0, 0, width, height};
     const Uint32 surfaceColor = colors[color].value;
     SDL_FillRect(surface, &area, surfaceColor);
     return surface;

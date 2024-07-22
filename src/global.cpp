@@ -1,11 +1,11 @@
-#include "global.h"
+#include "global.hpp"
 
 #include <SDL.h>
 
-#include "util.h"
+#include "util.hpp"
 
-SDL_Window *window = NULL;
-SDL_Renderer *renderer = NULL;
+SDL_Window *window = nullptr;
+SDL_Renderer *renderer = nullptr;
 
 const int defaultWindowWidth = 1280;
 const int defaultWindowHeight = 720;

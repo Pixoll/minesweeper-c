@@ -19,12 +19,15 @@ find_package(SDL2_ttf REQUIRED)
 
 include_directories(${SDL2_INCLUDE_DIR} ${SDL2_IMAGE_INCLUDE_DIR} ${SDL2_TTF_INCLUDE_DIR})
 
-add_executable(minesweeper src/main.c
-        src/grid_ui.c
-        src/grid.c
-        src/global.c
-        src/fonts.c
-        src/textures.c
-        src/util.c)
+add_executable(
+        minesweeper
+        src/main.cpp
+        src/grid_ui.cpp
+        src/grid.cpp
+        src/global.cpp
+        src/fonts.cpp
+        src/textures.cpp
+        src/util.cpp
+)
 
 target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARY} ${SDL2_IMAGE_LIBRARY} ${SDL2_TTF_LIBRARY})
