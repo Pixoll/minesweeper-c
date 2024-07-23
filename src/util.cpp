@@ -58,7 +58,7 @@ Color mapColor(const SDL_Surface *surface, const char *hexColor) {
     const Uint8 b = rgb & 0xff;
 
     Color color;
-    color.rgb = SDL_Color{r, g, b, 255};
+    color.rgb = {r, g, b, 255};
     color.value = SDL_MapRGB(surface->format, r, g, b);
     return color;
 }

@@ -35,7 +35,7 @@ typedef struct GridMeasurements {
     int gridHeight;
 } GridMeasurements;
 
-typedef struct Game {
+typedef struct Game_t {
     int rows;
     int columns;
     int totalMines;
@@ -46,9 +46,9 @@ typedef struct Game {
     bool won;
     GridCell **grid;
     GridMeasurements measurements;
-} Game;
+} Game_t;
 
-extern Game game;
+extern Game_t game;
 
 typedef struct GridCoords {
     int x;

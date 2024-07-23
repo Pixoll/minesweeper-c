@@ -1,159 +1,79 @@
-#include <cstdio>
 #include <cstdlib>
+#include <iostream>
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 
-#include "fonts.hpp"
-#include "global.hpp"
-#include "grid.hpp"
-#include "grid_ui.hpp"
-#include "textures.hpp"
-#include "util.hpp"
+#include "game.hpp"
+#include "main_menu_screen.hpp"
 
-const char *windowIconPath = "assets/images/icon.png";
-
-void initSDL();
-void closeSDL();
-void exceptArg(char *args[], int n, const char *message);
-void assetArg(int arg, int min, int max, const char *message);
+GameParameters start_sdl();
+void quit_sdl(SDL_Renderer *renderer, SDL_Window *window);
 
 int main(int argc, char *argv[]) {
-    exceptArg(argv, 1, "Provide the number of columns");
-    exceptArg(argv, 2, "Provide the number of rows");
+    const GameParameters parameters = start_sdl();
 
-    const int columns = atoi(argv[1]);
-    const int rows = atoi(argv[2]);
-    const int density = argv[3] ? atoi(argv[3]) : 20;
+    const auto game = new Game(parameters);
+    game->set_screen(new MainMenuScreen(game));
+    game->run();
 
-    assetArg(columns, 5, 100, "Number of columns must be between 5 and 100");
-    assetArg(rows, 5, 100, "Number of rows must be between 5 and 100");
-    assetArg(density, 1, 99, "Mines density must be between 1% and 99%");
+    quit_sdl(parameters.renderer, parameters.window);
 
-    const int minesCount = rows * columns * density / 100;
-    printf("Grid %dx%d\tMines count: %d (%d%%)\n", columns, rows, minesCount, density);
-    createGrid(rows, columns, minesCount);
-
-    initSDL();
-    initColors();
-
-    const SDL_Color bgColor = colors[COLOR_BACKGROUND].rgb;
-    SDL_SetRenderDrawColor(renderer, bgColor.r, bgColor.g, bgColor.b, bgColor.a);
-
-    SDL_Event event;
-    bool quit = false, placedMines = false;
-
-    while (!quit) {
-        while (SDL_PollEvent(&event) != 0) {
-            switch (event.type) {
-                case SDL_QUIT:
-                    quit = true;
-                    break;
-                case SDL_MOUSEBUTTONDOWN: {
-                    if (game.over)
-                        break;
-
-                    int clickX, clickY;
-                    SDL_GetMouseState(&clickX, &clickY);
-                    const auto [x, y, inside] = calculateGridCell(clickX, clickY);
-
-                    switch (event.button.button) {
-                        case SDL_BUTTON_LEFT: {
-                            if (inside) {
-                                if (!placedMines) {
-                                    placeGridMines(x, y);
-                                    placedMines = true;
-                                }
-
-                                revealCell(x, y);
-                            }
-                            break;
-                        }
-                        case SDL_BUTTON_RIGHT: {
-                            if (inside) {
-                                if (!placedMines)
-                                    break;
-                                toggleCellFlag(x, y);
-                            }
-                            break;
-                        }
-                        default:
-                            break;
-                    }
-                }
-                default:
-                    break;
-            }
-        }
-
-        getWindowSize();
-        calculateGridMeasurements();
-
-        initFonts();
-        initTextures();
-
-        SDL_RenderClear(renderer);
-
-        drawGridUI();
-
-        SDL_RenderPresent(renderer);
-    }
-
-    freeTextures();
-    freeFonts();
-    closeSDL();
     return 0;
 }
 
-void initSDL() {
-    if (SDL_Init(SDL_INIT_VIDEO) < 0)
-        throwSDLError("SDL_Init");
+GameParameters start_sdl() {
+    using std::cerr, std::endl;
 
-    window = SDL_CreateWindow(
+    const int sdl_init_error = SDL_Init(SDL_INIT_VIDEO);
+    if (sdl_init_error < 0) {
+        cerr << "Error " << sdl_init_error << " at SDL_Init: " << SDL_GetError() << endl;
+    }
+
+    SDL_Window *window = SDL_CreateWindow(
         "Minesweeper",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
-        defaultWindowWidth,
-        defaultWindowHeight,
+        1280,
+        720,
         SDL_WINDOW_SHOWN | SDL_WINDOW_MAXIMIZED | SDL_WINDOW_RESIZABLE
     );
-    if (window == nullptr)
-        throwSDLError("SDL_CreateWindow");
 
-    SDL_Surface *icon = IMG_Load(windowIconPath);
+    if (window == nullptr) {
+        cerr << "Error at SDL_CreateWindow: " << SDL_GetError() << endl;
+    }
+
+    SDL_Surface *icon = IMG_Load("assets/images/icon.png");
     SDL_SetWindowIcon(window, icon);
     SDL_FreeSurface(icon);
 
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    if (renderer == nullptr)
-        throwSDLError("SDL_CreateRenderer");
+    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+
+    if (renderer == nullptr) {
+        cerr << "Error at SDL_CreateRenderer: " << SDL_GetError() << endl;
+    }
 
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
-    const int ttfReady = TTF_Init();
-    if (ttfReady != 0)
-        throwSDLError("TTF_Init");
+    const int ttf_ready = TTF_Init();
+    if (ttf_ready == -1) {
+        cerr << "Error at TTF_Init: " << SDL_GetError() << endl;
+    }
+
+    SDL_DisplayMode current_display_mode;
+    const int display_mode_error = SDL_GetCurrentDisplayMode(0, &current_display_mode);
+    if (display_mode_error < 0) {
+        cerr << "Error " << display_mode_error << " at SDL_GetCurrentDisplayMode: " << SDL_GetError() << endl;
+    }
+
+    const long render_interval_microsecs = 1000000 / current_display_mode.refresh_rate;
+
+    return {window, renderer, render_interval_microsecs};
 }
 
-void closeSDL() {
+void quit_sdl(SDL_Renderer *renderer, SDL_Window *window) {
     TTF_Quit();
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
-}
-
-void exceptArg(char *args[], const int n, const char *message) {
-    if (args[n])
-        return;
-
-    printf("arg%d: %s\n", n, message);
-    exit(1);
-}
-
-void assetArg(const int arg, const int min, const int max, const char *message) {
-    if (arg >= min && arg <= max)
-        return;
-
-    printf("%s\n", message);
-    exit(1);
 }

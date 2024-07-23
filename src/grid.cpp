@@ -7,7 +7,7 @@
 #include "global.hpp"
 #include "util.hpp"
 
-Game game = {
+Game_t game = {
     .rows = 0,
     .columns = 0,
     .totalMines = 0,

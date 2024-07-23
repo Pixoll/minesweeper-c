@@ -22,6 +22,10 @@ include_directories(${SDL2_INCLUDE_DIR} ${SDL2_IMAGE_INCLUDE_DIR} ${SDL2_TTF_INC
 add_executable(
         minesweeper
         src/main.cpp
+        src/screen.hpp
+        src/game.hpp
+        src/main_menu_screen.hpp
+        src/game_screen.hpp
         src/grid_ui.cpp
         src/grid.cpp
         src/global.cpp
