@@ -95,4 +95,4 @@ extern Texture remaining_mines_icon_texture;
 
 void init_textures();
 void free_textures();
-void update_text_texture(Texture *texture, Font font, COLOR color, const char *text);
+void update_text_texture(Texture *texture, FontName font_name, COLOR color, const char *text);

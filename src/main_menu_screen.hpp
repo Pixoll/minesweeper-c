@@ -1,10 +1,8 @@
 #pragma once
 
-#include <iostream>
 #include <SDL.h>
 
 #include "game_screen.hpp"
-#include "grid.hpp"
 #include "screen.hpp"
 
 class Game;

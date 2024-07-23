@@ -2,7 +2,12 @@
 
 #include <SDL_ttf.h>
 
-enum FONT_TYPE {
+typedef struct Font {
+    TTF_Font *font;
+    int size;
+} Font;
+
+enum FontType {
     FONT_RUBIK_LIGHT,
     FONT_RUBIK_MEDIUM,
     FONT_RUBIK_REGULAR,
@@ -10,16 +15,12 @@ enum FONT_TYPE {
     FONT_TYPES,
 };
 
-typedef FONT_TYPE FONT_TYPE;
-
-typedef struct Font {
-    TTF_Font *font;
-    int size;
-} Font;
-
-extern Font font_rubik_medium_cell_sized;
-extern Font font_rubik_medium_primary;
-extern Font font_rubik_medium_secondary;
+enum FontName {
+    FONT_RUBIK_MEDIUM_CELL_SIZED,
+    FONT_RUBIK_MEDIUM_PRIMARY,
+    FONT_RUBIK_MEDIUM_SECONDARY,
+};
 
 void init_fonts();
+Font get_font(FontName name);
 void free_fonts();

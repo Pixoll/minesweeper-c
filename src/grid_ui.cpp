@@ -61,7 +61,7 @@ void draw_remaining_mines() {
         remaining_mines = current_remaining;
         char remaining_string[int_length(current_remaining) + 1];
         itoa(current_remaining, remaining_string, 10);
-        update_text_texture(&remaining_mines_text_texture, font_rubik_medium_primary, COLOR_WHITE, remaining_string);
+        update_text_texture(&remaining_mines_text_texture, FONT_RUBIK_MEDIUM_PRIMARY, COLOR_WHITE, remaining_string);
     }
 
     // TODO Icon and text aren't centered with each other, I hate it
@@ -86,7 +86,7 @@ void draw_game_time() {
         const string time_string = get_time_string(now - game.start_time);
         update_text_texture(
             &game_time_text_texture,
-            font_rubik_medium_secondary,
+            FONT_RUBIK_MEDIUM_SECONDARY,
             COLOR_LIGHTER_GREY,
             time_string.c_str()
         );

@@ -187,14 +187,19 @@ void init_cell_numbers_textures() {
     const int cell_size = game.measurements.cell_size;
     const int grid_line_width = game.measurements.grid_line_width;
 
+    TTF_Font *cell_sized_font = get_font(FONT_RUBIK_MEDIUM_CELL_SIZED).font;
+
     for (int cell = CELL_1; cell <= CELL_8; cell++) {
         char cell_text[2];
         snprintf(cell_text, 2, "%c", '0' + cell - CELL_0);
         const auto [rgb, value] = colors[COLOR_GRID_1 + cell - 1];
-        SDL_Surface *text_surface = TTF_RenderText_Solid(font_rubik_medium_cell_sized.font, cell_text, rgb);
+
+        SDL_Surface *text_surface = TTF_RenderText_Solid(cell_sized_font, cell_text, rgb);
         SDL_Texture *text_texture = SDL_CreateTextureFromSurface(renderer, text_surface);
+
         SDL_Rect cell_area;
-        TTF_SizeText(font_rubik_medium_cell_sized.font, cell_text, &cell_area.w, &cell_area.h);
+        TTF_SizeText(cell_sized_font, cell_text, &cell_area.w, &cell_area.h);
+
         cell_area.x = (grid_line_width + cell_size - cell_area.w) / 2;
         cell_area.y = (grid_line_width + cell_size - cell_area.h) / 2;
 
@@ -253,7 +258,7 @@ void init_grid_texture() {
 
 void init_remaining_mines_icon_texture() {
     init_texture_from_image(mine_image_path, &remaining_mines_icon_texture);
-    const int size = font_rubik_medium_primary.size;
+    const int size = get_font(FONT_RUBIK_MEDIUM_PRIMARY).size;
     remaining_mines_icon_texture.area.w = size;
     remaining_mines_icon_texture.area.h = size;
 }
@@ -319,11 +324,11 @@ void free_textures() {
     free_texture(remaining_mines_text_texture);
 }
 
-void update_text_texture(Texture *texture, const Font font, const COLOR color, const char *text) {
+void update_text_texture(Texture *texture, const FontName font_name, const COLOR color, const char *text) {
     if (texture->texture != nullptr)
         free_texture(*texture);
 
-    SDL_Surface *text_surface = TTF_RenderText_Solid(font.font, text, colors[color].rgb);
+    SDL_Surface *text_surface = TTF_RenderText_Solid(get_font(font_name).font, text, colors[color].rgb);
     SDL_Texture *text_texture = SDL_CreateTextureFromSurface(renderer, text_surface);
     const SDL_Rect area = {0, 0, text_surface->w, text_surface->h};
 
