@@ -34,7 +34,7 @@ void create_grid(const int rows, const int columns, const int mines_count) {
     for (int i = 0; i < columns; i++) {
         game.grid[i] = new GridCell[rows];
         for (int j = 0; j < rows; j++) {
-            game.grid[i][j] = GridCell{
+            game.grid[i][j] = {
                 .type = CELL_0,
                 .flagged = false,
                 .revealed = false,
@@ -195,7 +195,7 @@ void get_surrounding_unrevealed(const int x, const int y, GridCoords *coords, in
             if (ny < 0 || ny > rows - 1 || game.grid[nx][ny].revealed)
                 continue;
 
-            coords[*counter] = GridCoords{nx, ny};
+            coords[*counter] = {nx, ny};
             *counter = *counter + 1;
         }
     }

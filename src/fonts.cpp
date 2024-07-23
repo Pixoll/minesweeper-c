@@ -26,7 +26,7 @@ Font load_font(const FONT_TYPE type, const int size) {
         printf("Error while loading font ID %d\n", type);
         throw_sdl_error("TTF_OpenFont");
     }
-    return Font{font, size};
+    return {font, size};
 }
 
 void init_fonts() {

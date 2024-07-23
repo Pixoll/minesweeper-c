@@ -99,7 +99,7 @@ const TEXTURE_CELL_TYPE texture_cell_corner_type_order[33] = {
 void init_texture_from_image(const char *image_path, Texture *dest_texture) {
     SDL_Surface *surface = IMG_Load(image_path);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-    dest_texture->area = SDL_Rect{0, 0, surface->w, surface->h};
+    dest_texture->area = {0, 0, surface->w, surface->h};
     dest_texture->surface = surface;
     dest_texture->texture = texture;
 }
