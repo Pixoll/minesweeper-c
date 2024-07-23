@@ -3,11 +3,12 @@
 #include <cstdlib>
 #include <iostream>
 #include <SDL.h>
+#include <string>
 #include <unistd.h>
 
 #include "global.hpp"
 
-using std::cerr, std::endl;
+using std::cerr, std::endl, std::string, std::to_string;
 
 int random_between(const int min, const int max) {
     return rand() % (max - min + 1) + min;
@@ -34,17 +35,16 @@ int int_length(int value) {
     return length;
 }
 
-char *get_time_string(const int seconds) {
+string get_time_string(const int seconds) {
     const int sec = seconds % 60;
     const int min = seconds / 60;
 
-    const int time_length = int_length(sec) + int_length(min) + 4;
-    auto time_string = new char [time_length];
+    string time_string;
 
     if (min == 0)
-        snprintf(time_string, time_length, "%dS", sec);
+        time_string += to_string(sec) + "S";
     else
-        snprintf(time_string, time_length, "%dM %dS", min, sec);
+        time_string += to_string(min) + "M " + to_string(sec) + "S";
 
     return time_string;
 }

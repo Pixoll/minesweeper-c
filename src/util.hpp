@@ -1,8 +1,11 @@
 #pragma once
 
 #include <SDL.h>
+#include <string>
 
 #include "global.hpp"
+
+using std::string;
 
 // General purpose
 
@@ -12,7 +15,7 @@ int random_between(int min, int max);
 int is_pow2(int x);
 int int_log2(int x);
 int int_length(int value);
-char *get_time_string(int seconds);
+string get_time_string(int seconds);
 
 // SDL related
 

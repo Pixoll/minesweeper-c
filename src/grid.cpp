@@ -7,6 +7,8 @@
 #include "global.hpp"
 #include "util.hpp"
 
+using std::vector;
+
 Game_t game = {
     .rows = 0,
     .columns = 0,
@@ -26,20 +28,21 @@ CELL_TYPE count_surrounding_mines(int x, int y);
 void create_grid(const int rows, const int columns, const int mines_count) {
     if (created_grid) {
         for (int i = 0; i < columns; i++)
-            delete game.grid[i];
-        delete[] game.grid;
+            game.grid[i].clear();
+        game.grid.clear();
     }
 
-    game.grid = new GridCell *[columns];
+    game.grid.reserve(columns);
+
     for (int i = 0; i < columns; i++) {
-        game.grid[i] = new GridCell[rows];
-        for (int j = 0; j < rows; j++) {
-            game.grid[i][j] = {
+        game.grid.emplace_back(
+            rows,
+            GridCell{
                 .type = CELL_0,
                 .flagged = false,
                 .revealed = false,
-            };
-        }
+            }
+        );
     }
 
     game.rows = rows;

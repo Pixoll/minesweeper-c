@@ -1,12 +1,13 @@
 #include <cstdlib>
 #include <iostream>
+#include <string>
 
 #include "global.hpp"
 #include "grid.hpp"
 #include "textures.hpp"
 #include "util.hpp"
 
-using std::cerr, std::endl;
+using std::cerr, std::endl, std::string;
 
 time_t last_game_time_drawn = 0;
 int remaining_mines = 0;
@@ -82,9 +83,13 @@ void draw_game_time() {
     const time_t now = time(nullptr);
     if (last_game_time_drawn == 0 || (!game.over && last_game_time_drawn < now)) {
         last_game_time_drawn = now;
-        char *time_string = get_time_string(now - game.start_time);
-        update_text_texture(&game_time_text_texture, font_rubik_medium_secondary, COLOR_LIGHTER_GREY, time_string);
-        free(time_string);
+        const string time_string = get_time_string(now - game.start_time);
+        update_text_texture(
+            &game_time_text_texture,
+            font_rubik_medium_secondary,
+            COLOR_LIGHTER_GREY,
+            time_string.c_str()
+        );
     }
 
     game_time_text_texture.area.x = 10;

@@ -1,6 +1,9 @@
 #pragma once
 
 #include <ctime>
+#include <vector>
+
+using std::vector;
 
 enum CELL_TYPE {
     CELL_0,
@@ -44,7 +47,7 @@ typedef struct Game_t {
     time_t start_time;
     bool over;
     bool won;
-    GridCell **grid;
+    vector<vector<GridCell>> grid;
     GridMeasurements measurements;
 } Game_t;
 

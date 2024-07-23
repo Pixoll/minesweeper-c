@@ -14,9 +14,9 @@ void quit_sdl(SDL_Renderer *renderer, SDL_Window *window);
 int main(int argc, char *argv[]) {
     const GameParameters parameters = start_sdl();
 
-    const auto game = new Game(parameters);
-    game->set_screen(new MainMenuScreen(game));
-    game->run();
+    Game game(parameters);
+    game.set_screen(new MainMenuScreen(&game));
+    game.run();
 
     quit_sdl(parameters.renderer, parameters.window);
 
