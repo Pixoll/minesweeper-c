@@ -1,10 +1,12 @@
-#include <cstdio>
 #include <cstdlib>
+#include <iostream>
 
 #include "global.hpp"
 #include "grid.hpp"
 #include "textures.hpp"
 #include "util.hpp"
+
+using std::cerr, std::endl;
 
 time_t last_game_time_drawn = 0;
 int remaining_mines = 0;
@@ -157,7 +159,7 @@ TEXTURE_CELL_TYPE get_cell_type(const int x, const int y, const bool flagged, co
         return texture_cell_corner_type_order[int_log2(TLR_BLR_C) + 29];
 
     // Impossible to reach? Not reached in huge grid
-    printf("Not impossible to reach\n");
+    cerr << """Not impossible to reach" << endl;
 
     return TEXTURE_CELL_NO_SIDES;
 }

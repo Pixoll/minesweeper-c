@@ -6,6 +6,7 @@
 
 #include "game.hpp"
 #include "main_menu_screen.hpp"
+#include "util.hpp"
 
 GameParameters start_sdl();
 void quit_sdl(SDL_Renderer *renderer, SDL_Window *window);
@@ -26,9 +27,8 @@ GameParameters start_sdl() {
     using std::cerr, std::endl;
 
     const int sdl_init_error = SDL_Init(SDL_INIT_VIDEO);
-    if (sdl_init_error < 0) {
-        cerr << "Error " << sdl_init_error << " at SDL_Init: " << SDL_GetError() << endl;
-    }
+    if (sdl_init_error < 0)
+        throw_sdl_error("SDL_Init", sdl_init_error);
 
     SDL_Window *window = SDL_CreateWindow(
         "Minesweeper",
@@ -39,9 +39,8 @@ GameParameters start_sdl() {
         SDL_WINDOW_SHOWN | SDL_WINDOW_MAXIMIZED | SDL_WINDOW_RESIZABLE
     );
 
-    if (window == nullptr) {
-        cerr << "Error at SDL_CreateWindow: " << SDL_GetError() << endl;
-    }
+    if (window == nullptr)
+        throw_sdl_error("SDL_CreateWindow");
 
     SDL_Surface *icon = IMG_Load("assets/images/icon.png");
     SDL_SetWindowIcon(window, icon);
@@ -49,22 +48,19 @@ GameParameters start_sdl() {
 
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
-    if (renderer == nullptr) {
-        cerr << "Error at SDL_CreateRenderer: " << SDL_GetError() << endl;
-    }
+    if (renderer == nullptr)
+        throw_sdl_error("SDL_CreateRenderer");
 
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
     const int ttf_ready = TTF_Init();
-    if (ttf_ready == -1) {
-        cerr << "Error at TTF_Init: " << SDL_GetError() << endl;
-    }
+    if (ttf_ready == -1)
+        throw_sdl_error("TTF_Init");
 
     SDL_DisplayMode current_display_mode;
     const int display_mode_error = SDL_GetCurrentDisplayMode(0, &current_display_mode);
-    if (display_mode_error < 0) {
-        cerr << "Error " << display_mode_error << " at SDL_GetCurrentDisplayMode: " << SDL_GetError() << endl;
-    }
+    if (display_mode_error < 0)
+        throw_sdl_error("SDL_GetCurrentDisplayMode", display_mode_error);
 
     const long render_interval_microsecs = 1000000 / current_display_mode.refresh_rate;
 

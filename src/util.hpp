@@ -20,4 +20,4 @@ Color map_color(const SDL_Surface *surface, const char *hex_color);
 SDL_Surface *create_surface(int width, int height);
 SDL_Texture *create_texture(int width, int height, int access);
 SDL_Surface *create_colored_surface(int width, int height, COLOR color);
-void throw_sdl_error(const char *function_name);
+void throw_sdl_error(const char *function_name, int code = 0);

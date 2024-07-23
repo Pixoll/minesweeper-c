@@ -1,12 +1,13 @@
 #include "util.hpp"
 
-#include <cstdio>
 #include <cstdlib>
-#include <ctime>
+#include <iostream>
 #include <SDL.h>
 #include <unistd.h>
 
 #include "global.hpp"
+
+using std::cerr, std::endl;
 
 int random_between(const int min, const int max) {
     return rand() % (max - min + 1) + min;
@@ -83,7 +84,12 @@ SDL_Surface *create_colored_surface(const int width, const int height, const COL
     return surface;
 }
 
-void throw_sdl_error(const char *function_name) {
-    printf("%s() failed: %s\n", function_name, SDL_GetError());
+void throw_sdl_error(const char *function_name, const int code) {
+    cerr << "Error ";
+
+    if (code != 0)
+        cerr << code << " ";
+
+    cerr << "at " << function_name << "(): " << SDL_GetError() << endl;
     exit(1);
 }

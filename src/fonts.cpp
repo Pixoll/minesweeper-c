@@ -1,11 +1,13 @@
 #include "fonts.hpp"
 
-#include <cstdio>
+#include <iostream>
 #include <SDL_ttf.h>
 
 #include "global.hpp"
 #include "grid.hpp"
 #include "util.hpp"
+
+using std::cerr, std::endl;
 
 const char *font_paths[FONT_TYPES] = {
     "assets/fonts/Rubik-Light.ttf",
@@ -23,9 +25,10 @@ bool fonts_ready = false;
 Font load_font(const FONT_TYPE type, const int size) {
     TTF_Font *font = TTF_OpenFont(font_paths[type], size);
     if (font == nullptr) {
-        printf("Error while loading font ID %d\n", type);
+        cerr << "Error while loading font ID " << type << endl;
         throw_sdl_error("TTF_OpenFont");
     }
+
     return {font, size};
 }
 
