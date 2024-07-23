@@ -51,12 +51,13 @@ public:
 
         m_screen->render();
 
+    game_loop:
         while (!quit) {
             while (SDL_PollEvent(&event) != 0) {
                 switch (event.type) {
                     case SDL_QUIT:
                         quit = true;
-                        break;
+                        goto game_loop;
 
                     default:
                         m_screen->run_logic(event);
