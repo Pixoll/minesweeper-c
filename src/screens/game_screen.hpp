@@ -1,10 +1,10 @@
 #pragma once
 
-#include "fonts.hpp"
-#include "grid.hpp"
-#include "grid_ui.hpp"
 #include "screen.hpp"
-#include "textures.hpp"
+#include "../fonts.hpp"
+#include "../grid.hpp"
+#include "../grid_ui.hpp"
+#include "../textures.hpp"
 
 class Game;
 

@@ -3,7 +3,7 @@
 #include <chrono>
 #include <SDL.h>
 
-#include "screen.hpp"
+#include "screens/screen.hpp"
 
 struct GameParameters {
     SDL_Window *window;

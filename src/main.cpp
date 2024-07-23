@@ -5,7 +5,7 @@
 #include <SDL_ttf.h>
 
 #include "game.hpp"
-#include "main_menu_screen.hpp"
+#include "screens/main_menu_screen.hpp"
 
 GameParameters start_sdl();
 void quit_sdl(SDL_Renderer *renderer, SDL_Window *window);
