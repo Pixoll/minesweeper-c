@@ -4,7 +4,6 @@
 #include <cstdlib>
 #include <ctime>
 
-#include "global.hpp"
 #include "util.hpp"
 
 Game_t game{};
@@ -12,7 +11,7 @@ Game_t game{};
 bool created_grid = false;
 bool grid_measurements_ready = false;
 
-CELL_TYPE count_surrounding_mines(int x, int y);
+CellType count_surrounding_mines(int x, int y);
 
 void create_grid(const int rows, const int columns, const int mines_count) {
     if (created_grid) {
@@ -62,17 +61,17 @@ void place_grid_mines(const int x, const int y) {
     // Count surrounding mines
     for (int i = 0; i < columns; i++) {
         for (int j = 0; j < rows; j++) {
-            const CELL_TYPE cell = game.grid[i][j].type;
+            const CellType cell = game.grid[i][j].type;
             if (cell == CELL_MINE)
                 continue;
 
-            const CELL_TYPE surrounding = count_surrounding_mines(i, j);
+            const CellType surrounding = count_surrounding_mines(i, j);
             game.grid[i][j].type = surrounding;
         }
     }
 }
 
-void calculate_grid_measurements() {
+void calculate_grid_measurements(const int window_width, const int window_height) {
     if (grid_measurements_ready)
         return;
 
@@ -399,7 +398,7 @@ void reveal_cell_border(const int x, const int y) {
 
         for (int j = -1; j <= 1; j++) {
             const int by = y + j;
-            const CELL_TYPE cell_type = game.grid[bx][by].type;
+            const CellType cell_type = game.grid[bx][by].type;
 
             if (by < 0 || by > rows - 1 || game.grid[bx][by].revealed || cell_type == CELL_0 || cell_type == CELL_MINE)
                 continue;
@@ -410,7 +409,7 @@ void reveal_cell_border(const int x, const int y) {
     }
 }
 
-CELL_TYPE count_surrounding_mines(const int x, const int y) {
+CellType count_surrounding_mines(const int x, const int y) {
     const int rows = game.rows;
     const int columns = game.columns;
     int surrounding = CELL_0;
@@ -432,5 +431,5 @@ CELL_TYPE count_surrounding_mines(const int x, const int y) {
         }
     }
 
-    return static_cast<CELL_TYPE>(surrounding);
+    return static_cast<CellType>(surrounding);
 }

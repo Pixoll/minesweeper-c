@@ -2,9 +2,7 @@
 
 #include <iostream>
 #include <SDL_ttf.h>
-#include <unordered_map>
 
-#include "global.hpp"
 #include "grid.hpp"
 #include "util.hpp"
 
@@ -15,7 +13,7 @@ const char *font_paths[FONT_TYPES] = {
     "assets/fonts/Rubik-Bold.ttf",
 };
 
-std::unordered_map<FontName, Font> fonts;
+Font fonts[FONT_NAMES];
 
 bool fonts_ready = false;
 
@@ -29,7 +27,7 @@ Font load_font(const FontType type, const int size) {
     return {font, size};
 }
 
-void init_fonts() {
+void init_fonts(const int window_height) {
     if (fonts_ready)
         return;
 
@@ -45,6 +43,6 @@ Font get_font(const FontName name) {
 }
 
 void free_fonts() {
-    for (const auto &[_, font] : fonts)
-        TTF_CloseFont(font.font);
+    for (const auto &[font, size] : fonts)
+        TTF_CloseFont(font);
 }

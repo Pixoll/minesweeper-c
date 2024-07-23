@@ -5,11 +5,11 @@
 
 #include "screen.hpp"
 
-typedef struct GameParameters {
+struct GameParameters {
     SDL_Window *window;
     SDL_Renderer *renderer;
     long render_interval_microsecs;
-} GameParameters;
+};
 
 class Game {
     Screen *m_screen = nullptr;

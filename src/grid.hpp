@@ -3,7 +3,7 @@
 #include <ctime>
 #include <vector>
 
-enum CELL_TYPE {
+enum CellType {
     CELL_0,
     CELL_1,
     CELL_2,
@@ -17,15 +17,13 @@ enum CELL_TYPE {
     CELL_TYPES,
 };
 
-typedef CELL_TYPE CELL_TYPE;
-
-typedef struct GridCell {
-    CELL_TYPE type = CELL_0;
+struct GridCell {
+    CellType type = CELL_0;
     bool flagged = false;
     bool revealed = false;
-} GridCell;
+};
 
-typedef struct GridMeasurements {
+struct GridMeasurements {
     int cell_size = 0;
     int cell_offset = 0;
     int grid_line_length = 0;
@@ -34,9 +32,9 @@ typedef struct GridMeasurements {
     int grid_y_offset = 0;
     int grid_width = 0;
     int grid_height = 0;
-} GridMeasurements;
+};
 
-typedef struct Game_t {
+struct Game_t {
     int rows = 0;
     int columns = 0;
     int total_mines = 0;
@@ -47,19 +45,19 @@ typedef struct Game_t {
     bool won = false;
     std::vector<std::vector<GridCell>> grid;
     GridMeasurements measurements{};
-} Game_t;
+};
 
 extern Game_t game;
 
-typedef struct GridCoords {
+struct GridCoords {
     int x;
     int y;
     bool inside;
-} GridCoords;
+};
 
 void create_grid(int rows, int columns, int mines_count);
 void place_grid_mines(int x, int y);
-void calculate_grid_measurements();
+void calculate_grid_measurements(int window_width, int window_height);
 void toggle_cell_flag(int x, int y);
 void reveal_cell(int x, int y);
 GridCoords calculate_grid_cell(int click_x, int click_y);

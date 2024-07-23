@@ -2,7 +2,6 @@
 #include <iostream>
 #include <string>
 
-#include "global.hpp"
 #include "grid.hpp"
 #include "textures.hpp"
 #include "util.hpp"
@@ -10,20 +9,20 @@
 time_t last_game_time_drawn = 0;
 int remaining_mines = 0;
 
-void draw_grid();
-void draw_remaining_mines();
-void draw_game_time();
+void draw_grid(SDL_Renderer *renderer);
+void draw_remaining_mines(SDL_Renderer *renderer);
+void draw_game_time(SDL_Renderer *renderer);
 
-void draw_grid_ui() {
-    draw_grid();
-    draw_remaining_mines();
-    draw_game_time();
+void draw_grid_ui(SDL_Renderer *renderer) {
+    draw_grid(renderer);
+    draw_remaining_mines(renderer);
+    draw_game_time(renderer);
 }
 
-Texture get_cell_texture(GridCell cell, TEXTURE_CELL_TYPE type);
-TEXTURE_CELL_TYPE get_cell_type(int x, int y, bool flagged, bool revealed);
+Texture get_cell_texture(GridCell cell, TextureCellType type);
+TextureCellType get_cell_type(int x, int y, bool flagged, bool revealed);
 
-void draw_grid() {
+void draw_grid(SDL_Renderer *renderer) {
     const int rows = game.rows;
     const int columns = game.columns;
     const int cell_size = game.measurements.cell_size;
@@ -44,7 +43,7 @@ void draw_grid() {
             if (cell.type == CELL_0 && cell.revealed)
                 continue;
 
-            const TEXTURE_CELL_TYPE cell_type = get_cell_type(i, j, cell.flagged, cell.revealed);
+            const TextureCellType cell_type = get_cell_type(i, j, cell.flagged, cell.revealed);
             Texture cell_texture = get_cell_texture(cell, cell_type);
             cell_texture.area.x += x;
             cell_texture.area.y += y;
@@ -54,14 +53,20 @@ void draw_grid() {
     }
 }
 
-void draw_remaining_mines() {
+void draw_remaining_mines(SDL_Renderer *renderer) {
     const int current_remaining = game.total_mines - game.flagged_mines;
 
     if (remaining_mines != current_remaining) {
         remaining_mines = current_remaining;
         char remaining_string[int_length(current_remaining) + 1];
         itoa(current_remaining, remaining_string, 10);
-        update_text_texture(&remaining_mines_text_texture, FONT_RUBIK_MEDIUM_PRIMARY, COLOR_WHITE, remaining_string);
+        update_text_texture(
+            renderer,
+            &remaining_mines_text_texture,
+            FONT_RUBIK_MEDIUM_PRIMARY,
+            COLOR_WHITE,
+            remaining_string
+        );
     }
 
     // TODO Icon and text aren't centered with each other, I hate it
@@ -74,7 +79,7 @@ void draw_remaining_mines() {
     SDL_RenderCopy(renderer, remaining_mines_text_texture.texture, nullptr, &remaining_mines_text_texture.area);
 }
 
-void draw_game_time() {
+void draw_game_time(SDL_Renderer *renderer) {
     using std::string;
 
     if (game.start_time == 0)
@@ -85,6 +90,7 @@ void draw_game_time() {
         last_game_time_drawn = now;
         const string time_string = get_time_string(now - game.start_time);
         update_text_texture(
+            renderer,
             &game_time_text_texture,
             FONT_RUBIK_MEDIUM_SECONDARY,
             COLOR_LIGHTER_GREY,
@@ -97,7 +103,7 @@ void draw_game_time() {
     SDL_RenderCopy(renderer, game_time_text_texture.texture, nullptr, &game_time_text_texture.area);
 }
 
-Texture get_cell_texture(const GridCell cell, const TEXTURE_CELL_TYPE type) {
+Texture get_cell_texture(const GridCell cell, const TextureCellType type) {
     if (game.over && !game.won && cell.type == CELL_MINE) {
         if (cell.flagged)
             return cell_flagged_mine_textures[type];
@@ -127,7 +133,7 @@ bool verify_corners_with_mask(const int corners, const int mask) {
     return !bits_outside_of_mask && bits_in_mask;
 }
 
-TEXTURE_CELL_TYPE get_cell_type(const int x, const int y, const bool flagged, const bool revealed) {
+TextureCellType get_cell_type(const int x, const int y, const bool flagged, const bool revealed) {
     if (revealed)
         return TEXTURE_CELL_NO_SIDES;
 

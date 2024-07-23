@@ -28,7 +28,6 @@ add_executable(
         src/game_screen.hpp
         src/grid_ui.cpp
         src/grid.cpp
-        src/global.cpp
         src/fonts.cpp
         src/textures.cpp
         src/util.cpp

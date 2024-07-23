@@ -1,7 +1,6 @@
 #pragma once
 
 #include "fonts.hpp"
-#include "global.hpp"
 #include "grid.hpp"
 #include "grid_ui.hpp"
 #include "screen.hpp"
@@ -10,25 +9,33 @@
 class Game;
 
 class GameScreen final : virtual public Screen {
+    struct WindowDimensions {
+        int width = -1;
+        int height = -1;
+    };
+
     Game *m_game;
     bool m_placed_mines = false;
+    SDL_Window *m_window;
+    SDL_Renderer *m_renderer;
+    WindowDimensions m_window_dimensions{};
 
 public:
     explicit GameScreen(Game *game) : m_game(game) {
-        window = m_game->get_window();
-        renderer = m_game->get_renderer();
+        m_window = m_game->get_window();
+        m_renderer = m_game->get_renderer();
 
         create_grid(20, 20, 75);
-        init_colors();
+        init_colors(m_window);
 
-        const auto [r, g, b, a] = colors[COLOR_BACKGROUND].rgb;
-        SDL_SetRenderDrawColor(renderer, r, g, b, a);
+        const auto [r, g, b, a] = get_color(COLOR_BACKGROUND).rgb;
+        SDL_SetRenderDrawColor(m_renderer, r, g, b, a);
 
-        get_window_size();
-        calculate_grid_measurements();
+        get_window_size(m_window);
+        calculate_grid_measurements(m_window_dimensions.width, m_window_dimensions.height);
 
-        init_fonts();
-        init_textures();
+        init_fonts(m_window_dimensions.height);
+        init_textures(m_renderer);
     }
 
     void run_logic(const SDL_Event &event) override {
@@ -67,16 +74,24 @@ public:
     }
 
     void render() override {
-        get_window_size();
-        calculate_grid_measurements();
+        get_window_size(m_window);
+        calculate_grid_measurements(m_window_dimensions.width, m_window_dimensions.height);
 
-        init_fonts();
-        init_textures();
+        init_fonts(m_window_dimensions.height);
+        init_textures(m_renderer);
 
-        SDL_RenderClear(renderer);
+        SDL_RenderClear(m_renderer);
 
-        draw_grid_ui();
+        draw_grid_ui(m_renderer);
 
-        SDL_RenderPresent(renderer);
+        SDL_RenderPresent(m_renderer);
+    }
+
+private:
+    void get_window_size(SDL_Window *window) {
+        if (m_window_dimensions.height != -1 || m_window_dimensions.width != -1)
+            return;
+
+        SDL_GetWindowSize(window, &m_window_dimensions.width, &m_window_dimensions.height);
     }
 };

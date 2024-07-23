@@ -3,15 +3,27 @@
 #include <SDL.h>
 
 #include "fonts.hpp"
-#include "global.hpp"
+#include "util.hpp"
 
-typedef struct Texture {
+struct Texture {
     SDL_Surface *surface;
     SDL_Texture *texture;
     SDL_Rect area;
-} Texture;
+};
 
-enum TEXTURE_CELL_TYPE {
+/**
+ * T - Top side
+ * B - Bottom side
+ * L - Left side
+ * R - Right side
+ * C - Corner
+ *
+ * E.g. *_TBLR_TLCRC_BLC:
+ * - Top Bottom Left Right sides
+ * - Top Left Corner, Top Right Corner
+ * - Bottom Left Corner
+ */
+enum TextureCellType {
     TEXTURE_CELL_NO_SIDES,
     TEXTURE_CELL_B,
     TEXTURE_CELL_BL,
@@ -62,22 +74,8 @@ enum TEXTURE_CELL_TYPE {
     TEXTURE_CELL_TYPES,
 };
 
-/**
- * T - Top side
- * B - Bottom side
- * L - Left side
- * R - Right side
- * C - Corner
- *
- * E.g. *_TBLR_TLCRC_BLC:
- * - Top Bottom Left Right sides
- * - Top Left Corner, Top Right Corner
- * - Bottom Left Corner
- */
-typedef enum TEXTURE_CELL_TYPE TEXTURE_CELL_TYPE;
-
-extern const TEXTURE_CELL_TYPE texture_cell_side_type_order[16];
-extern const TEXTURE_CELL_TYPE texture_cell_corner_type_order[33];
+extern const TextureCellType texture_cell_side_type_order[16];
+extern const TextureCellType texture_cell_corner_type_order[33];
 
 extern Texture grid_texture;
 
@@ -93,6 +91,12 @@ extern Texture game_time_text_texture;
 extern Texture remaining_mines_text_texture;
 extern Texture remaining_mines_icon_texture;
 
-void init_textures();
+void init_textures(SDL_Renderer *renderer);
 void free_textures();
-void update_text_texture(Texture *texture, FontName font_name, COLOR color, const char *text);
+void update_text_texture(
+    SDL_Renderer *renderer,
+    Texture *texture,
+    FontName font_name,
+    ColorName color,
+    const char *text
+);

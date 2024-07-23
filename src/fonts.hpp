@@ -2,10 +2,10 @@
 
 #include <SDL_ttf.h>
 
-typedef struct Font {
+struct Font {
     TTF_Font *font;
     int size;
-} Font;
+};
 
 enum FontType {
     FONT_RUBIK_LIGHT,
@@ -19,8 +19,9 @@ enum FontName {
     FONT_RUBIK_MEDIUM_CELL_SIZED,
     FONT_RUBIK_MEDIUM_PRIMARY,
     FONT_RUBIK_MEDIUM_SECONDARY,
+    FONT_NAMES,
 };
 
-void init_fonts();
+void init_fonts(int window_height);
 Font get_font(FontName name);
 void free_fonts();
