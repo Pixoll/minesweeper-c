@@ -17,9 +17,9 @@ typedef struct Font {
     int size;
 } Font;
 
-extern Font fontRubikMediumCellSized;
-extern Font fontRubikMediumPrimary;
-extern Font fontRubikMediumSecondary;
+extern Font font_rubik_medium_cell_sized;
+extern Font font_rubik_medium_primary;
+extern Font font_rubik_medium_secondary;
 
-void initFonts();
-void freeFonts();
+void init_fonts();
+void free_fonts();

@@ -7,10 +7,10 @@
 extern SDL_Window *window;
 extern SDL_Renderer *renderer;
 
-extern const int defaultWindowWidth;
-extern const int defaultWindowHeight;
-extern int windowWidth;
-extern int windowHeight;
+extern const int default_window_width;
+extern const int default_window_height;
+extern int window_width;
+extern int window_height;
 
 enum COLOR {
     COLOR_BACKGROUND,
@@ -49,5 +49,5 @@ typedef struct Color {
 
 extern Color colors[COLORS_AMOUNT];
 
-void getWindowSize();
-void initColors();
+void get_window_size();
+void init_colors();

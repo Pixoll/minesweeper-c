@@ -76,23 +76,23 @@ enum TEXTURE_CELL_TYPE {
  */
 typedef enum TEXTURE_CELL_TYPE TEXTURE_CELL_TYPE;
 
-extern const TEXTURE_CELL_TYPE textureCellSideTypeOrder[16];
-extern const TEXTURE_CELL_TYPE textureCellCornerTypeOrder[33];
+extern const TEXTURE_CELL_TYPE texture_cell_side_type_order[16];
+extern const TEXTURE_CELL_TYPE texture_cell_corner_type_order[33];
 
-extern Texture gridTexture;
+extern Texture grid_texture;
 
-extern Texture cellCoveredTextures[TEXTURE_CELL_TYPES];
-extern Texture cellCoveredMineTextures[TEXTURE_CELL_TYPES];
-extern Texture cellFlaggedMineTextures[TEXTURE_CELL_TYPES];
-extern Texture cellTriggeredMineTextures[TEXTURE_CELL_TYPES];
-extern Texture cellFlagTextures[TEXTURE_CELL_TYPES];
+extern Texture cell_covered_textures[TEXTURE_CELL_TYPES];
+extern Texture cell_covered_mine_textures[TEXTURE_CELL_TYPES];
+extern Texture cell_flagged_mine_textures[TEXTURE_CELL_TYPES];
+extern Texture cell_triggered_mine_textures[TEXTURE_CELL_TYPES];
+extern Texture cell_flag_textures[TEXTURE_CELL_TYPES];
 
-extern Texture cellNumbersTextures[8];
+extern Texture cell_numbers_textures[8];
 
-extern Texture gameTimeTextTexture;
-extern Texture remainingMinesTextTexture;
-extern Texture remainingMinesIconTexture;
+extern Texture game_time_text_texture;
+extern Texture remaining_mines_text_texture;
+extern Texture remaining_mines_icon_texture;
 
-void initTextures();
-void freeTextures();
-void updateTextTexture(Texture *texture, Font font, COLOR color, const char *text);
+void init_textures();
+void free_textures();
+void update_text_texture(Texture *texture, Font font, COLOR color, const char *text);

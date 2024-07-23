@@ -8,15 +8,15 @@
 
 #include "global.hpp"
 
-int randomBetween(const int min, const int max) {
+int random_between(const int min, const int max) {
     return rand() % (max - min + 1) + min;
 }
 
-int isPow2(const int x) {
+int is_pow2(const int x) {
     return x > 0 && !(x & (x - 1));
 }
 
-int intLog2(int x) {
+int int_log2(int x) {
     int log2 = 0;
     while (x >>= 1)
         log2++;
@@ -24,7 +24,7 @@ int intLog2(int x) {
     return log2;
 }
 
-int intLength(int value) {
+int int_length(int value) {
     int length = 1;
     while (value > 9) {
         length++;
@@ -33,26 +33,26 @@ int intLength(int value) {
     return length;
 }
 
-char *getTimeString(const int seconds) {
+char *get_time_string(const int seconds) {
     const int sec = seconds % 60;
     const int min = seconds / 60;
 
-    const int timeLength = intLength(sec) + intLength(min) + 4;
-    auto timeString = new char [timeLength];
+    const int time_length = int_length(sec) + int_length(min) + 4;
+    auto time_string = new char [time_length];
 
     if (min == 0)
-        snprintf(timeString, timeLength, "%dS", sec);
+        snprintf(time_string, time_length, "%dS", sec);
     else
-        snprintf(timeString, timeLength, "%dM %dS", min, sec);
+        snprintf(time_string, time_length, "%dM %dS", min, sec);
 
-    return timeString;
+    return time_string;
 }
 
-Color mapColor(const SDL_Surface *surface, const char *hexColor) {
-    if (hexColor[0] == '#')
-        hexColor++;  // shift left once
+Color map_color(const SDL_Surface *surface, const char *hex_color) {
+    if (hex_color[0] == '#')
+        hex_color++;  // shift left once
 
-    const int rgb = strtol(hexColor, nullptr, 16);
+    const int rgb = strtol(hex_color, nullptr, 16);
     const Uint8 r = rgb >> 16 & 0xff;
     const Uint8 g = rgb >> 8 & 0xff;
     const Uint8 b = rgb & 0xff;
@@ -63,27 +63,27 @@ Color mapColor(const SDL_Surface *surface, const char *hexColor) {
     return color;
 }
 
-SDL_Surface *createSurface(const int width, const int height) {
-    const Uint32 pixelFormat = SDL_GetWindowSurface(window)->format->format;
-    SDL_Surface *surface = SDL_CreateRGBSurfaceWithFormat(0, width, height, 32, pixelFormat);
+SDL_Surface *create_surface(const int width, const int height) {
+    const Uint32 pixel_format = SDL_GetWindowSurface(window)->format->format;
+    SDL_Surface *surface = SDL_CreateRGBSurfaceWithFormat(0, width, height, 32, pixel_format);
     return surface;
 }
 
-SDL_Texture *createTexture(const int width, const int height, const int access) {
-    const Uint32 pixelFormat = SDL_GetWindowSurface(window)->format->format;
-    SDL_Texture *texture = SDL_CreateTexture(renderer, pixelFormat, access, width, height);
+SDL_Texture *create_texture(const int width, const int height, const int access) {
+    const Uint32 pixel_format = SDL_GetWindowSurface(window)->format->format;
+    SDL_Texture *texture = SDL_CreateTexture(renderer, pixel_format, access, width, height);
     return texture;
 }
 
-SDL_Surface *createColoredSurface(const int width, const int height, const COLOR color) {
-    SDL_Surface *surface = createSurface(width, height);
-    const auto area = SDL_Rect{0, 0, width, height};
-    const Uint32 surfaceColor = colors[color].value;
-    SDL_FillRect(surface, &area, surfaceColor);
+SDL_Surface *create_colored_surface(const int width, const int height, const COLOR color) {
+    SDL_Surface *surface = create_surface(width, height);
+    const SDL_Rect area = {0, 0, width, height};
+    const Uint32 surface_color = colors[color].value;
+    SDL_FillRect(surface, &area, surface_color);
     return surface;
 }
 
-void throwSDLError(const char *functionName) {
-    printf("%s() failed: %s\n", functionName, SDL_GetError());
+void throw_sdl_error(const char *function_name) {
+    printf("%s() failed: %s\n", function_name, SDL_GetError());
     exit(1);
 }

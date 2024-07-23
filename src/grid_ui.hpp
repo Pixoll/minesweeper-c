@@ -1,3 +1,3 @@
 #pragma once
 
-void drawGridUI();
+void draw_grid_ui();
