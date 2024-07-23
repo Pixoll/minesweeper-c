@@ -74,16 +74,8 @@ public:
     }
 
     void render() override {
-        get_window_size(m_window);
-        calculate_grid_measurements(m_window_dimensions.width, m_window_dimensions.height);
-
-        init_fonts(m_window_dimensions.height);
-        init_textures(m_renderer);
-
         SDL_RenderClear(m_renderer);
-
         draw_grid_ui(m_renderer);
-
         SDL_RenderPresent(m_renderer);
     }
 
