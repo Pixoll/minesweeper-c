@@ -3,8 +3,6 @@
 #include <ctime>
 #include <vector>
 
-using std::vector;
-
 enum CELL_TYPE {
     CELL_0,
     CELL_1,
@@ -47,7 +45,7 @@ typedef struct Game_t {
     time_t start_time;
     bool over;
     bool won;
-    vector<vector<GridCell>> grid;
+    std::vector<std::vector<GridCell>> grid;
     GridMeasurements measurements;
 } Game_t;
 

@@ -7,8 +7,6 @@
 #include "global.hpp"
 #include "util.hpp"
 
-using std::vector;
-
 Game_t game = {
     .rows = 0,
     .columns = 0,

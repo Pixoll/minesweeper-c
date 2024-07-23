@@ -8,8 +8,6 @@
 
 #include "global.hpp"
 
-using std::cerr, std::endl, std::string, std::to_string;
-
 int random_between(const int min, const int max) {
     return rand() % (max - min + 1) + min;
 }
@@ -35,7 +33,9 @@ int int_length(int value) {
     return length;
 }
 
-string get_time_string(const int seconds) {
+std::string get_time_string(const int seconds) {
+    using std::string, std::to_string;
+
     const int sec = seconds % 60;
     const int min = seconds / 60;
 
@@ -85,6 +85,8 @@ SDL_Surface *create_colored_surface(const int width, const int height, const COL
 }
 
 void throw_sdl_error(const char *function_name, const int code) {
+    using std::cerr, std::endl;
+
     cerr << "Error ";
 
     if (code != 0)

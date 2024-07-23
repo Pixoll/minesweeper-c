@@ -7,8 +7,6 @@
 #include "textures.hpp"
 #include "util.hpp"
 
-using std::cerr, std::endl, std::string;
-
 time_t last_game_time_drawn = 0;
 int remaining_mines = 0;
 
@@ -77,6 +75,8 @@ void draw_remaining_mines() {
 }
 
 void draw_game_time() {
+    using std::string;
+
     if (game.start_time == 0)
         return;
 
@@ -164,7 +164,7 @@ TEXTURE_CELL_TYPE get_cell_type(const int x, const int y, const bool flagged, co
         return texture_cell_corner_type_order[int_log2(TLR_BLR_C) + 29];
 
     // Impossible to reach? Not reached in huge grid
-    cerr << """Not impossible to reach" << endl;
+    std::cerr << "Not impossible to reach" << std::endl;
 
     return TEXTURE_CELL_NO_SIDES;
 }

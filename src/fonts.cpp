@@ -7,8 +7,6 @@
 #include "grid.hpp"
 #include "util.hpp"
 
-using std::cerr, std::endl;
-
 const char *font_paths[FONT_TYPES] = {
     "assets/fonts/Rubik-Light.ttf",
     "assets/fonts/Rubik-Medium.ttf",
@@ -25,7 +23,7 @@ bool fonts_ready = false;
 Font load_font(const FONT_TYPE type, const int size) {
     TTF_Font *font = TTF_OpenFont(font_paths[type], size);
     if (font == nullptr) {
-        cerr << "Error while loading font ID " << type << endl;
+        std::cerr << "Error while loading font ID " << type << std::endl;
         throw_sdl_error("TTF_OpenFont");
     }
 
