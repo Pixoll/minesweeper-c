@@ -7,16 +7,7 @@
 #include "global.hpp"
 #include "util.hpp"
 
-Game_t game = {
-    .rows = 0,
-    .columns = 0,
-    .total_mines = 0,
-    .flagged_mines = 0,
-    .unrevealed_count = 0,
-    .start_time = 0,
-    .over = false,
-    .won = false,
-};
+Game_t game{};
 
 bool created_grid = false;
 bool grid_measurements_ready = false;
@@ -32,16 +23,8 @@ void create_grid(const int rows, const int columns, const int mines_count) {
 
     game.grid.reserve(columns);
 
-    for (int i = 0; i < columns; i++) {
-        game.grid.emplace_back(
-            rows,
-            GridCell{
-                .type = CELL_0,
-                .flagged = false,
-                .revealed = false,
-            }
-        );
-    }
+    for (int i = 0; i < columns; i++)
+        game.grid.emplace_back(rows, GridCell{});
 
     game.rows = rows;
     game.columns = columns;

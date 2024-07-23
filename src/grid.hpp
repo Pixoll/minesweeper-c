@@ -20,33 +20,33 @@ enum CELL_TYPE {
 typedef CELL_TYPE CELL_TYPE;
 
 typedef struct GridCell {
-    CELL_TYPE type;
-    bool flagged;
-    bool revealed;
+    CELL_TYPE type = CELL_0;
+    bool flagged = false;
+    bool revealed = false;
 } GridCell;
 
 typedef struct GridMeasurements {
-    int cell_size;
-    int cell_offset;
-    int grid_line_length;
-    int grid_line_width;
-    int grid_x_offset;
-    int grid_y_offset;
-    int grid_width;
-    int grid_height;
+    int cell_size = 0;
+    int cell_offset = 0;
+    int grid_line_length = 0;
+    int grid_line_width = 0;
+    int grid_x_offset = 0;
+    int grid_y_offset = 0;
+    int grid_width = 0;
+    int grid_height = 0;
 } GridMeasurements;
 
 typedef struct Game_t {
-    int rows;
-    int columns;
-    int total_mines;
-    int flagged_mines;
-    int unrevealed_count;
-    time_t start_time;
-    bool over;
-    bool won;
+    int rows = 0;
+    int columns = 0;
+    int total_mines = 0;
+    int flagged_mines = 0;
+    int unrevealed_count = 0;
+    time_t start_time = 0;
+    bool over = false;
+    bool won = false;
     std::vector<std::vector<GridCell>> grid;
-    GridMeasurements measurements;
+    GridMeasurements measurements{};
 } Game_t;
 
 extern Game_t game;
