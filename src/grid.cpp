@@ -4,8 +4,6 @@
 #include <cstdlib>
 #include <ctime>
 
-#include "util.hpp"
-
 Game_t game{};
 
 bool created_grid = false;
@@ -30,6 +28,10 @@ void create_grid(const int rows, const int columns, const int mines_count) {
     game.total_mines = mines_count;
     game.unrevealed_count = rows * columns;
     created_grid = true;
+}
+
+int random_between(const int min, const int max) {
+    return rand() % (max - min + 1) + min;
 }
 
 void place_grid_mines(const int x, const int y) {

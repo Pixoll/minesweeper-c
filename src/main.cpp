@@ -6,10 +6,10 @@
 
 #include "game.hpp"
 #include "main_menu_screen.hpp"
-#include "util.hpp"
 
 GameParameters start_sdl();
 void quit_sdl(SDL_Renderer *renderer, SDL_Window *window);
+void throw_sdl_error(const char *function_name, int code = 0);
 
 int main(int argc, char *argv[]) {
     const GameParameters parameters = start_sdl();
@@ -24,8 +24,6 @@ int main(int argc, char *argv[]) {
 }
 
 GameParameters start_sdl() {
-    using std::cerr, std::endl;
-
     const int sdl_init_error = SDL_Init(SDL_INIT_VIDEO);
     if (sdl_init_error < 0)
         throw_sdl_error("SDL_Init", sdl_init_error);
@@ -72,4 +70,16 @@ void quit_sdl(SDL_Renderer *renderer, SDL_Window *window) {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
+}
+
+void throw_sdl_error(const char *function_name, const int code) {
+    using std::cerr, std::endl;
+
+    cerr << "Error ";
+
+    if (code != 0)
+        cerr << code << " ";
+
+    cerr << "at " << function_name << "(): " << SDL_GetError() << endl;
+    exit(1);
 }

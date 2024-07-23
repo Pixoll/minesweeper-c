@@ -30,7 +30,6 @@ add_executable(
         src/grid.cpp
         src/fonts.cpp
         src/textures.cpp
-        src/util.cpp
 )
 
 target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARY} ${SDL2_IMAGE_LIBRARY} ${SDL2_TTF_LIBRARY})

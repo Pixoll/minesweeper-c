@@ -4,7 +4,6 @@
 
 #include "grid.hpp"
 #include "textures.hpp"
-#include "util.hpp"
 
 time_t last_game_time_drawn = 0;
 int remaining_mines = 0;
@@ -53,6 +52,15 @@ void draw_grid(SDL_Renderer *renderer) {
     }
 }
 
+int int_length(int value) {
+    int length = 1;
+    while (value > 9) {
+        length++;
+        value /= 10;
+    }
+    return length;
+}
+
 void draw_remaining_mines(SDL_Renderer *renderer) {
     const int current_remaining = game.total_mines - game.flagged_mines;
 
@@ -77,6 +85,22 @@ void draw_remaining_mines(SDL_Renderer *renderer) {
     remaining_mines_text_texture.area.x = remaining_mines_icon_texture.area.w + 20;
     remaining_mines_text_texture.area.y = 10;
     SDL_RenderCopy(renderer, remaining_mines_text_texture.texture, nullptr, &remaining_mines_text_texture.area);
+}
+
+std::string get_time_string(const int seconds) {
+    using std::string, std::to_string;
+
+    const int sec = seconds % 60;
+    const int min = seconds / 60;
+
+    string time_string;
+
+    if (min == 0)
+        time_string += to_string(sec) + "S";
+    else
+        time_string += to_string(min) + "M " + to_string(sec) + "S";
+
+    return time_string;
 }
 
 void draw_game_time(SDL_Renderer *renderer) {
@@ -131,6 +155,18 @@ bool verify_corners_with_mask(const int corners, const int mask) {
     const bool bits_outside_of_mask = corners & ~mask;
     const bool bits_in_mask = corners & mask;
     return !bits_outside_of_mask && bits_in_mask;
+}
+
+int is_pow2(const int x) {
+    return x > 0 && !(x & (x - 1));
+}
+
+int int_log2(int x) {
+    int log2 = 0;
+    while (x >>= 1)
+        log2++;
+
+    return log2;
 }
 
 TextureCellType get_cell_type(const int x, const int y, const bool flagged, const bool revealed) {

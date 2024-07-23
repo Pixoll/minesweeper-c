@@ -3,7 +3,6 @@
 #include <SDL.h>
 
 #include "fonts.hpp"
-#include "util.hpp"
 
 struct Texture {
     SDL_Surface *surface;
@@ -74,6 +73,39 @@ enum TextureCellType {
     TEXTURE_CELL_TYPES,
 };
 
+enum ColorName {
+    COLOR_BACKGROUND,
+    COLOR_THEME,
+
+    COLOR_GRID_1,
+    COLOR_GRID_2,
+    COLOR_GRID_3,
+    COLOR_GRID_4,
+    COLOR_GRID_5,
+    COLOR_GRID_6,
+    COLOR_GRID_7,
+    COLOR_GRID_8,
+
+    COLOR_FLAGGED_CELL,
+    COLOR_FLAGGED_CELL_BG,
+    COLOR_TRIGGERED_MINE,
+    COLOR_TRIGGERED_MINE_BG,
+
+    COLOR_BLACK,
+    COLOR_DARK_GREY,
+    COLOR_GREY,
+    COLOR_LIGHT_GREY,
+    COLOR_LIGHTER_GREY,
+    COLOR_WHITE,
+
+    COLORS_AMOUNT,
+};
+
+struct Color {
+    SDL_Color rgb;
+    Uint32 value;
+};
+
 extern const TextureCellType texture_cell_side_type_order[16];
 extern const TextureCellType texture_cell_corner_type_order[33];
 
@@ -100,3 +132,6 @@ void update_text_texture(
     ColorName color,
     const char *text
 );
+
+void init_colors(SDL_Window *window);
+Color get_color(ColorName name);
