@@ -21,8 +21,6 @@ Texture game_time_text_texture;
 Texture remaining_mines_text_texture;
 Texture remaining_mines_icon_texture;
 
-bool textures_ready = false;
-
 const auto cell_map_path = "assets/images/cell_map.png";
 const auto mine_image_path = "assets/images/mine.png";
 const auto flag_image_path = "assets/images/flag.png";
@@ -285,9 +283,6 @@ void init_remaining_mines_icon_texture(SDL_Renderer *renderer) {
 }
 
 void init_textures(SDL_Renderer *renderer) {
-    if (textures_ready)
-        return;
-
     init_grid_texture(renderer);
     init_cell_map_texture(renderer);
     init_cell_numbers_textures(renderer);
@@ -333,8 +328,6 @@ void init_textures(SDL_Renderer *renderer) {
         COLOR_TRIGGERED_MINE,
         COLOR_TRIGGERED_MINE_BG
     );
-
-    textures_ready = true;
 }
 
 Texture get_cell_texture(const TextureCellSubtype subtype, const TextureCellType type) {

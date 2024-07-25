@@ -15,8 +15,6 @@ const char *font_paths[FONT_TYPES] = {
 
 Font fonts[FONT_NAMES];
 
-bool fonts_ready = false;
-
 void throw_sdl_error(const char *function_name, int code = 0);
 
 Font load_font(const FontType type, const int size) {
@@ -30,16 +28,11 @@ Font load_font(const FontType type, const int size) {
 }
 
 void init_fonts(const int window_height) {
-    if (fonts_ready)
-        return;
-
     const int cell_size = get_game().measurements.cell_size;
 
     fonts[FONT_RUBIK_MEDIUM_CELL_SIZED] = load_font(FONT_RUBIK_MEDIUM, cell_size * 0.5);
     fonts[FONT_RUBIK_MEDIUM_PRIMARY] = load_font(FONT_RUBIK_MEDIUM, window_height * 0.02);
     fonts[FONT_RUBIK_MEDIUM_SECONDARY] = load_font(FONT_RUBIK_MEDIUM, window_height * 0.01875);
-
-    fonts_ready = true;
 }
 
 Font get_font(const FontName name) {
