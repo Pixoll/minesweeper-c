@@ -31,7 +31,7 @@ public:
         const auto [r, g, b, a] = get_color(COLOR_BACKGROUND).rgb;
         SDL_SetRenderDrawColor(m_renderer, r, g, b, a);
 
-        get_window_size(m_window);
+        SDL_GetWindowSize(m_window, &m_window_dimensions.width, &m_window_dimensions.height);
         calculate_grid_measurements(m_window_dimensions.width, m_window_dimensions.height);
 
         init_fonts(m_window_dimensions.height);
@@ -77,13 +77,5 @@ public:
         SDL_RenderClear(m_renderer);
         draw_grid_ui(m_renderer);
         SDL_RenderPresent(m_renderer);
-    }
-
-private:
-    void get_window_size(SDL_Window *window) {
-        if (m_window_dimensions.height != -1 || m_window_dimensions.width != -1)
-            return;
-
-        SDL_GetWindowSize(window, &m_window_dimensions.width, &m_window_dimensions.height);
     }
 };
