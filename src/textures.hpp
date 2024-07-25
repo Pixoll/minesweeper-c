@@ -120,8 +120,10 @@ enum ColorName {
 static constexpr int COLORS_AMOUNT = COLOR_WHITE + 1;
 
 struct Color {
-    SDL_Color rgb;
-    Uint32 value;
+    SDL_Color rgb{};
+    Uint32 value = 0;
+    Color() = default;
+    Color(const SDL_Surface *surface, const char *hex_color);
 };
 
 void init_textures(SDL_Renderer *renderer);

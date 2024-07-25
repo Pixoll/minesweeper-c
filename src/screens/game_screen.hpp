@@ -25,7 +25,7 @@ public:
         m_window = m_game->get_window();
         m_renderer = m_game->get_renderer();
 
-        create_grid(20, 20, 75);
+        create_grid(10, 20, 50);
         init_colors(m_window);
 
         const auto [r, g, b, a] = get_color(COLOR_BACKGROUND).rgb;

@@ -2,12 +2,8 @@
 
 #include <cstdlib>
 #include <ctime>
-#include <iostream>
 
 Game_t game{};
-
-bool created_grid = false;
-bool grid_measurements_ready = false;
 
 const Game_t &get_game() {
     return game;
@@ -16,12 +12,7 @@ const Game_t &get_game() {
 CellType count_surrounding_mines(int x, int y);
 
 void create_grid(const int rows, const int columns, const int mines_count) {
-    if (created_grid) {
-        for (int i = 0; i < columns; i++)
-            game.grid[i].clear();
-        game.grid.clear();
-    }
-
+    game.grid.clear();
     game.grid.reserve(columns);
 
     for (int i = 0; i < columns; i++)
@@ -31,7 +22,6 @@ void create_grid(const int rows, const int columns, const int mines_count) {
     game.columns = columns;
     game.total_mines = mines_count;
     game.unrevealed_count = rows * columns;
-    created_grid = true;
 }
 
 int random_between(const int min, const int max) {
@@ -78,9 +68,6 @@ void place_grid_mines(const int x, const int y) {
 }
 
 void calculate_grid_measurements(const int window_width, const int window_height) {
-    if (grid_measurements_ready)
-        return;
-
     const int rows = game.rows;
     const int columns = game.columns;
 
@@ -108,8 +95,6 @@ void calculate_grid_measurements(const int window_width, const int window_height
     game.measurements.grid_y_offset = grid_y_offset;
     game.measurements.grid_width = grid_width;
     game.measurements.grid_height = grid_height;
-
-    grid_measurements_ready = true;
 }
 
 GridCoords calculate_grid_cell(const int click_x, const int click_y) {

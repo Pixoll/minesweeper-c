@@ -33,9 +33,7 @@ const auto grid_line_vertical_image_path = "assets/images/grid_line_vertical.png
 const auto grid_filler_horizontal_image_path = "assets/images/grid_filler_horizontal.png";
 const auto grid_filler_vertical_image_path = "assets/images/grid_filler_vertical.png";
 
-Color colors[COLORS_AMOUNT];
-
-Color map_color(const SDL_Surface *surface, const char *hex_color) {
+Color::Color(const SDL_Surface *surface, const char *hex_color) {
     if (hex_color[0] == '#')
         hex_color++;  // shift left once
 
@@ -44,39 +42,37 @@ Color map_color(const SDL_Surface *surface, const char *hex_color) {
     const Uint8 g = rgb >> 8 & 0xff;
     const Uint8 b = rgb & 0xff;
 
-    const Color color = {
-        {r, g, b, 255},
-        SDL_MapRGB(surface->format, r, g, b),
-    };
-
-    return color;
+    this->rgb = {r, g, b, 255};
+    this->value = SDL_MapRGB(surface->format, r, g, b);
 }
+
+Color colors[COLORS_AMOUNT];
 
 void init_colors(SDL_Window *window) {
     const SDL_Surface *surface = SDL_GetWindowSurface(window);
-    colors[COLOR_THEME] = map_color(surface, "#d77f37");
-    colors[COLOR_BACKGROUND] = map_color(surface, "#333333");
+    colors[COLOR_THEME] = Color(surface, "#d77f37");
+    colors[COLOR_BACKGROUND] = Color(surface, "#333333");
 
-    colors[COLOR_GRID_1] = map_color(surface, "#b3b3ff");  // #0000ff
-    colors[COLOR_GRID_2] = map_color(surface, "#b3ffb3");  // #008000
-    colors[COLOR_GRID_3] = map_color(surface, "#ffb3b3");  // #ff0000
-    colors[COLOR_GRID_4] = map_color(surface, "#4d4dff");  // #000080
-    colors[COLOR_GRID_5] = map_color(surface, "#ff4d4d");  // #800000
-    colors[COLOR_GRID_6] = map_color(surface, "#b3ffff");  // #008080
-    colors[COLOR_GRID_7] = map_color(surface, "#bfbfbf");  // #808080
-    colors[COLOR_GRID_8] = map_color(surface, "#ffffff");
+    colors[COLOR_GRID_1] = Color(surface, "#b3b3ff");  // #0000ff
+    colors[COLOR_GRID_2] = Color(surface, "#b3ffb3");  // #008000
+    colors[COLOR_GRID_3] = Color(surface, "#ffb3b3");  // #ff0000
+    colors[COLOR_GRID_4] = Color(surface, "#4d4dff");  // #000080
+    colors[COLOR_GRID_5] = Color(surface, "#ff4d4d");  // #800000
+    colors[COLOR_GRID_6] = Color(surface, "#b3ffff");  // #008080
+    colors[COLOR_GRID_7] = Color(surface, "#bfbfbf");  // #808080
+    colors[COLOR_GRID_8] = Color(surface, "#ffffff");
 
-    colors[COLOR_FLAGGED_CELL] = map_color(surface, "#333333");
-    colors[COLOR_FLAGGED_CELL_BG] = map_color(surface, "#606060");
-    colors[COLOR_TRIGGERED_MINE] = map_color(surface, "#431a0d");
-    colors[COLOR_TRIGGERED_MINE_BG] = map_color(surface, "#b6350d");
+    colors[COLOR_FLAGGED_CELL] = Color(surface, "#333333");
+    colors[COLOR_FLAGGED_CELL_BG] = Color(surface, "#606060");
+    colors[COLOR_TRIGGERED_MINE] = Color(surface, "#431a0d");
+    colors[COLOR_TRIGGERED_MINE_BG] = Color(surface, "#b6350d");
 
-    colors[COLOR_BLACK] = map_color(surface, "#000000");
-    colors[COLOR_DARK_GREY] = map_color(surface, "#1e1f1c");
-    colors[COLOR_GREY] = map_color(surface, "#333333");
-    colors[COLOR_LIGHT_GREY] = map_color(surface, "#606060");
-    colors[COLOR_LIGHTER_GREY] = map_color(surface, "#cfcfcf");
-    colors[COLOR_WHITE] = map_color(surface, "#ffffff");
+    colors[COLOR_BLACK] = Color(surface, "#000000");
+    colors[COLOR_DARK_GREY] = Color(surface, "#1e1f1c");
+    colors[COLOR_GREY] = Color(surface, "#333333");
+    colors[COLOR_LIGHT_GREY] = Color(surface, "#606060");
+    colors[COLOR_LIGHTER_GREY] = Color(surface, "#cfcfcf");
+    colors[COLOR_WHITE] = Color(surface, "#ffffff");
 }
 
 Color get_color(const ColorName name) {
@@ -102,7 +98,7 @@ void init_texture_from_image(SDL_Renderer *renderer, const char *image_path, Tex
 //     SDL_Surface *surface = SDL_CreateRGBSurfaceWithFormat(0, width, height, 32, pixel_format);
 //     return surface;
 // }
-//
+
 // SDL_Surface *create_colored_surface(SDL_Window *window, const int width, const int height, const ColorName color) {
 //     SDL_Surface *surface = create_surface(window, width, height);
 //     const SDL_Rect area = {0, 0, width, height};
@@ -228,11 +224,7 @@ void init_cell_numbers_textures(SDL_Renderer *renderer) {
         cell_area.x = (grid_line_width + cell_size - cell_area.w) / 2;
         cell_area.y = (grid_line_width + cell_size - cell_area.h) / 2;
 
-        cell_numbers_textures[cell - CELL_1] = {
-            .surface = text_surface,
-            .texture = text_texture,
-            .area = cell_area,
-        };
+        cell_numbers_textures[cell - CELL_1] = {text_surface, text_texture, cell_area,};
     }
 }
 
@@ -297,8 +289,9 @@ void init_textures(SDL_Renderer *renderer) {
         return;
 
     init_grid_texture(renderer);
-
     init_cell_map_texture(renderer);
+    init_cell_numbers_textures(renderer);
+    init_remaining_mines_icon_texture(renderer);
 
     init_cell_textures_set(
         renderer,
@@ -340,10 +333,6 @@ void init_textures(SDL_Renderer *renderer) {
         COLOR_TRIGGERED_MINE,
         COLOR_TRIGGERED_MINE_BG
     );
-
-    init_cell_numbers_textures(renderer);
-
-    init_remaining_mines_icon_texture(renderer);
 
     textures_ready = true;
 }
