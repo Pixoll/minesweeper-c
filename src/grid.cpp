@@ -1,13 +1,17 @@
 #include "grid.hpp"
 
-#include <cstdio>
 #include <cstdlib>
 #include <ctime>
+#include <iostream>
 
 Game_t game{};
 
 bool created_grid = false;
 bool grid_measurements_ready = false;
+
+const Game_t &get_game() {
+    return game;
+}
 
 CellType count_surrounding_mines(int x, int y);
 

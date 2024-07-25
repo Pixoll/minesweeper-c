@@ -39,7 +39,7 @@ public:
     }
 
     void run_logic(const SDL_Event &event) override {
-        if (event.type != SDL_MOUSEBUTTONDOWN || game.over)
+        if (event.type != SDL_MOUSEBUTTONDOWN || get_game().over)
             return;
 
         int click_x, click_y;

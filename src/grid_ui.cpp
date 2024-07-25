@@ -8,6 +8,63 @@
 time_t last_game_time_drawn = 0;
 int remaining_mines = 0;
 
+constexpr TextureCellType texture_cell_side_type_order[16] = {
+    TEXTURE_CELL_NO_SIDES,
+    TEXTURE_CELL_R,
+    TEXTURE_CELL_L,
+    TEXTURE_CELL_LR,
+    TEXTURE_CELL_B,
+    TEXTURE_CELL_BR,
+    TEXTURE_CELL_BL,
+    TEXTURE_CELL_BLR,
+    TEXTURE_CELL_T,
+    TEXTURE_CELL_TR,
+    TEXTURE_CELL_TL,
+    TEXTURE_CELL_TLR,
+    TEXTURE_CELL_BT,
+    TEXTURE_CELL_TBR,
+    TEXTURE_CELL_TBL,
+    TEXTURE_CELL_TBLR,
+};
+
+constexpr TextureCellType texture_cell_corner_type_order[33] = {
+    TEXTURE_CELL_TBLR_BRC,
+    TEXTURE_CELL_TBLR_BLC,
+    TEXTURE_CELL_TBLR_BLCRC,
+    TEXTURE_CELL_TBLR_TRC,
+    TEXTURE_CELL_TBLR_TRC_BRC,
+    TEXTURE_CELL_TBLR_TRC_BLC,
+    TEXTURE_CELL_TBLR_TRC_BLCRC,
+    TEXTURE_CELL_TBLR_TLC,
+    TEXTURE_CELL_TBLR_TLC_BRC,
+    TEXTURE_CELL_TBLR_TLC_BLC,
+    TEXTURE_CELL_TBLR_TLC_BLCRC,
+    TEXTURE_CELL_TBLR_TLCRC,
+    TEXTURE_CELL_TBLR_TLCRC_BRC,
+    TEXTURE_CELL_TBLR_TLCRC_BLC,
+    TEXTURE_CELL_TBLR_TLCRC_BLCRC,
+
+    TEXTURE_CELL_BLR_BRC,
+    TEXTURE_CELL_BLR_BLC,
+    TEXTURE_CELL_BLR_BLCRC,
+    TEXTURE_CELL_TBR_BRC,
+    TEXTURE_CELL_TLR_TRC,
+    TEXTURE_CELL_TBL_BLC,
+    TEXTURE_CELL_TBR_TRC,
+    TEXTURE_CELL_TBR_TRC_BRC,
+    TEXTURE_CELL_TLR_TLC,
+    TEXTURE_CELL_NO_SIDES,
+    TEXTURE_CELL_NO_SIDES,
+    TEXTURE_CELL_TBL_TLC,
+    TEXTURE_CELL_TLR_TLCRC,
+    TEXTURE_CELL_TBL_TLC_BLC,
+
+    TEXTURE_CELL_BRC,
+    TEXTURE_CELL_BLC,
+    TEXTURE_CELL_TRC,
+    TEXTURE_CELL_TLC,
+};
+
 void draw_grid(SDL_Renderer *renderer);
 void draw_remaining_mines(SDL_Renderer *renderer);
 void draw_game_time(SDL_Renderer *renderer);
@@ -22,6 +79,9 @@ Texture get_cell_texture(GridCell cell, TextureCellType type);
 TextureCellType get_cell_type(int x, int y, bool flagged, bool revealed);
 
 void draw_grid(SDL_Renderer *renderer) {
+    const Game_t &game = get_game();
+    const Texture &grid_texture = get_texture(TEXTURE_GRID);
+
     const int rows = game.rows;
     const int columns = game.columns;
     const int cell_size = game.measurements.cell_size;
@@ -62,6 +122,10 @@ int int_length(int value) {
 }
 
 void draw_remaining_mines(SDL_Renderer *renderer) {
+    const Game_t &game = get_game();
+    Texture &remaining_mines_text_texture = get_texture(TEXTURE_REMAINING_MINES_TEXT);
+    Texture &remaining_mines_icon_texture = get_texture(TEXTURE_REMAINING_MINES_ICON);
+
     const int current_remaining = game.total_mines - game.flagged_mines;
 
     if (remaining_mines != current_remaining) {
@@ -106,6 +170,9 @@ std::string get_time_string(const int seconds) {
 void draw_game_time(SDL_Renderer *renderer) {
     using std::string;
 
+    const Game_t &game = get_game();
+    Texture &game_time_text_texture = get_texture(TEXTURE_GAME_TIME_TEXT);
+
     if (game.start_time == 0)
         return;
 
@@ -128,27 +195,30 @@ void draw_game_time(SDL_Renderer *renderer) {
 }
 
 Texture get_cell_texture(const GridCell cell, const TextureCellType type) {
+    const Game_t &game = get_game();
+
     if (game.over && !game.won && cell.type == CELL_MINE) {
         if (cell.flagged)
-            return cell_flagged_mine_textures[type];
+            return get_cell_texture(TEXTURE_CELL_FLAGGED_MINE, type);
 
         if (cell.revealed)
-            return cell_triggered_mine_textures[type];
+            return get_cell_texture(TEXTURE_CELL_TRIGGERED_MINE, type);
 
-        return cell_covered_mine_textures[type];
+        return get_cell_texture(TEXTURE_CELL_COVERED_MINE, type);
     }
 
     if (cell.flagged)
-        return cell_flag_textures[type];
+        return get_cell_texture(TEXTURE_CELL_FLAG, type);
 
     if (!cell.revealed)
-        return cell_covered_textures[type];
+        return get_cell_texture(TEXTURE_CELL_COVERED, type);
 
-    return cell_numbers_textures[cell.type - CELL_1];
+    return get_cell_number_texture(cell.type - CELL_1);
 }
 
 bool verify_cell(const int x, const int y, const bool flagged) {
-    return !game.grid[x][y].revealed && flagged == game.grid[x][y].flagged;
+    const GameGrid &grid = get_game().grid;
+    return !grid[x][y].revealed && flagged == grid[x][y].flagged;
 }
 
 bool verify_corners_with_mask(const int corners, const int mask) {
@@ -172,6 +242,8 @@ int int_log2(int x) {
 TextureCellType get_cell_type(const int x, const int y, const bool flagged, const bool revealed) {
     if (revealed)
         return TEXTURE_CELL_NO_SIDES;
+
+    const Game_t &game = get_game();
 
     const int rows = game.rows;
     const int columns = game.columns;

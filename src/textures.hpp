@@ -5,9 +5,9 @@
 #include "fonts.hpp"
 
 struct Texture {
-    SDL_Surface *surface;
-    SDL_Texture *texture;
-    SDL_Rect area;
+    SDL_Surface *surface = nullptr;
+    SDL_Texture *texture = nullptr;
+    SDL_Rect area{};
 };
 
 /**
@@ -70,7 +70,25 @@ enum TextureCellType {
     TEXTURE_CELL_TLR_TRC,
     TEXTURE_CELL_TR,
     TEXTURE_CELL_TRC,
-    TEXTURE_CELL_TYPES,
+};
+
+static constexpr int TEXTURE_CELL_TYPES = TEXTURE_CELL_TRC + 1;
+
+enum TextureCellSubtype {
+    TEXTURE_CELL_COVERED,
+    TEXTURE_CELL_COVERED_MINE,
+    TEXTURE_CELL_FLAGGED_MINE,
+    TEXTURE_CELL_TRIGGERED_MINE,
+    TEXTURE_CELL_FLAG,
+};
+
+static constexpr int TEXTURE_CELL_SUBTYPES = TEXTURE_CELL_FLAG + 1;
+
+enum TextureName {
+    TEXTURE_GRID,
+    TEXTURE_GAME_TIME_TEXT,
+    TEXTURE_REMAINING_MINES_TEXT,
+    TEXTURE_REMAINING_MINES_ICON,
 };
 
 enum ColorName {
@@ -97,33 +115,19 @@ enum ColorName {
     COLOR_LIGHT_GREY,
     COLOR_LIGHTER_GREY,
     COLOR_WHITE,
-
-    COLORS_AMOUNT,
 };
+
+static constexpr int COLORS_AMOUNT = COLOR_WHITE + 1;
 
 struct Color {
     SDL_Color rgb;
     Uint32 value;
 };
 
-extern const TextureCellType texture_cell_side_type_order[16];
-extern const TextureCellType texture_cell_corner_type_order[33];
-
-extern Texture grid_texture;
-
-extern Texture cell_covered_textures[TEXTURE_CELL_TYPES];
-extern Texture cell_covered_mine_textures[TEXTURE_CELL_TYPES];
-extern Texture cell_flagged_mine_textures[TEXTURE_CELL_TYPES];
-extern Texture cell_triggered_mine_textures[TEXTURE_CELL_TYPES];
-extern Texture cell_flag_textures[TEXTURE_CELL_TYPES];
-
-extern Texture cell_numbers_textures[8];
-
-extern Texture game_time_text_texture;
-extern Texture remaining_mines_text_texture;
-extern Texture remaining_mines_icon_texture;
-
 void init_textures(SDL_Renderer *renderer);
+Texture get_cell_texture(TextureCellSubtype subtype, TextureCellType type);
+Texture get_cell_number_texture(int number);
+Texture &get_texture(TextureName name);
 void free_textures();
 void update_text_texture(
     SDL_Renderer *renderer,
