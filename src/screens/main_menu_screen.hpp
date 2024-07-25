@@ -22,7 +22,7 @@ public:
         if (event.button.button != SDL_BUTTON_LEFT)
             return;
 
-        m_game->set_screen(new GameScreen(m_game));
+        m_game->set_screen<GameScreen>(m_game);
     }
 
     void render() override {}

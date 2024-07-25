@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
     const GameParameters parameters = start_sdl();
 
     Game game(parameters);
-    game.set_screen(new MainMenuScreen(&game));
+    game.set_screen<MainMenuScreen>(&game);
     game.run();
 
     quit_sdl(parameters.renderer, parameters.window);
@@ -60,9 +60,7 @@ GameParameters start_sdl() {
     if (display_mode_error < 0)
         throw_sdl_error("SDL_GetCurrentDisplayMode", display_mode_error);
 
-    const long render_interval_microsecs = 1000000 / current_display_mode.refresh_rate;
-
-    return {window, renderer, render_interval_microsecs};
+    return {window, renderer, current_display_mode.refresh_rate};
 }
 
 void quit_sdl(SDL_Renderer *renderer, SDL_Window *window) {

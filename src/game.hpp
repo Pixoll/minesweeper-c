@@ -1,37 +1,37 @@
 #pragma once
 
 #include <chrono>
+#include <memory>
 #include <SDL.h>
+#include <thread>
 
 #include "screens/screen.hpp"
 
 struct GameParameters {
     SDL_Window *window;
     SDL_Renderer *renderer;
-    long render_interval_microsecs;
+    long screen_refresh_rate;
 };
 
 class Game {
-    Screen *m_screen = nullptr;
-    Screen *m_last_screen = nullptr;
-    long m_render_interval_microsecs;
+    using microseconds = std::chrono::microseconds;
+
+    std::unique_ptr<Screen> m_screen{};
+    microseconds m_render_interval_microsecs;
     SDL_Window *m_window;
     SDL_Renderer *m_renderer;
 
 public:
     explicit Game(const GameParameters &parameters)
-        : m_render_interval_microsecs(parameters.render_interval_microsecs),
+        : m_render_interval_microsecs(100000 / parameters.screen_refresh_rate),
           m_window(parameters.window),
           m_renderer(parameters.renderer) {}
 
-    ~Game() {
-        delete m_last_screen;
-        delete m_screen;
-    }
+    ~Game() = default;
 
-    void set_screen(Screen *new_screen) {
-        m_last_screen = m_screen;
-        m_screen = new_screen;
+    template <class ScreenT, typename... Args>
+    void set_screen(Args... args) {
+        m_screen = std::make_unique<ScreenT>(args...);
     }
 
     [[nodiscard]] SDL_Window *get_window() const {
@@ -42,12 +42,9 @@ public:
         return m_renderer;
     }
 
-    void run() {
-        using std::chrono::high_resolution_clock, std::chrono::duration_cast, std::chrono::microseconds;
-
+    void run() const {
         SDL_Event event;
         bool quit = false;
-        high_resolution_clock::time_point last_render = high_resolution_clock::now();
 
         m_screen->render();
 
@@ -65,19 +62,9 @@ public:
                 }
             }
 
-            const long microsecs_since_last_render = duration_cast<microseconds>(
-                high_resolution_clock::now() - last_render
-            ).count();
+            m_screen->render();
 
-            if (microsecs_since_last_render >= m_render_interval_microsecs) {
-                m_screen->render();
-                last_render = high_resolution_clock::now();
-            }
-
-            if (m_last_screen) {
-                delete m_last_screen;
-                m_last_screen = nullptr;
-            }
+            std::this_thread::sleep_for(m_render_interval_microsecs);
         }
     }
 };
