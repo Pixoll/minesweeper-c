@@ -13,6 +13,8 @@ class MainMenuScreen final : virtual public Screen {
 public:
     explicit MainMenuScreen(Game *game) : m_game(game) {}
 
+    ~MainMenuScreen() override = default;
+
     void run_logic(const SDL_Event &event) override {
         if (event.type != SDL_MOUSEBUTTONDOWN)
             return;

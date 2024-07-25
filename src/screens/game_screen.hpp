@@ -38,6 +38,8 @@ public:
         init_textures(m_renderer);
     }
 
+    ~GameScreen() override = default;
+
     void run_logic(const SDL_Event &event) override {
         if (event.type != SDL_MOUSEBUTTONDOWN || get_game().over)
             return;
