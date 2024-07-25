@@ -34,11 +34,11 @@ public:
         m_screen = new_screen;
     }
 
-    SDL_Window *get_window() const {
+    [[nodiscard]] SDL_Window *get_window() const {
         return m_window;
     }
 
-    SDL_Renderer *get_renderer() const {
+    [[nodiscard]] SDL_Renderer *get_renderer() const {
         return m_renderer;
     }
 
