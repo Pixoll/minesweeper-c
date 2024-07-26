@@ -8,10 +8,10 @@
 class Engine;
 
 class MainMenuScreen final : virtual public Screen {
-    Engine *m_game;
+    Engine *m_engine;
 
 public:
-    explicit MainMenuScreen(Engine *game) : m_game(game) {}
+    explicit MainMenuScreen(Engine *engine) : m_engine(engine) {}
 
     ~MainMenuScreen() override = default;
 
@@ -22,7 +22,7 @@ public:
         if (event.button.button != SDL_BUTTON_LEFT)
             return;
 
-        m_game->set_screen<GameScreen>(m_game);
+        m_engine->set_screen<GameScreen>(m_engine);
     }
 
     void render() override {}

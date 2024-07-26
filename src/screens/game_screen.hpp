@@ -18,7 +18,7 @@ class GameScreen final : virtual public Screen {
         int height = -1;
     };
 
-    Engine *m_game;
+    Engine *m_engine;
     bool m_placed_mines = false;
     SDL_Window *m_window;
     SDL_Renderer *m_renderer;
@@ -84,9 +84,9 @@ class GameScreen final : virtual public Screen {
     };
 
 public:
-    explicit GameScreen(Engine *game) : m_game(game) {
-        m_window = m_game->get_window();
-        m_renderer = m_game->get_renderer();
+    explicit GameScreen(Engine *engine) : m_engine(engine) {
+        m_window = m_engine->get_window();
+        m_renderer = m_engine->get_renderer();
 
         create_grid(10, 20, 50);
         init_colors(m_window);
