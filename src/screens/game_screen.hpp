@@ -6,9 +6,9 @@
 #include <string>
 
 #include "screen.hpp"
-#include "../fonts.hpp"
-#include "../textures.hpp"
 #include "../core/game.hpp"
+#include "../graphics/fonts.hpp"
+#include "../graphics/textures.hpp"
 
 class Engine;
 

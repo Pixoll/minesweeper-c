@@ -3,7 +3,7 @@
 #include <SDL.h>
 
 #include "fonts.hpp"
-#include "core/game.hpp"
+#include "../core/game.hpp"
 
 struct Texture {
     SDL_Surface *surface = nullptr;
