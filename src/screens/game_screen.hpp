@@ -263,7 +263,7 @@ private:
         SDL_RenderCopy(m_renderer, game_time_text_texture.texture, nullptr, &game_time_text_texture.area);
     }
 
-    Texture get_grid_cell_texture(const Game::GridCell cell, const TextureCellType type) const {
+    [[nodiscard]] Texture get_grid_cell_texture(const Game::GridCell cell, const TextureCellType type) const {
         if (m_game.is_over() && !m_game.has_won() && cell.type == Game::CELL_MINE) {
             if (cell.flagged)
                 return get_cell_texture(TEXTURE_CELL_FLAGGED_MINE, type);
@@ -283,7 +283,7 @@ private:
         return get_cell_number_texture(cell.type - Game::CELL_1);
     }
 
-    bool verify_cell(const int x, const int y, const bool flagged) const {
+    [[nodiscard]] bool verify_cell(const int x, const int y, const bool flagged) const {
         const auto [type, cell_flagged, revealed] = m_game.get_grid_cell(x, y);
         return !revealed && flagged == cell_flagged;
     }
@@ -306,7 +306,7 @@ private:
         return log2;
     }
 
-    TextureCellType get_cell_type(const int x, const int y, const bool flagged, const bool revealed) const {
+    [[nodiscard]] TextureCellType get_cell_type(const int x, const int y, const bool flagged, const bool revealed) const {
         if (revealed)
             return TEXTURE_CELL_NO_SIDES;
 

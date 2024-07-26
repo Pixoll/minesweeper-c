@@ -38,19 +38,19 @@ public:
         m_screen = std::make_unique<ScreenT>(args...);
     }
 
-    SDL_Window *get_window() const {
+    [[nodiscard]] SDL_Window *get_window() const {
         return m_window;
     }
 
-    SDL_Renderer *get_renderer() const {
+    [[nodiscard]] SDL_Renderer *get_renderer() const {
         return m_renderer;
     }
 
-    int get_window_width() const {
+    [[nodiscard]] int get_window_width() const {
         return m_window_width;
     }
 
-    int get_window_height() const {
+    [[nodiscard]] int get_window_height() const {
         return m_window_height;
     }
 

@@ -92,39 +92,39 @@ public:
 
     ~Game() = default;
 
-    int get_rows() const {
+    [[nodiscard]] int get_rows() const {
         return m_rows;
     }
 
-    int get_columns() const {
+    [[nodiscard]] int get_columns() const {
         return m_columns;
     }
 
-    int get_total_mines() const {
+    [[nodiscard]] int get_total_mines() const {
         return m_total_mines;
     }
 
-    int get_flagged_mines() const {
+    [[nodiscard]] int get_flagged_mines() const {
         return m_flagged_mines;
     }
 
-    time_t get_start_time() const {
+    [[nodiscard]] time_t get_start_time() const {
         return m_start_time;
     }
 
-    const Measurements &get_measurements() const {
+    [[nodiscard]] const Measurements &get_measurements() const {
         return m_measurements;
     }
 
-    const GridCell &get_grid_cell(const int x, const int y) const {
+    [[nodiscard]] const GridCell &get_grid_cell(const int x, const int y) const {
         return m_grid[x][y];
     }
 
-    bool is_over() const {
+    [[nodiscard]] bool is_over() const {
         return m_over;
     }
 
-    bool has_won() const {
+    [[nodiscard]] bool has_won() const {
         return m_won;
     }
 
@@ -163,7 +163,7 @@ public:
         }
     }
 
-    GridCoords calculate_grid_cell(const int click_x, const int click_y) const {
+    [[nodiscard]] GridCoords calculate_grid_cell(const int click_x, const int click_y) const {
         const int cell_size = m_measurements.cell_size;
         const int grid_x_offset = m_measurements.grid_x_offset;
         const int grid_y_offset = m_measurements.grid_y_offset;
@@ -273,7 +273,7 @@ private:
         return rand() % (max - min + 1) + min;
     }
 
-    CellType count_surrounding_mines(const int x, const int y) const {
+    [[nodiscard]] CellType count_surrounding_mines(const int x, const int y) const {
         int surrounding = CELL_0;
 
         for (int i = -1; i <= 1; i++) {
@@ -368,7 +368,7 @@ private:
         return revealed_mine;
     }
 
-    int count_surrounding_flagged(const int x, const int y) const {
+    [[nodiscard]] int count_surrounding_flagged(const int x, const int y) const {
         int flagged = 0;
         for (int i = -1; i <= 1; i++) {
             const int nx = x + i;
@@ -389,7 +389,7 @@ private:
         return flagged;
     }
 
-    GridCoords get_surrounding_empty(const int x, const int y) const {
+    [[nodiscard]] GridCoords get_surrounding_empty(const int x, const int y) const {
         GridCoords coords{};
 
         for (int i = -1; i <= 1; i++) {
