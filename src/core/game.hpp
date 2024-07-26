@@ -138,7 +138,6 @@ public:
         srand(now);
 
         int placed_mines = 0;
-        // TODO Is this bad???
         while (placed_mines < m_total_mines) {
             const int nx = random_between(0, m_columns - 1);
             const int ny = random_between(0, m_rows - 1);
