@@ -8,7 +8,7 @@
 #include "screen.hpp"
 #include "../fonts.hpp"
 #include "../textures.hpp"
-#include "../core/grid.hpp"
+#include "../core/game.hpp"
 
 class Engine;
 
@@ -150,7 +150,7 @@ public:
 
 private:
     void draw_grid() const {
-        const Game_t &game = get_game();
+        const Game &game = get_game();
         const Texture &grid_texture = get_texture(TEXTURE_GRID);
 
         const int rows = game.rows;
@@ -193,7 +193,7 @@ private:
     }
 
     void draw_remaining_mines() {
-        const Game_t &game = get_game();
+        const Game &game = get_game();
         Texture &remaining_mines_text_texture = get_texture(TEXTURE_REMAINING_MINES_TEXT);
         Texture &remaining_mines_icon_texture = get_texture(TEXTURE_REMAINING_MINES_ICON);
 
@@ -241,7 +241,7 @@ private:
     void draw_game_time() {
         using std::string;
 
-        const Game_t &game = get_game();
+        const Game &game = get_game();
         Texture &game_time_text_texture = get_texture(TEXTURE_GAME_TIME_TEXT);
 
         if (game.start_time == 0)
@@ -266,7 +266,7 @@ private:
     }
 
     static Texture get_grid_cell_texture(const GridCell cell, const TextureCellType type) {
-        const Game_t &game = get_game();
+        const Game &game = get_game();
 
         if (game.over && !game.won && cell.type == CELL_MINE) {
             if (cell.flagged)
@@ -314,7 +314,7 @@ private:
         if (revealed)
             return TEXTURE_CELL_NO_SIDES;
 
-        const Game_t &game = get_game();
+        const Game &game = get_game();
 
         const int rows = game.rows;
         const int columns = game.columns;

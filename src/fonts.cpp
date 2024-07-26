@@ -4,7 +4,7 @@
 #include <iostream>
 #include <SDL_ttf.h>
 
-#include "core/grid.hpp"
+#include "core/game.hpp"
 
 const char *font_paths[FONT_TYPES] = {
     "assets/fonts/Rubik-Light.ttf",

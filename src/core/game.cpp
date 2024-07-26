@@ -1,11 +1,11 @@
-#include "grid.hpp"
+#include "game.hpp"
 
 #include <cstdlib>
 #include <ctime>
 
-Game_t game{};
+Game game{};
 
-const Game_t &get_game() {
+const Game &get_game() {
     return game;
 }
 

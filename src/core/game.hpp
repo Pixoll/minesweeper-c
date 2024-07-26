@@ -36,7 +36,7 @@ struct GridMeasurements {
 
 typedef std::vector<std::vector<GridCell>> GameGrid;
 
-struct Game_t {
+struct Game {
     int rows = 0;
     int columns = 0;
     int total_mines = 0;
@@ -55,7 +55,7 @@ struct GridCoords {
     bool inside;
 };
 
-const Game_t &get_game();
+const Game &get_game();
 void create_grid(int rows, int columns, int mines_count);
 void place_grid_mines(int x, int y);
 void calculate_grid_measurements(int window_width, int window_height);
