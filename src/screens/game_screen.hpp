@@ -10,7 +10,7 @@
 #include "../textures.hpp"
 #include "../core/grid.hpp"
 
-class Game;
+class Engine;
 
 class GameScreen final : virtual public Screen {
     struct WindowDimensions {
@@ -18,7 +18,7 @@ class GameScreen final : virtual public Screen {
         int height = -1;
     };
 
-    Game *m_game;
+    Engine *m_game;
     bool m_placed_mines = false;
     SDL_Window *m_window;
     SDL_Renderer *m_renderer;
@@ -84,7 +84,7 @@ class GameScreen final : virtual public Screen {
     };
 
 public:
-    explicit GameScreen(Game *game) : m_game(game) {
+    explicit GameScreen(Engine *game) : m_game(game) {
         m_window = m_game->get_window();
         m_renderer = m_game->get_renderer();
 

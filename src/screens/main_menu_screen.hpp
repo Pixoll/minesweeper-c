@@ -5,13 +5,13 @@
 #include "game_screen.hpp"
 #include "screen.hpp"
 
-class Game;
+class Engine;
 
 class MainMenuScreen final : virtual public Screen {
-    Game *m_game;
+    Engine *m_game;
 
 public:
-    explicit MainMenuScreen(Game *game) : m_game(game) {}
+    explicit MainMenuScreen(Engine *game) : m_game(game) {}
 
     ~MainMenuScreen() override = default;
 

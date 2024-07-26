@@ -4,26 +4,26 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 
-#include "game.hpp"
+#include "engine.hpp"
 #include "screens/main_menu_screen.hpp"
 
-GameParameters start_sdl();
+EngineParameters start_sdl();
 void quit_sdl(SDL_Renderer *renderer, SDL_Window *window);
 void throw_sdl_error(const char *function_name, int code = 0);
 
 int main(int argc, char *argv[]) {
-    const GameParameters parameters = start_sdl();
+    const EngineParameters parameters = start_sdl();
 
-    Game game(parameters);
-    game.set_screen<MainMenuScreen>(&game);
-    game.run();
+    Engine engine(parameters);
+    engine.set_screen<MainMenuScreen>(&engine);
+    engine.run();
 
     quit_sdl(parameters.renderer, parameters.window);
 
     return 0;
 }
 
-GameParameters start_sdl() {
+EngineParameters start_sdl() {
     const int sdl_init_error = SDL_Init(SDL_INIT_VIDEO);
     if (sdl_init_error < 0)
         throw_sdl_error("SDL_Init", sdl_init_error);

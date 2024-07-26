@@ -7,13 +7,13 @@
 
 #include "screens/screen.hpp"
 
-struct GameParameters {
+struct EngineParameters {
     SDL_Window *window;
     SDL_Renderer *renderer;
     long screen_refresh_rate;
 };
 
-class Game {
+class Engine {
     using microseconds = std::chrono::microseconds;
 
     std::unique_ptr<Screen> m_screen{};
@@ -22,12 +22,12 @@ class Game {
     SDL_Renderer *m_renderer;
 
 public:
-    explicit Game(const GameParameters &parameters)
+    explicit Engine(const EngineParameters &parameters)
         : m_render_interval_microsecs(100000 / parameters.screen_refresh_rate),
           m_window(parameters.window),
           m_renderer(parameters.renderer) {}
 
-    ~Game() = default;
+    ~Engine() = default;
 
     template <class ScreenT, typename... Args>
     void set_screen(Args... args) {
