@@ -210,7 +210,6 @@ private:
             );
         }
 
-        // TODO Icon and text aren't centered with each other, I hate it
         remaining_mines_icon_texture.area.x = 10;
         remaining_mines_icon_texture.area.y = 10;
         SDL_RenderCopy(m_renderer, remaining_mines_icon_texture.texture, nullptr, &remaining_mines_icon_texture.area);
