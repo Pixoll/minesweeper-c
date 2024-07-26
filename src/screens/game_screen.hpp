@@ -87,7 +87,7 @@ public:
         m_renderer(engine->get_renderer()),
         m_window_width(engine->get_window_width()),
         m_window_height(engine->get_window_height()),
-        m_game(10, 20, 50, engine->get_window_width(), engine->get_window_height()) {
+        m_game(15, 20, 50, engine->get_window_width(), engine->get_window_height()) {
         init_colors(m_window);
 
         const auto [r, g, b, a] = get_color(COLOR_BACKGROUND).rgb;
@@ -295,7 +295,7 @@ private:
     }
 
     static int is_pow2(const int x) {
-        return x > 0 && !(x & (x - 1));
+        return x > 0 && !(x & x - 1);
     }
 
     static int int_log2(int x) {
