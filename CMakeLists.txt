@@ -23,12 +23,12 @@ add_executable(
         minesweeper
         src/main.cpp
         src/game.hpp
+        src/fonts.cpp
+        src/textures.cpp
+        src/core/grid.cpp
         src/screens/screen.hpp
         src/screens/main_menu_screen.hpp
         src/screens/game_screen.hpp
-        src/grid.cpp
-        src/fonts.cpp
-        src/textures.cpp
 )
 
 target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARY} ${SDL2_IMAGE_LIBRARY} ${SDL2_TTF_LIBRARY})

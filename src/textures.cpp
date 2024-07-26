@@ -6,7 +6,7 @@
 #include <SDL_ttf.h>
 
 #include "fonts.hpp"
-#include "grid.hpp"
+#include "core/grid.hpp"
 
 Texture grid_texture;
 

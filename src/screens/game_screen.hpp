@@ -7,8 +7,8 @@
 
 #include "screen.hpp"
 #include "../fonts.hpp"
-#include "../grid.hpp"
 #include "../textures.hpp"
+#include "../core/grid.hpp"
 
 class Game;
 
