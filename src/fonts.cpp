@@ -4,8 +4,6 @@
 #include <iostream>
 #include <SDL_ttf.h>
 
-#include "core/game.hpp"
-
 const char *font_paths[FONT_TYPES] = {
     "assets/fonts/Rubik-Light.ttf",
     "assets/fonts/Rubik-Medium.ttf",
