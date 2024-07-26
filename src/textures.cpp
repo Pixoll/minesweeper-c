@@ -140,14 +140,13 @@ void free_texture(const Texture &texture) {
 
 void init_cell_textures_set(
     SDL_Renderer *renderer,
+    const Game::Measurements &measurements,
     Texture textures[TEXTURE_CELL_TYPES],
     const char *image_path,
     const float image_scale_wrt_cell,
     const ColorName image_color,
     const ColorName cell_color
 ) {
-    const GridMeasurements &measurements = get_game().measurements;
-
     const int cell_size = measurements.cell_size;
     const int cell_offset = measurements.cell_offset;
     const int grid_line_width = measurements.grid_line_width;
@@ -200,17 +199,15 @@ void init_cell_textures_set(
     free_texture(image_texture);
 }
 
-void init_cell_numbers_textures(SDL_Renderer *renderer) {
-    const GridMeasurements &measurements = get_game().measurements;
-
+void init_cell_numbers_textures(SDL_Renderer *renderer, const Game::Measurements &measurements) {
     const int cell_size = measurements.cell_size;
     const int grid_line_width = measurements.grid_line_width;
 
     TTF_Font *cell_sized_font = get_font(FONT_RUBIK_MEDIUM_CELL_SIZED).font;
 
-    for (int cell = CELL_1; cell <= CELL_8; cell++) {
+    for (int cell = Game::CELL_1; cell <= Game::CELL_8; cell++) {
         char cell_text[2];
-        snprintf(cell_text, 2, "%c", '0' + cell - CELL_0);
+        snprintf(cell_text, 2, "%c", '0' + cell - Game::CELL_0);
         const auto [rgb, value] = get_color(static_cast<ColorName>(COLOR_GRID_1 + cell - 1));
 
         SDL_Surface *text_surface = TTF_RenderText_Solid(cell_sized_font, cell_text, rgb);
@@ -222,11 +219,11 @@ void init_cell_numbers_textures(SDL_Renderer *renderer) {
         cell_area.x = (grid_line_width + cell_size - cell_area.w) / 2;
         cell_area.y = (grid_line_width + cell_size - cell_area.h) / 2;
 
-        cell_numbers_textures[cell - CELL_1] = {text_surface, text_texture, cell_area,};
+        cell_numbers_textures[cell - Game::CELL_1] = {text_surface, text_texture, cell_area,};
     }
 }
 
-void init_grid_texture(SDL_Renderer *renderer) {
+void init_grid_texture(SDL_Renderer *renderer, const Game::Measurements &measurements) {
     const auto &[
         cell_size,
         cell_offset,
@@ -236,7 +233,7 @@ void init_grid_texture(SDL_Renderer *renderer) {
         grid_y_offset,
         grid_width,
         grid_height
-    ] = get_game().measurements;
+    ] = measurements;
 
     const int grid_line_offset = (grid_line_width + cell_size - grid_line_length) / 2;
     const auto [r, g, b, a] = get_color(COLOR_LIGHT_GREY).rgb;
@@ -282,14 +279,15 @@ void init_remaining_mines_icon_texture(SDL_Renderer *renderer) {
     remaining_mines_icon_texture.area.h = size;
 }
 
-void init_textures(SDL_Renderer *renderer) {
-    init_grid_texture(renderer);
+void init_textures(SDL_Renderer *renderer, const Game::Measurements &measurements) {
+    init_grid_texture(renderer, measurements);
     init_cell_map_texture(renderer);
-    init_cell_numbers_textures(renderer);
+    init_cell_numbers_textures(renderer, measurements);
     init_remaining_mines_icon_texture(renderer);
 
     init_cell_textures_set(
         renderer,
+        measurements,
         cell_textures[TEXTURE_CELL_COVERED],
         nullptr,
         0,
@@ -298,6 +296,7 @@ void init_textures(SDL_Renderer *renderer) {
     );
     init_cell_textures_set(
         renderer,
+        measurements,
         cell_textures[TEXTURE_CELL_FLAG],
         flag_image_path,
         0.35,
@@ -306,6 +305,7 @@ void init_textures(SDL_Renderer *renderer) {
     );
     init_cell_textures_set(
         renderer,
+        measurements,
         cell_textures[TEXTURE_CELL_FLAGGED_MINE],
         mine_image_path,
         0.5,
@@ -314,6 +314,7 @@ void init_textures(SDL_Renderer *renderer) {
     );
     init_cell_textures_set(
         renderer,
+        measurements,
         cell_textures[TEXTURE_CELL_COVERED_MINE],
         mine_image_path,
         0.5,
@@ -322,6 +323,7 @@ void init_textures(SDL_Renderer *renderer) {
     );
     init_cell_textures_set(
         renderer,
+        measurements,
         cell_textures[TEXTURE_CELL_TRIGGERED_MINE],
         mine_image_path,
         0.5,
@@ -362,8 +364,8 @@ void free_cell_textures_from(Texture textures[TEXTURE_CELL_TYPES]) {
 }
 
 void free_cell_numbers_textures() {
-    for (int cell = CELL_1; cell <= CELL_8; cell++) {
-        const Texture cell_texture = cell_numbers_textures[cell - CELL_1];
+    for (int cell = Game::CELL_1; cell <= Game::CELL_8; cell++) {
+        const Texture cell_texture = cell_numbers_textures[cell - Game::CELL_1];
         free_texture(cell_texture);
     }
 }

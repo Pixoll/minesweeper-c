@@ -13,16 +13,13 @@
 class Engine;
 
 class GameScreen final : virtual public Screen {
-    struct WindowDimensions {
-        int width = -1;
-        int height = -1;
-    };
-
     Engine *m_engine;
-    bool m_placed_mines = false;
     SDL_Window *m_window;
     SDL_Renderer *m_renderer;
-    WindowDimensions m_window_dimensions{};
+    int m_window_width;
+    int m_window_height;
+    Game m_game;
+    bool m_placed_mines = false;
     time_t m_last_game_time_drawn = 0;
     int m_remaining_mines = 0;
 
@@ -84,32 +81,33 @@ class GameScreen final : virtual public Screen {
     };
 
 public:
-    explicit GameScreen(Engine *engine) : m_engine(engine) {
-        m_window = m_engine->get_window();
-        m_renderer = m_engine->get_renderer();
-
-        create_grid(10, 20, 50);
+    explicit GameScreen(Engine *engine) :
+        m_engine(engine),
+        m_window(engine->get_window()),
+        m_renderer(engine->get_renderer()),
+        m_window_width(engine->get_window_width()),
+        m_window_height(engine->get_window_height()),
+        m_game(10, 20, 50, engine->get_window_width(), engine->get_window_height()) {
         init_colors(m_window);
 
         const auto [r, g, b, a] = get_color(COLOR_BACKGROUND).rgb;
         SDL_SetRenderDrawColor(m_renderer, r, g, b, a);
 
-        SDL_GetWindowSize(m_window, &m_window_dimensions.width, &m_window_dimensions.height);
-        calculate_grid_measurements(m_window_dimensions.width, m_window_dimensions.height);
+        const Game::Measurements &measurements = m_game.get_measurements();
 
-        init_fonts(m_window_dimensions.height);
-        init_textures(m_renderer);
+        init_fonts(m_window_height, measurements.cell_size);
+        init_textures(m_renderer, measurements);
     }
 
     ~GameScreen() override = default;
 
     void run_logic(const SDL_Event &event) override {
-        if (event.type != SDL_MOUSEBUTTONDOWN || get_game().over)
+        if (event.type != SDL_MOUSEBUTTONDOWN || m_game.is_over())
             return;
 
         int click_x, click_y;
         SDL_GetMouseState(&click_x, &click_y);
-        const auto [x, y, inside] = calculate_grid_cell(click_x, click_y);
+        const auto [x, y, inside] = m_game.calculate_grid_cell(click_x, click_y);
 
         if (!inside)
             return;
@@ -117,11 +115,11 @@ public:
         switch (event.button.button) {
             case SDL_BUTTON_LEFT: {
                 if (!m_placed_mines) {
-                    place_grid_mines(x, y);
+                    m_game.place_grid_mines(x, y);
                     m_placed_mines = true;
                 }
 
-                reveal_cell(x, y);
+                m_game.reveal_cell(x, y);
                 break;
             }
 
@@ -129,7 +127,7 @@ public:
                 if (!m_placed_mines)
                     break;
 
-                toggle_cell_flag(x, y);
+                m_game.toggle_cell_flag(x, y);
                 break;
             }
 
@@ -150,14 +148,15 @@ public:
 
 private:
     void draw_grid() const {
-        const Game &game = get_game();
         const Texture &grid_texture = get_texture(TEXTURE_GRID);
 
-        const int rows = game.rows;
-        const int columns = game.columns;
-        const int cell_size = game.measurements.cell_size;
-        const int grid_x_offset = game.measurements.grid_x_offset;
-        const int grid_y_offset = game.measurements.grid_y_offset;
+        const int rows = m_game.get_rows();
+        const int columns = m_game.get_columns();
+
+        const Game::Measurements &measurements = m_game.get_measurements();
+        const int cell_size = measurements.cell_size;
+        const int grid_x_offset = measurements.grid_x_offset;
+        const int grid_y_offset = measurements.grid_y_offset;
 
         // Draw grid
         SDL_RenderCopy(m_renderer, grid_texture.texture, nullptr, &grid_texture.area);
@@ -168,9 +167,9 @@ private:
 
             for (int j = 0; j < rows; j++) {
                 const int y = grid_y_offset + cell_size * j;
-                const GridCell cell = game.grid[i][j];
+                const Game::GridCell cell = m_game.get_grid_cell(i, j);
 
-                if (cell.type == CELL_0 && cell.revealed)
+                if (cell.type == Game::CELL_0 && cell.revealed)
                     continue;
 
                 const TextureCellType cell_type = get_cell_type(i, j, cell.flagged, cell.revealed);
@@ -193,11 +192,10 @@ private:
     }
 
     void draw_remaining_mines() {
-        const Game &game = get_game();
         Texture &remaining_mines_text_texture = get_texture(TEXTURE_REMAINING_MINES_TEXT);
         Texture &remaining_mines_icon_texture = get_texture(TEXTURE_REMAINING_MINES_ICON);
 
-        const int current_remaining = game.total_mines - game.flagged_mines;
+        const int current_remaining = m_game.get_total_mines() - m_game.get_flagged_mines();
 
         if (m_remaining_mines != current_remaining) {
             m_remaining_mines = current_remaining;
@@ -241,16 +239,16 @@ private:
     void draw_game_time() {
         using std::string;
 
-        const Game &game = get_game();
         Texture &game_time_text_texture = get_texture(TEXTURE_GAME_TIME_TEXT);
+        const time_t start_time = m_game.get_start_time();
 
-        if (game.start_time == 0)
+        if (start_time == 0)
             return;
 
         const time_t now = time(nullptr);
-        if (m_last_game_time_drawn == 0 || (!game.over && m_last_game_time_drawn < now)) {
+        if (m_last_game_time_drawn == 0 || (!m_game.is_over() && m_last_game_time_drawn < now)) {
             m_last_game_time_drawn = now;
-            const string time_string = get_time_string(now - game.start_time);
+            const string time_string = get_time_string(now - start_time);
             update_text_texture(
                 m_renderer,
                 &game_time_text_texture,
@@ -265,10 +263,8 @@ private:
         SDL_RenderCopy(m_renderer, game_time_text_texture.texture, nullptr, &game_time_text_texture.area);
     }
 
-    static Texture get_grid_cell_texture(const GridCell cell, const TextureCellType type) {
-        const Game &game = get_game();
-
-        if (game.over && !game.won && cell.type == CELL_MINE) {
+    Texture get_grid_cell_texture(const Game::GridCell cell, const TextureCellType type) const {
+        if (m_game.is_over() && !m_game.has_won() && cell.type == Game::CELL_MINE) {
             if (cell.flagged)
                 return get_cell_texture(TEXTURE_CELL_FLAGGED_MINE, type);
 
@@ -284,12 +280,12 @@ private:
         if (!cell.revealed)
             return get_cell_texture(TEXTURE_CELL_COVERED, type);
 
-        return get_cell_number_texture(cell.type - CELL_1);
+        return get_cell_number_texture(cell.type - Game::CELL_1);
     }
 
-    static bool verify_cell(const int x, const int y, const bool flagged) {
-        const GameGrid &grid = get_game().grid;
-        return !grid[x][y].revealed && flagged == grid[x][y].flagged;
+    bool verify_cell(const int x, const int y, const bool flagged) const {
+        const auto [type, cell_flagged, revealed] = m_game.get_grid_cell(x, y);
+        return !revealed && flagged == cell_flagged;
     }
 
     static bool verify_corners_with_mask(const int corners, const int mask) {
@@ -310,14 +306,12 @@ private:
         return log2;
     }
 
-    static TextureCellType get_cell_type(const int x, const int y, const bool flagged, const bool revealed) {
+    TextureCellType get_cell_type(const int x, const int y, const bool flagged, const bool revealed) const {
         if (revealed)
             return TEXTURE_CELL_NO_SIDES;
 
-        const Game &game = get_game();
-
-        const int rows = game.rows;
-        const int columns = game.columns;
+        const int rows = m_game.get_rows();
+        const int columns = m_game.get_columns();
 
         const bool T = y - 1 >= 0 && verify_cell(x, y - 1, flagged);
         const bool B = y + 1 <= rows - 1 && verify_cell(x, y + 1, flagged);

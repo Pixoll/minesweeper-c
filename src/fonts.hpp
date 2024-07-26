@@ -22,6 +22,6 @@ enum FontName {
     FONT_NAMES,
 };
 
-void init_fonts(int window_height);
+void init_fonts(int window_height, int cell_size);
 Font get_font(FontName name);
 void free_fonts();

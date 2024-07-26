@@ -25,7 +25,7 @@ add_executable(
         src/engine.hpp
         src/fonts.cpp
         src/textures.cpp
-        src/core/game.cpp
+        src/core/game.hpp
         src/screens/screen.hpp
         src/screens/main_menu_screen.hpp
         src/screens/game_screen.hpp

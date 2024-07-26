@@ -20,12 +20,16 @@ class Engine {
     microseconds m_render_interval_microsecs;
     SDL_Window *m_window;
     SDL_Renderer *m_renderer;
+    int m_window_width = 0;
+    int m_window_height = 0;
 
 public:
     explicit Engine(const EngineParameters &parameters)
         : m_render_interval_microsecs(100000 / parameters.screen_refresh_rate),
           m_window(parameters.window),
-          m_renderer(parameters.renderer) {}
+          m_renderer(parameters.renderer) {
+        SDL_GetWindowSize(m_window, &m_window_width, &m_window_height);
+    }
 
     ~Engine() = default;
 
@@ -34,12 +38,20 @@ public:
         m_screen = std::make_unique<ScreenT>(args...);
     }
 
-    [[nodiscard]] SDL_Window *get_window() const {
+    SDL_Window *get_window() const {
         return m_window;
     }
 
-    [[nodiscard]] SDL_Renderer *get_renderer() const {
+    SDL_Renderer *get_renderer() const {
         return m_renderer;
+    }
+
+    int get_window_width() const {
+        return m_window_width;
+    }
+
+    int get_window_height() const {
+        return m_window_height;
     }
 
     void run() const {

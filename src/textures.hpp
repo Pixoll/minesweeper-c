@@ -3,6 +3,7 @@
 #include <SDL.h>
 
 #include "fonts.hpp"
+#include "core/game.hpp"
 
 struct Texture {
     SDL_Surface *surface = nullptr;
@@ -126,7 +127,7 @@ struct Color {
     Color(const SDL_Surface *surface, const char *hex_color);
 };
 
-void init_textures(SDL_Renderer *renderer);
+void init_textures(SDL_Renderer *renderer, const Game::Measurements &measurements);
 Texture get_cell_texture(TextureCellSubtype subtype, TextureCellType type);
 Texture get_cell_number_texture(int number);
 Texture &get_texture(TextureName name);
