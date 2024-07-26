@@ -26,7 +26,6 @@ add_executable(
         src/screens/screen.hpp
         src/screens/main_menu_screen.hpp
         src/screens/game_screen.hpp
-        src/grid_ui.cpp
         src/grid.cpp
         src/fonts.cpp
         src/textures.cpp
