@@ -216,7 +216,8 @@ private:
         SDL_RenderCopy(m_renderer, remaining_mines_icon_texture.texture, nullptr, &remaining_mines_icon_texture.area);
 
         remaining_mines_text_texture.area.x = remaining_mines_icon_texture.area.w + 20;
-        remaining_mines_text_texture.area.y = 10;
+        remaining_mines_text_texture.area.y = 10
+                + (remaining_mines_icon_texture.area.h - remaining_mines_text_texture.area.h) / 2;
         SDL_RenderCopy(m_renderer, remaining_mines_text_texture.texture, nullptr, &remaining_mines_text_texture.area);
     }
 
@@ -306,7 +307,12 @@ private:
         return log2;
     }
 
-    [[nodiscard]] TextureCellType get_cell_type(const int x, const int y, const bool flagged, const bool revealed) const {
+    [[nodiscard]] TextureCellType get_cell_type(
+        const int x,
+        const int y,
+        const bool flagged,
+        const bool revealed
+    ) const {
         if (revealed)
             return TEXTURE_CELL_NO_SIDES;
 
