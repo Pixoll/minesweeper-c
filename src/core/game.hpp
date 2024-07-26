@@ -2,6 +2,7 @@
 
 #include <cstdlib>
 #include <ctime>
+#include <random>
 #include <vector>
 
 class Game {
@@ -56,6 +57,8 @@ private:
     bool m_over = false;
     bool m_won = false;
     Measurements m_measurements{};
+    std::mt19937_64 m_random_generator_engine = std::mt19937_64(std::random_device{}());
+    std::uniform_int_distribution<char> m_random_generator;
 
 public:
     Game(const int rows, const int columns, const int mines_count, const int window_width, const int window_height) :
@@ -269,8 +272,8 @@ public:
     }
 
 private:
-    static int random_between(const int min, const int max) {
-        return rand() % (max - min + 1) + min;
+    int random_between(const int min, const int max) {
+        return m_random_generator(m_random_generator_engine) % (max - min + 1) + min;
     }
 
     [[nodiscard]] CellType count_surrounding_mines(const int x, const int y) const {
