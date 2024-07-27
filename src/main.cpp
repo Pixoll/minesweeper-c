@@ -11,6 +11,7 @@ EngineParameters start_sdl();
 void quit_sdl(SDL_Renderer *renderer, SDL_Window *window);
 void throw_sdl_error(const char *function_name, int code = 0);
 
+// ReSharper disable CppParameterNeverUsed
 int main(int argc, char *argv[]) {
     const EngineParameters parameters = start_sdl();
 
