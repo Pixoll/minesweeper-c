@@ -88,11 +88,6 @@ public:
         m_window_width(engine->get_window_width()),
         m_window_height(engine->get_window_height()),
         m_game(15, 20, 50, engine->get_window_width(), engine->get_window_height()) {
-        init_colors(m_window);
-
-        const auto [r, g, b, a] = get_color(COLOR_BACKGROUND).rgb;
-        SDL_SetRenderDrawColor(m_renderer, r, g, b, a);
-
         const Game::Measurements &measurements = m_game.get_measurements();
 
         init_fonts(m_window_height, measurements.cell_size);
