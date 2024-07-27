@@ -60,7 +60,7 @@ public:
         return m_window_height;
     }
 
-    void run() const {
+    void run() {
         SDL_Event event;
         bool quit = false;
 
@@ -84,5 +84,7 @@ public:
 
             std::this_thread::sleep_for(m_render_interval_microsecs);
         }
+
+        m_screen = nullptr;
     }
 };
