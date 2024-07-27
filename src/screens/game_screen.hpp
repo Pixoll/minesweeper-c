@@ -10,6 +10,7 @@
 #include "../graphics/fonts.hpp"
 #include "../graphics/textures.hpp"
 
+class MainMenuScreen;
 class Engine;
 
 class GameScreen final : virtual public Screen {
@@ -94,11 +95,19 @@ public:
         init_textures(m_renderer, measurements);
     }
 
-    ~GameScreen() override = default;
+    ~GameScreen() override {
+        free_fonts();
+        free_textures();
+    }
 
     void run_logic(const SDL_Event &event) override {
-        if (event.type != SDL_MOUSEBUTTONDOWN || m_game.is_over())
+        if (event.type != SDL_MOUSEBUTTONDOWN)
             return;
+
+        if (m_game.is_over()) {
+            m_engine->set_screen<MainMenuScreen>(m_engine);
+            return;
+        }
 
         int click_x, click_y;
         SDL_GetMouseState(&click_x, &click_y);
