@@ -33,3 +33,11 @@ add_executable(
 )
 
 target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARY} ${SDL2_IMAGE_LIBRARY} ${SDL2_TTF_LIBRARY})
+
+add_custom_target(assets_data
+        COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+        "${CMAKE_CURRENT_SOURCE_DIR}/assets/"
+        "${CMAKE_CURRENT_BINARY_DIR}/assets"
+)
+
+add_dependencies(minesweeper assets_data)
