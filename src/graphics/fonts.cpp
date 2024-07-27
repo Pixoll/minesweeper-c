@@ -36,6 +36,8 @@ Font get_font(const FontName name) {
 }
 
 void free_fonts() {
-    for (const auto &[font, size] : fonts)
+    for (auto &[font, size] : fonts) {
         TTF_CloseFont(font);
+        font = nullptr;
+    }
 }
