@@ -9,9 +9,10 @@ class Engine;
 
 class MainMenuScreen final : virtual public Screen {
     Engine *m_engine;
+    SDL_Renderer *m_renderer;
 
 public:
-    explicit MainMenuScreen(Engine *engine) : m_engine(engine) {}
+    explicit MainMenuScreen(Engine *engine) : m_engine(engine), m_renderer(engine->get_renderer()) {}
 
     ~MainMenuScreen() override = default;
 
@@ -25,5 +26,8 @@ public:
         m_engine->set_screen<GameScreen>(m_engine);
     }
 
-    void render() override {}
+    void render() override {
+        SDL_RenderClear(m_renderer);
+        SDL_RenderPresent(m_renderer);
+    }
 };
