@@ -12,15 +12,17 @@ enum FontType {
     FONT_RUBIK_MEDIUM,
     FONT_RUBIK_REGULAR,
     FONT_RUBIK_BOLD,
-    FONT_TYPES,
 };
+
+constexpr int FONT_TYPES = FONT_RUBIK_BOLD + 1;
 
 enum FontName {
     FONT_RUBIK_MEDIUM_CELL_SIZED,
     FONT_RUBIK_MEDIUM_PRIMARY,
     FONT_RUBIK_MEDIUM_SECONDARY,
-    FONT_NAMES,
 };
+
+constexpr int FONT_NAMES = FONT_RUBIK_MEDIUM_SECONDARY + 1;
 
 void init_fonts(int window_height, int cell_size);
 Font get_font(FontName name);
