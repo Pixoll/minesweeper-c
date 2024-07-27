@@ -131,11 +131,14 @@ void init_cell_map_texture(SDL_Renderer *renderer) {
     cell_map_texture.texture = texture;
 }
 
-void free_texture(const Texture &texture) {
+void free_texture(Texture &texture) {
     if (texture.surface != nullptr)
         SDL_FreeSurface(texture.surface);
     if (texture.texture != nullptr)
         SDL_DestroyTexture(texture.texture);
+
+    texture.surface = nullptr;
+    texture.texture = nullptr;
 }
 
 void init_cell_textures_set(
@@ -365,7 +368,7 @@ void free_cell_textures_from(Texture textures[TEXTURE_CELL_TYPES]) {
 
 void free_cell_numbers_textures() {
     for (int cell = Game::CELL_1; cell <= Game::CELL_8; cell++) {
-        const Texture cell_texture = cell_numbers_textures[cell - Game::CELL_1];
+        Texture cell_texture = cell_numbers_textures[cell - Game::CELL_1];
         free_texture(cell_texture);
     }
 }
