@@ -22,7 +22,7 @@ class GameScreen final : virtual public Screen {
     time_t m_last_game_time_drawn = 0;
     int m_remaining_mines = 0;
 
-    static constexpr Texture::CellType m_texture_cell_side_type_order[16] = {
+    static constexpr Texture::CellType TEXTURE_CELL_SIDE_TYPE_ORDER[16] = {
         Texture::CELL_NO_SIDES,
         Texture::CELL_R,
         Texture::CELL_L,
@@ -41,7 +41,7 @@ class GameScreen final : virtual public Screen {
         Texture::CELL_TBLR,
     };
 
-    static constexpr Texture::CellType m_texture_cell_corner_type_order[33] = {
+    static constexpr Texture::CellType TEXTURE_CELL_CORNER_TYPE_ORDER[33] = {
         Texture::CELL_TBLR_BRC,
         Texture::CELL_TBLR_BLC,
         Texture::CELL_TBLR_BLCRC,
@@ -332,21 +332,21 @@ private:
         const int TLR_BLR_C = TLC << 3 | TRC << 2 | BLC << 1 | BRC;
 
         if (TLR_BLR_C == 0b0000)
-            return m_texture_cell_side_type_order[TBLR];
+            return TEXTURE_CELL_SIDE_TYPE_ORDER[TBLR];
         if (TBLR == 0b1111)
-            return m_texture_cell_corner_type_order[TLR_BLR_C - 1];
+            return TEXTURE_CELL_CORNER_TYPE_ORDER[TLR_BLR_C - 1];
 
         if (TBLR == 0b0111 && verify_corners_with_mask(TLR_BLR_C, 0b0011))
-            return m_texture_cell_corner_type_order[TLR_BLR_C + 14];
+            return TEXTURE_CELL_CORNER_TYPE_ORDER[TLR_BLR_C + 14];
         if (TBLR == 0b1011 && verify_corners_with_mask(TLR_BLR_C, 0b1100))
-            return m_texture_cell_corner_type_order[TLR_BLR_C + 15];
+            return TEXTURE_CELL_CORNER_TYPE_ORDER[TLR_BLR_C + 15];
         if (TBLR == 0b1101 && verify_corners_with_mask(TLR_BLR_C, 0b0101))
-            return m_texture_cell_corner_type_order[TLR_BLR_C + 17];
+            return TEXTURE_CELL_CORNER_TYPE_ORDER[TLR_BLR_C + 17];
         if (TBLR == 0b1110 && verify_corners_with_mask(TLR_BLR_C, 0b1010))
-            return m_texture_cell_corner_type_order[TLR_BLR_C + 18];
+            return TEXTURE_CELL_CORNER_TYPE_ORDER[TLR_BLR_C + 18];
 
         if (is_pow2(TLR_BLR_C))
-            return m_texture_cell_corner_type_order[int_log2(TLR_BLR_C) + 29];
+            return TEXTURE_CELL_CORNER_TYPE_ORDER[int_log2(TLR_BLR_C) + 29];
 
         // Impossible to reach? Not reached in huge grid
         std::cerr << "Not impossible to reach" << std::endl;
