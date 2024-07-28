@@ -28,9 +28,6 @@ const auto flag_image_path = "assets/images/flag.png";
 const auto grid_line_horizontal_image_path = "assets/images/grid_line_horizontal.png";
 const auto grid_line_vertical_image_path = "assets/images/grid_line_vertical.png";
 
-const auto grid_filler_horizontal_image_path = "assets/images/grid_filler_horizontal.png";
-const auto grid_filler_vertical_image_path = "assets/images/grid_filler_vertical.png";
-
 Color colors[Color::NAMES_AMOUNT];
 
 void init_colors(SDL_Window *window) {
