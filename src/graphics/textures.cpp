@@ -31,27 +31,6 @@ const auto grid_line_vertical_image_path = "assets/images/grid_line_vertical.png
 const auto grid_filler_horizontal_image_path = "assets/images/grid_filler_horizontal.png";
 const auto grid_filler_vertical_image_path = "assets/images/grid_filler_vertical.png";
 
-Color::Color(const SDL_Surface *surface, const char *hex_color) {
-    if (hex_color[0] == '#')
-        hex_color++;  // shift left once
-
-    const int rgb = strtol(hex_color, nullptr, 16);
-    const Uint8 r = rgb >> 16 & 0xff;
-    const Uint8 g = rgb >> 8 & 0xff;
-    const Uint8 b = rgb & 0xff;
-
-    this->rgb = {r, g, b, 255};
-    this->value = SDL_MapRGB(surface->format, r, g, b);
-}
-
-Texture::Texture(SDL_Renderer *renderer, const char *image_path) {
-    SDL_Surface *surface = IMG_Load(image_path);
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-    this->area = {0, 0, surface->w, surface->h};
-    this->surface = surface;
-    this->texture = texture;
-}
-
 Color colors[Color::NAMES_AMOUNT];
 
 void init_colors(SDL_Window *window) {
@@ -93,16 +72,16 @@ SDL_Texture *create_texture(SDL_Renderer *renderer, const int width, const int h
 
 // SDL_Surface *create_surface(SDL_Window *window, const int width, const int height) {
 //     const Uint32 pixel_format = SDL_GetWindowSurface(window)->format->format;
-//     SDL_Surface *surface = SDL_CreateRGBSurfaceWithFormat(0, width, height, 32, pixel_format);
-//     return surface;
+//     SDL_Surface *m_surface = SDL_CreateRGBSurfaceWithFormat(0, width, height, 32, pixel_format);
+//     return m_surface;
 // }
 
 // SDL_Surface *create_colored_surface(SDL_Window *window, const int width, const int height, const ColorName color) {
-//     SDL_Surface *surface = create_surface(window, width, height);
-//     const SDL_Rect area = {0, 0, width, height};
+//     SDL_Surface *m_surface = create_surface(window, width, height);
+//     const SDL_Rect m_area = {0, 0, width, height};
 //     const Uint32 surface_color = get_color(color).value;
-//     SDL_FillRect(surface, &area, surface_color);
-//     return surface;
+//     SDL_FillRect(m_surface, &m_area, surface_color);
+//     return m_surface;
 // }
 
 // void initCellSizedTextureFromImage(const char *imagePath, Texture *destTexture, const ColorName color) {
@@ -118,27 +97,19 @@ SDL_Texture *create_texture(SDL_Renderer *renderer, const int width, const int h
 
 //     SDL_SetTextureColorMod(texture, textureColor.r, textureColor.g, textureColor.b);
 
-//     destTexture->area = area;
-//     destTexture->surface = surface;
-//     destTexture->texture = texture;
+//     destTexture->m_area = area;
+//     destTexture->m_surface = surface;
+//     destTexture->m_texture = texture;
 // }
 
 void init_cell_map_texture(SDL_Renderer *renderer) {
     SDL_Surface *surface = IMG_Load(cell_map_path);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-    cell_map_texture.area = {0, 0, surface->w, surface->h};
-    cell_map_texture.surface = surface;
-    cell_map_texture.texture = texture;
-}
-
-void free_texture(Texture &texture) {
-    if (texture.surface != nullptr)
-        SDL_FreeSurface(texture.surface);
-    if (texture.texture != nullptr)
-        SDL_DestroyTexture(texture.texture);
-
-    texture.surface = nullptr;
-    texture.texture = nullptr;
+    cell_map_texture = {
+        surface,
+        texture,
+        {0, 0, surface->w, surface->h},
+    };
 }
 
 void init_cell_textures_set(
@@ -162,12 +133,13 @@ void init_cell_textures_set(
     Texture image_texture{};
 
     if (image_path != nullptr && image_scale_wrt_cell != 0) {
-        image_texture.surface = IMG_Load(image_path);
-        image_texture.texture = SDL_CreateTextureFromSurface(renderer, image_texture.surface);
-        image_texture.area = {image_offset, image_offset, image_size, image_size};
+        image_texture = {
+            renderer,
+            image_path,
+            {image_offset, image_offset, image_size, image_size},
+        };
 
-        const auto [r, g, b, a] = get_color(image_color).rgb;
-        SDL_SetTextureColorMod(image_texture.texture, r, g, b);
+        image_texture.set_color_mod(get_color(image_color).rgb);
     }
 
     for (int type = 0; type < Texture::CELL_TYPES; type++) {
@@ -176,30 +148,24 @@ void init_cell_textures_set(
             texture_area,
         };
 
-        SDL_SetRenderTarget(renderer, textures[type].texture);
-        SDL_SetTextureBlendMode(textures[type].texture, SDL_BLENDMODE_BLEND);
+        textures[type].set_as_render_target(renderer);
 
         const int map_index = type * cell_texture_size;
-        const int map_x = map_index % cell_map_texture.area.w;
-        const int map_y = map_index / cell_map_texture.area.h * cell_texture_size;
-        const SDL_Rect cell_texture_area = {map_x, map_y, cell_texture_size, cell_texture_size};
+        const int map_x = map_index % cell_map_texture.get_w();
+        const int map_y = map_index / cell_map_texture.get_h() * cell_texture_size;
 
-        SDL_SetTextureColorMod(
-            cell_map_texture.texture,
-            cell_texture_color.r,
-            cell_texture_color.g,
-            cell_texture_color.b
-        );
-        SDL_RenderCopy(renderer, cell_map_texture.texture, &cell_texture_area, nullptr);
-        SDL_SetTextureColorMod(cell_map_texture.texture, 255, 255, 255);
+        cell_map_texture.set_color_mod(cell_texture_color);
+        cell_map_texture.render(renderer, {map_x, map_y, cell_texture_size, cell_texture_size});
+
+        cell_map_texture.set_color_mod({255, 255, 255});
 
         if (image_path != nullptr && image_scale_wrt_cell != 0)
-            SDL_RenderCopy(renderer, image_texture.texture, nullptr, &image_texture.area);
+            image_texture.render(renderer, NULL_RECT, image_texture.get_area());
 
         SDL_SetRenderTarget(renderer, nullptr);
     }
 
-    free_texture(image_texture);
+    image_texture.destroy();
 }
 
 void init_cell_numbers_textures(SDL_Renderer *renderer, const Game::Measurements &measurements) {
@@ -211,7 +177,7 @@ void init_cell_numbers_textures(SDL_Renderer *renderer, const Game::Measurements
     for (int cell = Game::CELL_1; cell <= Game::CELL_8; cell++) {
         char cell_text[2];
         snprintf(cell_text, 2, "%c", '0' + cell - Game::CELL_0);
-        const auto [rgb, value] = get_color(static_cast<Color::Name>(Color::GRID_1 + cell - 1));
+        const auto [rgb, value] = get_color(static_cast<Color::Name>(Color::GRID_1 + cell - Game::CELL_1));
 
         SDL_Surface *text_surface = TTF_RenderText_Solid(cell_sized_font, cell_text, rgb);
         SDL_Texture *text_texture = SDL_CreateTextureFromSurface(renderer, text_surface);
@@ -239,51 +205,47 @@ void init_grid_texture(SDL_Renderer *renderer, const Game::Measurements &measure
     ] = measurements;
 
     const int grid_line_offset = (grid_line_width + cell_size - grid_line_length) / 2;
-    const auto [r, g, b, a] = get_color(Color::LIGHT_GREY).rgb;
+    const SDL_Color light_grey = get_color(Color::LIGHT_GREY).rgb;
 
     grid_texture = {
         create_texture(renderer, grid_width, grid_height, SDL_TEXTUREACCESS_TARGET),
         {grid_x_offset, grid_y_offset, grid_width, grid_height},
     };
 
-    SDL_SetRenderTarget(renderer, grid_texture.texture);
-    SDL_SetTextureBlendMode(grid_texture.texture, SDL_BLENDMODE_BLEND);
+    grid_texture.set_as_render_target(renderer);
 
-    SDL_Surface *grid_line_h_surface = IMG_Load(grid_line_horizontal_image_path);
-    SDL_Texture *grid_line_h_texture = SDL_CreateTextureFromSurface(renderer, grid_line_h_surface);
-    SDL_SetTextureColorMod(grid_line_h_texture, r, g, b);
+    Texture grid_line_h_texture(renderer, grid_line_horizontal_image_path);
+    grid_line_h_texture.set_color_mod(light_grey);
 
-    SDL_Surface *grid_line_v_surface = IMG_Load(grid_line_vertical_image_path);
-    SDL_Texture *grid_line_v_texture = SDL_CreateTextureFromSurface(renderer, grid_line_v_surface);
-    SDL_SetTextureColorMod(grid_line_v_texture, r, g, b);
+    Texture grid_line_v_texture(renderer, grid_line_vertical_image_path);
+    grid_line_v_texture.set_color_mod(light_grey);
 
     for (int x = 0; x < grid_width - grid_line_width; x += cell_size) {
         for (int y = 0; y < grid_height - grid_line_width; y += cell_size) {
-            if (x > 0) {
-                const SDL_Rect vertical = {x, y + grid_line_offset, grid_line_width, grid_line_length};
-                SDL_RenderCopy(renderer, grid_line_v_texture, nullptr, &vertical);
-            }
-            if (y > 0) {
-                const SDL_Rect horizontal = {x + grid_line_offset, y, grid_line_length, grid_line_width};
-                SDL_RenderCopy(renderer, grid_line_h_texture, nullptr, &horizontal);
-            }
+            if (x > 0)
+                grid_line_v_texture.render(
+                    renderer,
+                    NULL_RECT,
+                    {x, y + grid_line_offset, grid_line_width, grid_line_length}
+                );
+
+            if (y > 0)
+                grid_line_h_texture.render(
+                    renderer,
+                    NULL_RECT,
+                    {x + grid_line_offset, y, grid_line_length, grid_line_width}
+                );
         }
     }
 
     SDL_SetRenderTarget(renderer, nullptr);
-
-    SDL_FreeSurface(grid_line_h_surface);
-    SDL_DestroyTexture(grid_line_h_texture);
-
-    SDL_FreeSurface(grid_line_v_surface);
-    SDL_DestroyTexture(grid_line_v_texture);
+    grid_line_h_texture.destroy();
+    grid_line_v_texture.destroy();
 }
 
 void init_remaining_mines_icon_texture(SDL_Renderer *renderer) {
     remaining_mines_icon_texture = {renderer, mine_image_path};
-    const int size = get_font(Font::RUBIK_MEDIUM_PRIMARY).size;
-    remaining_mines_icon_texture.area.w = size;
-    remaining_mines_icon_texture.area.h = size;
+    remaining_mines_icon_texture.set_size(get_font(Font::RUBIK_MEDIUM_PRIMARY).size);
 }
 
 void init_textures(SDL_Renderer *renderer, const Game::Measurements &measurements) {
@@ -338,7 +300,7 @@ void init_textures(SDL_Renderer *renderer, const Game::Measurements &measurement
         Color::TRIGGERED_MINE_BG
     );
 
-    free_texture(cell_map_texture);
+    cell_map_texture.destroy();
 }
 
 Texture get_cell_texture(const Texture::CellSubtype subtype, const Texture::CellType type) {
@@ -361,7 +323,7 @@ Texture &get_texture(const Texture::Name name) {
         case Texture::REMAINING_MINES_TEXT: return remaining_mines_text_texture;
         case Texture::REMAINING_MINES_ICON: return remaining_mines_icon_texture;
         default: {
-            std::cerr << "Invalid texture name " << name << std::endl;
+            std::cerr << "Invalid m_texture name " << name << std::endl;
             exit(1);
         }
     }
@@ -369,14 +331,12 @@ Texture &get_texture(const Texture::Name name) {
 
 void free_cell_textures_from(Texture textures[Texture::CELL_TYPES]) {
     for (int type = 0; type < Texture::CELL_TYPES; type++)
-        free_texture(textures[type]);
+        textures[type].destroy();
 }
 
 void free_cell_numbers_textures() {
-    for (int cell = Game::CELL_1; cell <= Game::CELL_8; cell++) {
-        Texture cell_texture = cell_numbers_textures[cell - Game::CELL_1];
-        free_texture(cell_texture);
-    }
+    for (int cell = Game::CELL_1; cell <= Game::CELL_8; cell++)
+        cell_numbers_textures[cell - Game::CELL_1].destroy();
 }
 
 void free_textures() {
@@ -388,27 +348,26 @@ void free_textures() {
     free_cell_textures_from(cell_textures[Texture::CELL_TRIGGERED_MINE]);
     free_cell_textures_from(cell_textures[Texture::CELL_FLAG]);
 
-    free_texture(grid_texture);
-
-    free_texture(game_time_text_texture);
-    free_texture(remaining_mines_text_texture);
+    grid_texture.destroy();
+    game_time_text_texture.destroy();
+    remaining_mines_text_texture.destroy();
 }
 
 void update_text_texture(
     SDL_Renderer *renderer,
-    Texture *texture,
+    Texture &texture,
     const Font::Name font_name,
     const Color::Name color,
     const char *text
 ) {
-    if (texture->texture != nullptr)
-        free_texture(*texture);
+    texture.destroy();
 
     SDL_Surface *text_surface = TTF_RenderText_Solid(get_font(font_name).font, text, get_color(color).rgb);
     SDL_Texture *text_texture = SDL_CreateTextureFromSurface(renderer, text_surface);
-    const SDL_Rect area = {0, 0, text_surface->w, text_surface->h};
 
-    texture->surface = text_surface;
-    texture->texture = text_texture;
-    texture->area = area;
+    texture = {
+        text_surface,
+        text_texture,
+        {0, 0, text_surface->w, text_surface->h},
+    };
 }

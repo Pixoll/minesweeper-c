@@ -1,27 +1,96 @@
 #pragma once
 
+#include <cstdlib>
 #include <SDL.h>
+#include <SDL_image.h>
 
 #include "fonts.hpp"
 #include "../core/game.hpp"
 
-struct Texture {
-    SDL_Surface *surface = nullptr;
-    SDL_Texture *texture = nullptr;
-    SDL_Rect area{0, 0, 0, 0};
+constexpr SDL_Rect NULL_RECT = {0, 0, 0, 0};
 
+class Texture {
+    SDL_Surface *m_surface = nullptr;
+    SDL_Texture *m_texture = nullptr;
+    SDL_Rect m_area{0, 0, 0, 0};
+
+public:
     Texture() = default;
 
-    Texture(SDL_Surface *_surface, SDL_Texture *_texture, const SDL_Rect _area) :
-        surface(_surface),
-        texture(_texture),
-        area(_area) {}
+    Texture(SDL_Surface *surface, SDL_Texture *texture, const SDL_Rect area) :
+        m_surface(surface),
+        m_texture(texture),
+        m_area(area) {}
 
-    Texture(SDL_Texture *_texture, const SDL_Rect _area) :
-        texture(_texture),
-        area(_area) {}
+    Texture(SDL_Texture *texture, const SDL_Rect area) : Texture(nullptr, texture, area) {}
 
-    Texture(SDL_Renderer *renderer, const char *image_path);
+    Texture(SDL_Renderer *renderer, const char *image_path) {
+        m_surface = IMG_Load(image_path);
+        m_texture = SDL_CreateTextureFromSurface(renderer, m_surface);
+        m_area = {0, 0, m_surface->w, m_surface->h};
+    }
+
+    Texture(SDL_Renderer *renderer, const char *image_path, const SDL_Rect area) : m_area(area) {
+        m_surface = IMG_Load(image_path);
+        m_texture = SDL_CreateTextureFromSurface(renderer, m_surface);
+    }
+
+    ~Texture() = default;
+
+    [[nodiscard]] int get_h() const {
+        return m_area.h;
+    }
+
+    [[nodiscard]] int get_w() const {
+        return m_area.w;
+    }
+
+    [[nodiscard]] const SDL_Rect &get_area() const {
+        return m_area;
+    }
+
+    void set_size(const int size) {
+        m_area.h = size;
+        m_area.w = size;
+    }
+
+    void set_position(const int x, const int y) {
+        m_area.x = x;
+        m_area.y = y;
+    }
+
+    void move(const int x_pixels, const int y_pixels) {
+        m_area.x += x_pixels;
+        m_area.y += y_pixels;
+    }
+
+    void set_color_mod(const SDL_Color color) const {
+        SDL_SetTextureColorMod(m_texture, color.r, color.g, color.b);
+    }
+
+    void set_as_render_target(SDL_Renderer *renderer, const SDL_BlendMode blend_mode = SDL_BLENDMODE_BLEND) const {
+        SDL_SetRenderTarget(renderer, m_texture);
+        SDL_SetTextureBlendMode(m_texture, blend_mode);
+    }
+
+    void render(SDL_Renderer *renderer, const SDL_Rect source, const SDL_Rect destination = NULL_RECT) const {
+        SDL_RenderCopy(
+            renderer,
+            m_texture,
+            is_null_rect(source) ? nullptr : &source,
+            is_null_rect(destination) ? nullptr : &destination
+        );
+    }
+
+    void destroy() {
+        if (m_texture == nullptr)
+            return;
+
+        SDL_FreeSurface(m_surface);
+        SDL_DestroyTexture(m_texture);
+        m_surface = nullptr;
+        m_texture = nullptr;
+    }
 
     /**
      * T - Top side
@@ -103,13 +172,31 @@ struct Texture {
         REMAINING_MINES_TEXT,
         REMAINING_MINES_ICON,
     };
+
+private:
+    static bool is_null_rect(const SDL_Rect &rect) {
+        return rect.x == 0 && rect.y == 0 && rect.h == 0 && rect.w == 0;
+    }
 };
 
 struct Color {
     SDL_Color rgb{0, 0, 0, 0};
     Uint32 value = 0;
+
     Color() = default;
-    Color(const SDL_Surface *surface, const char *hex_color);
+
+    Color(const SDL_Surface *surface, const char *hex_color) {
+        if (hex_color[0] == '#')
+            hex_color++;  // shift left once
+
+        const int raw_rgb = strtol(hex_color, nullptr, 16);
+        const Uint8 r = raw_rgb >> 16 & 0xff;
+        const Uint8 g = raw_rgb >> 8 & 0xff;
+        const Uint8 b = raw_rgb & 0xff;
+
+        rgb = {r, g, b, 255};
+        value = SDL_MapRGB(surface->format, r, g, b);
+    }
 
     enum Name {
         BACKGROUND,
@@ -147,7 +234,7 @@ Texture &get_texture(Texture::Name name);
 void free_textures();
 void update_text_texture(
     SDL_Renderer *renderer,
-    Texture *texture,
+    Texture &texture,
     Font::Name font_name,
     Color::Name color,
     const char *text

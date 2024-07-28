@@ -160,7 +160,7 @@ private:
         const int grid_y_offset = measurements.grid_y_offset;
 
         // Draw grid
-        SDL_RenderCopy(m_renderer, grid_texture.texture, nullptr, &grid_texture.area);
+        grid_texture.render(m_renderer, NULL_RECT, grid_texture.get_area());
 
         // Draw cells
         for (int i = 0; i < columns; i++) {
@@ -175,10 +175,9 @@ private:
 
                 const Texture::CellType cell_type = get_cell_type(i, j, cell.flagged, cell.revealed);
                 Texture cell_texture = get_grid_cell_texture(cell, cell_type);
-                cell_texture.area.x += x;
-                cell_texture.area.y += y;
+                cell_texture.move(x, y);
 
-                SDL_RenderCopy(m_renderer, cell_texture.texture, nullptr, &cell_texture.area);
+                cell_texture.render(m_renderer, NULL_RECT, cell_texture.get_area());
             }
         }
     }
@@ -204,21 +203,22 @@ private:
             itoa(current_remaining, remaining_string, 10);
             update_text_texture(
                 m_renderer,
-                &remaining_mines_text_texture,
+                remaining_mines_text_texture,
                 Font::RUBIK_MEDIUM_PRIMARY,
                 Color::WHITE,
                 remaining_string
             );
         }
 
-        remaining_mines_icon_texture.area.x = 10;
-        remaining_mines_icon_texture.area.y = 10;
-        SDL_RenderCopy(m_renderer, remaining_mines_icon_texture.texture, nullptr, &remaining_mines_icon_texture.area);
+        remaining_mines_icon_texture.set_position(10, 10);
+        remaining_mines_icon_texture.render(m_renderer, NULL_RECT, remaining_mines_icon_texture.get_area());
 
-        remaining_mines_text_texture.area.x = remaining_mines_icon_texture.area.w + 20;
-        remaining_mines_text_texture.area.y = 10
-                + (remaining_mines_icon_texture.area.h - remaining_mines_text_texture.area.h) / 2;
-        SDL_RenderCopy(m_renderer, remaining_mines_text_texture.texture, nullptr, &remaining_mines_text_texture.area);
+        remaining_mines_text_texture.set_position(
+            remaining_mines_icon_texture.get_w() + 20,
+            10 + (remaining_mines_icon_texture.get_h() - remaining_mines_text_texture.get_h()) / 2
+        );
+
+        remaining_mines_text_texture.render(m_renderer, NULL_RECT, remaining_mines_text_texture.get_area());
     }
 
     static std::string get_time_string(const int seconds) {
@@ -252,16 +252,15 @@ private:
             const string time_string = get_time_string(now - start_time);
             update_text_texture(
                 m_renderer,
-                &game_time_text_texture,
+                game_time_text_texture,
                 Font::RUBIK_MEDIUM_SECONDARY,
                 Color::LIGHTER_GREY,
                 time_string.c_str()
             );
         }
 
-        game_time_text_texture.area.x = 10;
-        game_time_text_texture.area.y = game_time_text_texture.area.h + 20;
-        SDL_RenderCopy(m_renderer, game_time_text_texture.texture, nullptr, &game_time_text_texture.area);
+        game_time_text_texture.set_position(10, game_time_text_texture.get_h() + 20);
+        game_time_text_texture.render(m_renderer, NULL_RECT, game_time_text_texture.get_area());
     }
 
     [[nodiscard]] Texture get_grid_cell_texture(const Game::GridCell cell, const Texture::CellType type) const {
