@@ -57,6 +57,7 @@ void init_cell_textures_set(
 
     const SDL_Rect texture_area = {cell_offset, cell_offset, cell_size, cell_size};
     const SDL_Color cell_texture_color = get_color(cell_color).rgb;
+    const SDL_Color white = get_color(Color::WHITE).rgb;
 
     Texture image_texture{};
 
@@ -82,7 +83,7 @@ void init_cell_textures_set(
         cell_map_texture.set_color_mod(cell_texture_color);
         cell_map_texture.render(renderer, {map_x, map_y, cell_texture_size, cell_texture_size});
 
-        cell_map_texture.set_color_mod({255, 255, 255});
+        cell_map_texture.set_color_mod(white);
 
         if (image_path != nullptr && image_scale_wrt_cell != 0)
             image_texture.render(renderer, NULL_RECT, image_texture.get_area());
