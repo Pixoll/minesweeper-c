@@ -56,29 +56,29 @@ Color colors[COLORS_AMOUNT];
 
 void init_colors(SDL_Window *window) {
     const SDL_Surface *surface = SDL_GetWindowSurface(window);
-    colors[COLOR_THEME] = Color(surface, "#d77f37");
-    colors[COLOR_BACKGROUND] = Color(surface, "#333333");
+    colors[COLOR_THEME] = {surface, "#d77f37"};
+    colors[COLOR_BACKGROUND] = {surface, "#333333"};
 
-    colors[COLOR_GRID_1] = Color(surface, "#b3b3ff");  // #0000ff
-    colors[COLOR_GRID_2] = Color(surface, "#b3ffb3");  // #008000
-    colors[COLOR_GRID_3] = Color(surface, "#ffb3b3");  // #ff0000
-    colors[COLOR_GRID_4] = Color(surface, "#4d4dff");  // #000080
-    colors[COLOR_GRID_5] = Color(surface, "#ff4d4d");  // #800000
-    colors[COLOR_GRID_6] = Color(surface, "#b3ffff");  // #008080
-    colors[COLOR_GRID_7] = Color(surface, "#bfbfbf");  // #808080
-    colors[COLOR_GRID_8] = Color(surface, "#ffffff");
+    colors[COLOR_GRID_1] = {surface, "#b3b3ff"};  // #0000ff
+    colors[COLOR_GRID_2] = {surface, "#b3ffb3"};  // #008000
+    colors[COLOR_GRID_3] = {surface, "#ffb3b3"};  // #ff0000
+    colors[COLOR_GRID_4] = {surface, "#4d4dff"};  // #000080
+    colors[COLOR_GRID_5] = {surface, "#ff4d4d"};  // #800000
+    colors[COLOR_GRID_6] = {surface, "#b3ffff"};  // #008080
+    colors[COLOR_GRID_7] = {surface, "#bfbfbf"};  // #808080
+    colors[COLOR_GRID_8] = {surface, "#ffffff"};
 
-    colors[COLOR_FLAGGED_CELL] = Color(surface, "#333333");
-    colors[COLOR_FLAGGED_CELL_BG] = Color(surface, "#606060");
-    colors[COLOR_TRIGGERED_MINE] = Color(surface, "#431a0d");
-    colors[COLOR_TRIGGERED_MINE_BG] = Color(surface, "#b6350d");
+    colors[COLOR_FLAGGED_CELL] = {surface, "#333333"};
+    colors[COLOR_FLAGGED_CELL_BG] = {surface, "#606060"};
+    colors[COLOR_TRIGGERED_MINE] = {surface, "#431a0d"};
+    colors[COLOR_TRIGGERED_MINE_BG] = {surface, "#b6350d"};
 
-    colors[COLOR_BLACK] = Color(surface, "#000000");
-    colors[COLOR_DARK_GREY] = Color(surface, "#1e1f1c");
-    colors[COLOR_GREY] = Color(surface, "#333333");
-    colors[COLOR_LIGHT_GREY] = Color(surface, "#606060");
-    colors[COLOR_LIGHTER_GREY] = Color(surface, "#cfcfcf");
-    colors[COLOR_WHITE] = Color(surface, "#ffffff");
+    colors[COLOR_BLACK] = {surface, "#000000"};
+    colors[COLOR_DARK_GREY] = {surface, "#1e1f1c"};
+    colors[COLOR_GREY] = {surface, "#333333"};
+    colors[COLOR_LIGHT_GREY] = {surface, "#606060"};
+    colors[COLOR_LIGHTER_GREY] = {surface, "#cfcfcf"};
+    colors[COLOR_WHITE] = {surface, "#ffffff"};
 }
 
 Color get_color(const ColorName name) {
@@ -280,7 +280,7 @@ void init_grid_texture(SDL_Renderer *renderer, const Game::Measurements &measure
 }
 
 void init_remaining_mines_icon_texture(SDL_Renderer *renderer) {
-    remaining_mines_icon_texture = Texture(renderer, mine_image_path);
+    remaining_mines_icon_texture = {renderer, mine_image_path};
     const int size = get_font(FONT_RUBIK_MEDIUM_PRIMARY).size;
     remaining_mines_icon_texture.area.w = size;
     remaining_mines_icon_texture.area.h = size;
