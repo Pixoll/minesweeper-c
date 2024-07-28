@@ -44,6 +44,14 @@ Color::Color(const SDL_Surface *surface, const char *hex_color) {
     this->value = SDL_MapRGB(surface->format, r, g, b);
 }
 
+Texture::Texture(SDL_Renderer *renderer, const char *image_path) {
+    SDL_Surface *surface = IMG_Load(image_path);
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+    this->area = {0, 0, surface->w, surface->h};
+    this->surface = surface;
+    this->texture = texture;
+}
+
 Color colors[COLORS_AMOUNT];
 
 void init_colors(SDL_Window *window) {
@@ -81,14 +89,6 @@ SDL_Texture *create_texture(SDL_Renderer *renderer, const int width, const int h
     const Uint32 pixel_format = SDL_GetWindowSurface(SDL_RenderGetWindow(renderer))->format->format;
     SDL_Texture *texture = SDL_CreateTexture(renderer, pixel_format, access, width, height);
     return texture;
-}
-
-void init_texture_from_image(SDL_Renderer *renderer, const char *image_path, Texture *dest_texture) {
-    SDL_Surface *surface = IMG_Load(image_path);
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-    dest_texture->area = {0, 0, surface->w, surface->h};
-    dest_texture->surface = surface;
-    dest_texture->texture = texture;
 }
 
 // SDL_Surface *create_surface(SDL_Window *window, const int width, const int height) {
@@ -171,9 +171,13 @@ void init_cell_textures_set(
     }
 
     for (int type = 0; type < TEXTURE_CELL_TYPES; type++) {
-        SDL_Texture *final_texture = create_texture(renderer, cell_size, cell_size, SDL_TEXTUREACCESS_TARGET);
-        SDL_SetRenderTarget(renderer, final_texture);
-        SDL_SetTextureBlendMode(final_texture, SDL_BLENDMODE_BLEND);
+        textures[type] = {
+            create_texture(renderer, cell_size, cell_size, SDL_TEXTUREACCESS_TARGET),
+            texture_area,
+        };
+
+        SDL_SetRenderTarget(renderer, textures[type].texture);
+        SDL_SetTextureBlendMode(textures[type].texture, SDL_BLENDMODE_BLEND);
 
         const int map_index = type * cell_texture_size;
         const int map_x = map_index % cell_map_texture.area.w;
@@ -193,10 +197,6 @@ void init_cell_textures_set(
             SDL_RenderCopy(renderer, image_texture.texture, nullptr, &image_texture.area);
 
         SDL_SetRenderTarget(renderer, nullptr);
-
-        textures[type].surface = nullptr;
-        textures[type].texture = final_texture;
-        textures[type].area = texture_area;
     }
 
     free_texture(image_texture);
@@ -222,7 +222,7 @@ void init_cell_numbers_textures(SDL_Renderer *renderer, const Game::Measurements
         cell_area.x = (grid_line_width + cell_size - cell_area.w) / 2;
         cell_area.y = (grid_line_width + cell_size - cell_area.h) / 2;
 
-        cell_numbers_textures[cell - Game::CELL_1] = {text_surface, text_texture, cell_area,};
+        cell_numbers_textures[cell - Game::CELL_1] = {text_surface, text_texture, cell_area};
     }
 }
 
@@ -241,9 +241,13 @@ void init_grid_texture(SDL_Renderer *renderer, const Game::Measurements &measure
     const int grid_line_offset = (grid_line_width + cell_size - grid_line_length) / 2;
     const auto [r, g, b, a] = get_color(COLOR_LIGHT_GREY).rgb;
 
-    SDL_Texture *final_texture = create_texture(renderer, grid_width, grid_height, SDL_TEXTUREACCESS_TARGET);
-    SDL_SetRenderTarget(renderer, final_texture);
-    SDL_SetTextureBlendMode(final_texture, SDL_BLENDMODE_BLEND);
+    grid_texture = {
+        create_texture(renderer, grid_width, grid_height, SDL_TEXTUREACCESS_TARGET),
+        {grid_x_offset, grid_y_offset, grid_width, grid_height},
+    };
+
+    SDL_SetRenderTarget(renderer, grid_texture.texture);
+    SDL_SetTextureBlendMode(grid_texture.texture, SDL_BLENDMODE_BLEND);
 
     SDL_Surface *grid_line_h_surface = IMG_Load(grid_line_horizontal_image_path);
     SDL_Texture *grid_line_h_texture = SDL_CreateTextureFromSurface(renderer, grid_line_h_surface);
@@ -268,12 +272,6 @@ void init_grid_texture(SDL_Renderer *renderer, const Game::Measurements &measure
 
     SDL_SetRenderTarget(renderer, nullptr);
 
-    const SDL_Rect grid_area = {grid_x_offset, grid_y_offset, grid_width, grid_height};
-
-    grid_texture.surface = nullptr;
-    grid_texture.texture = final_texture;
-    grid_texture.area = grid_area;
-
     SDL_FreeSurface(grid_line_h_surface);
     SDL_DestroyTexture(grid_line_h_texture);
 
@@ -282,7 +280,7 @@ void init_grid_texture(SDL_Renderer *renderer, const Game::Measurements &measure
 }
 
 void init_remaining_mines_icon_texture(SDL_Renderer *renderer) {
-    init_texture_from_image(renderer, mine_image_path, &remaining_mines_icon_texture);
+    remaining_mines_icon_texture = Texture(renderer, mine_image_path);
     const int size = get_font(FONT_RUBIK_MEDIUM_PRIMARY).size;
     remaining_mines_icon_texture.area.w = size;
     remaining_mines_icon_texture.area.h = size;

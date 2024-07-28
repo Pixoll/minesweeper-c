@@ -8,7 +8,20 @@
 struct Texture {
     SDL_Surface *surface = nullptr;
     SDL_Texture *texture = nullptr;
-    SDL_Rect area{};
+    SDL_Rect area{0, 0, 0, 0};
+
+    Texture() = default;
+
+    Texture(SDL_Surface *_surface, SDL_Texture *_texture, const SDL_Rect _area) :
+        surface(_surface),
+        texture(_texture),
+        area(_area) {}
+
+    Texture(SDL_Texture *_texture, const SDL_Rect _area) :
+        texture(_texture),
+        area(_area) {}
+
+    Texture(SDL_Renderer *renderer, const char *image_path);
 };
 
 /**
@@ -121,7 +134,7 @@ enum ColorName {
 static constexpr int COLORS_AMOUNT = COLOR_WHITE + 1;
 
 struct Color {
-    SDL_Color rgb{};
+    SDL_Color rgb{0, 0, 0, 0};
     Uint32 value = 0;
     Color() = default;
     Color(const SDL_Surface *surface, const char *hex_color);
