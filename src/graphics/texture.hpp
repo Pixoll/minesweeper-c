@@ -1,11 +1,7 @@
 #pragma once
 
-#include <cstdlib>
 #include <SDL.h>
 #include <SDL_image.h>
-
-#include "fonts.hpp"
-#include "../core/game.hpp"
 
 constexpr SDL_Rect NULL_RECT = {0, 0, 0, 0};
 
@@ -23,6 +19,11 @@ public:
         m_area(area) {}
 
     Texture(SDL_Texture *texture, const SDL_Rect area) : Texture(nullptr, texture, area) {}
+
+    Texture(SDL_Renderer *renderer, const SDL_Rect area, const int access = SDL_TEXTUREACCESS_TARGET) : m_area(area) {
+        const Uint32 pixel_format = SDL_GetWindowSurface(SDL_RenderGetWindow(renderer))->format->format;
+        m_texture = SDL_CreateTexture(renderer, pixel_format, access, m_area.w, m_area.h);
+    }
 
     Texture(SDL_Renderer *renderer, const char *image_path) {
         m_surface = IMG_Load(image_path);
@@ -178,67 +179,3 @@ private:
         return rect.x == 0 && rect.y == 0 && rect.h == 0 && rect.w == 0;
     }
 };
-
-struct Color {
-    SDL_Color rgb{0, 0, 0, 0};
-    Uint32 value = 0;
-
-    Color() = default;
-
-    Color(const SDL_Surface *surface, const char *hex_color) {
-        if (hex_color[0] == '#')
-            hex_color++;  // shift left once
-
-        const int raw_rgb = strtol(hex_color, nullptr, 16);
-        const Uint8 r = raw_rgb >> 16 & 0xff;
-        const Uint8 g = raw_rgb >> 8 & 0xff;
-        const Uint8 b = raw_rgb & 0xff;
-
-        rgb = {r, g, b, 255};
-        value = SDL_MapRGB(surface->format, r, g, b);
-    }
-
-    enum Name {
-        BACKGROUND,
-        THEME,
-
-        GRID_1,
-        GRID_2,
-        GRID_3,
-        GRID_4,
-        GRID_5,
-        GRID_6,
-        GRID_7,
-        GRID_8,
-
-        FLAGGED_CELL,
-        FLAGGED_CELL_BG,
-        TRIGGERED_MINE,
-        TRIGGERED_MINE_BG,
-
-        BLACK,
-        DARK_GREY,
-        GREY,
-        LIGHT_GREY,
-        LIGHTER_GREY,
-        WHITE,
-    };
-
-    static constexpr int NAMES_AMOUNT = WHITE + 1;
-};
-
-void init_textures(SDL_Renderer *renderer, const Game::Measurements &measurements);
-Texture get_cell_texture(Texture::CellSubtype subtype, Texture::CellType type);
-Texture get_cell_number_texture(int number);
-Texture &get_texture(Texture::Name name);
-void free_textures();
-void update_text_texture(
-    SDL_Renderer *renderer,
-    Texture &texture,
-    Font::Name font_name,
-    Color::Name color,
-    const char *text
-);
-
-void init_colors(SDL_Window *window);
-Color get_color(Color::Name name);

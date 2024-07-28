@@ -6,7 +6,7 @@
 #include <thread>
 
 #include "graphics/fonts.hpp"
-#include "graphics/textures.hpp"
+#include "graphics/game_textures.hpp"
 #include "screens/screen.hpp"
 
 struct EngineParameters {

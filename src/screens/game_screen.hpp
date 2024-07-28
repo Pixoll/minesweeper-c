@@ -7,7 +7,7 @@
 #include "screen.hpp"
 #include "../core/game.hpp"
 #include "../graphics/fonts.hpp"
-#include "../graphics/textures.hpp"
+#include "../graphics/game_textures.hpp"
 
 class MainMenuScreen;
 class Engine;
@@ -89,12 +89,12 @@ public:
         const Game::Measurements &measurements = m_game.get_measurements();
 
         init_game_fonts(measurements.cell_size);
-        init_textures(m_renderer, measurements);
+        init_game_textures(m_renderer, measurements);
     }
 
     ~GameScreen() override {
         free_game_fonts();
-        free_textures();
+        free_game_textures();
     }
 
     void run_logic(const SDL_Event &event) override {
@@ -149,7 +149,7 @@ public:
 
 private:
     void draw_grid() const {
-        const Texture &grid_texture = get_texture(Texture::GRID);
+        const Texture &grid_texture = get_game_texture(Texture::GRID);
 
         const int rows = m_game.get_rows();
         const int columns = m_game.get_columns();
@@ -192,8 +192,8 @@ private:
     }
 
     void draw_remaining_mines() {
-        Texture &remaining_mines_text_texture = get_texture(Texture::REMAINING_MINES_TEXT);
-        Texture &remaining_mines_icon_texture = get_texture(Texture::REMAINING_MINES_ICON);
+        Texture &remaining_mines_text_texture = get_game_texture(Texture::REMAINING_MINES_TEXT);
+        Texture &remaining_mines_icon_texture = get_game_texture(Texture::REMAINING_MINES_ICON);
 
         const int current_remaining = m_game.get_total_mines() - m_game.get_flagged_mines();
 
@@ -240,7 +240,7 @@ private:
     void draw_game_time() {
         using std::string;
 
-        Texture &game_time_text_texture = get_texture(Texture::GAME_TIME_TEXT);
+        Texture &game_time_text_texture = get_game_texture(Texture::GAME_TIME_TEXT);
         const time_t start_time = m_game.get_start_time();
 
         if (start_time == 0)

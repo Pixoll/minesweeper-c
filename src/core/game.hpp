@@ -57,7 +57,7 @@ private:
     bool m_over = false;
     bool m_won = false;
     Measurements m_measurements{};
-    std::mt19937_64 m_random_generator_engine = std::mt19937_64(std::random_device{}());
+    std::mt19937_64 m_random_generator_engine{std::random_device{}()};
     std::uniform_int_distribution<char> m_random_generator;
 
 public:

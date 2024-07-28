@@ -1,11 +1,13 @@
-#include "textures.hpp"
+#include "game_textures.hpp"
 
 #include <iostream>
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 
+#include "colors.hpp"
 #include "fonts.hpp"
+#include "texture.hpp"
 #include "../core/game.hpp"
 
 Texture grid_texture;
@@ -27,77 +29,6 @@ const auto flag_image_path = "assets/textures/flag.png";
 
 const auto grid_line_horizontal_image_path = "assets/textures/grid_line_horizontal.png";
 const auto grid_line_vertical_image_path = "assets/textures/grid_line_vertical.png";
-
-Color colors[Color::NAMES_AMOUNT];
-
-void init_colors(SDL_Window *window) {
-    const SDL_Surface *surface = SDL_GetWindowSurface(window);
-    colors[Color::THEME] = {surface, "#d77f37"};
-    colors[Color::BACKGROUND] = {surface, "#333333"};
-
-    colors[Color::GRID_1] = {surface, "#b3b3ff"};  // #0000ff
-    colors[Color::GRID_2] = {surface, "#b3ffb3"};  // #008000
-    colors[Color::GRID_3] = {surface, "#ffb3b3"};  // #ff0000
-    colors[Color::GRID_4] = {surface, "#4d4dff"};  // #000080
-    colors[Color::GRID_5] = {surface, "#ff4d4d"};  // #800000
-    colors[Color::GRID_6] = {surface, "#b3ffff"};  // #008080
-    colors[Color::GRID_7] = {surface, "#bfbfbf"};  // #808080
-    colors[Color::GRID_8] = {surface, "#ffffff"};
-
-    colors[Color::FLAGGED_CELL] = {surface, "#333333"};
-    colors[Color::FLAGGED_CELL_BG] = {surface, "#606060"};
-    colors[Color::TRIGGERED_MINE] = {surface, "#431a0d"};
-    colors[Color::TRIGGERED_MINE_BG] = {surface, "#b6350d"};
-
-    colors[Color::BLACK] = {surface, "#000000"};
-    colors[Color::DARK_GREY] = {surface, "#1e1f1c"};
-    colors[Color::GREY] = {surface, "#333333"};
-    colors[Color::LIGHT_GREY] = {surface, "#606060"};
-    colors[Color::LIGHTER_GREY] = {surface, "#cfcfcf"};
-    colors[Color::WHITE] = {surface, "#ffffff"};
-}
-
-Color get_color(const Color::Name name) {
-    return colors[name];
-}
-
-SDL_Texture *create_texture(SDL_Renderer *renderer, const int width, const int height, const int access) {
-    const Uint32 pixel_format = SDL_GetWindowSurface(SDL_RenderGetWindow(renderer))->format->format;
-    SDL_Texture *texture = SDL_CreateTexture(renderer, pixel_format, access, width, height);
-    return texture;
-}
-
-// SDL_Surface *create_surface(SDL_Window *window, const int width, const int height) {
-//     const Uint32 pixel_format = SDL_GetWindowSurface(window)->format->format;
-//     SDL_Surface *m_surface = SDL_CreateRGBSurfaceWithFormat(0, width, height, 32, pixel_format);
-//     return m_surface;
-// }
-
-// SDL_Surface *create_colored_surface(SDL_Window *window, const int width, const int height, const ColorName color) {
-//     SDL_Surface *m_surface = create_surface(window, width, height);
-//     const SDL_Rect m_area = {0, 0, width, height};
-//     const Uint32 surface_color = get_color(color).value;
-//     SDL_FillRect(m_surface, &m_area, surface_color);
-//     return m_surface;
-// }
-
-// void initCellSizedTextureFromImage(const char *imagePath, Texture *destTexture, const ColorName color) {
-//     const int cell_size = game.measurements.cell_size;
-//     const int textureSize = cell_size * 0.5;
-//     const int grid_line_width = game.measurements.grid_line_width;
-//     const int textureOffset = (grid_line_width + cell_size - textureSize) / 2;
-//     const SDL_Color textureColor = colors[color].rgb;
-
-//     SDL_Surface *surface = IMG_Load(imagePath);
-//     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-//     SDL_Rect area = SDL_Rect{textureOffset, textureOffset, textureSize, textureSize};
-
-//     SDL_SetTextureColorMod(texture, textureColor.r, textureColor.g, textureColor.b);
-
-//     destTexture->m_area = area;
-//     destTexture->m_surface = surface;
-//     destTexture->m_texture = texture;
-// }
 
 void init_cell_map_texture(SDL_Renderer *renderer) {
     SDL_Surface *surface = IMG_Load(cell_map_path);
@@ -140,10 +71,7 @@ void init_cell_textures_set(
     }
 
     for (int type = 0; type < Texture::CELL_TYPES; type++) {
-        textures[type] = {
-            create_texture(renderer, cell_size, cell_size, SDL_TEXTUREACCESS_TARGET),
-            texture_area,
-        };
+        textures[type] = {renderer, texture_area};
 
         textures[type].set_as_render_target(renderer);
 
@@ -205,7 +133,7 @@ void init_grid_texture(SDL_Renderer *renderer, const Game::Measurements &measure
     const SDL_Color light_grey = get_color(Color::LIGHT_GREY).rgb;
 
     grid_texture = {
-        create_texture(renderer, grid_width, grid_height, SDL_TEXTUREACCESS_TARGET),
+        renderer,
         {grid_x_offset, grid_y_offset, grid_width, grid_height},
     };
 
@@ -245,7 +173,7 @@ void init_remaining_mines_icon_texture(SDL_Renderer *renderer) {
     remaining_mines_icon_texture.set_size(get_font(Font::RUBIK_MEDIUM_PRIMARY).size);
 }
 
-void init_textures(SDL_Renderer *renderer, const Game::Measurements &measurements) {
+void init_game_textures(SDL_Renderer *renderer, const Game::Measurements &measurements) {
     init_grid_texture(renderer, measurements);
     init_cell_map_texture(renderer);
     init_cell_numbers_textures(renderer, measurements);
@@ -313,7 +241,7 @@ Texture get_cell_number_texture(const int number) {
     return cell_numbers_textures[number];
 }
 
-Texture &get_texture(const Texture::Name name) {
+Texture &get_game_texture(const Texture::Name name) {
     switch (name) {
         case Texture::GRID: return grid_texture;
         case Texture::GAME_TIME_TEXT: return game_time_text_texture;
@@ -336,7 +264,7 @@ void free_cell_numbers_textures() {
         cell_numbers_textures[cell - Game::CELL_1].destroy();
 }
 
-void free_textures() {
+void free_game_textures() {
     free_cell_numbers_textures();
 
     free_cell_textures_from(cell_textures[Texture::CELL_COVERED]);
