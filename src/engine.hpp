@@ -62,17 +62,14 @@ public:
 
     void run() {
         SDL_Event event;
-        bool quit = false;
 
         m_screen->render();
 
-    game_loop:
-        while (!quit) {
+        while (true) {
             while (SDL_PollEvent(&event) != 0) {
                 switch (event.type) {
                     case SDL_QUIT:
-                        quit = true;
-                        goto game_loop;
+                        goto exit_game_loop;
 
                     default:
                         m_screen->run_logic(event);
@@ -85,6 +82,7 @@ public:
             std::this_thread::sleep_for(m_render_interval_microsecs);
         }
 
+    exit_game_loop:
         m_screen = nullptr;
     }
 };
