@@ -5,27 +5,26 @@
 struct Font {
     TTF_Font *font;
     int size;
+
+    enum Type {
+        RUBIK_LIGHT,
+        RUBIK_MEDIUM,
+        RUBIK_REGULAR,
+        RUBIK_BOLD,
+    };
+
+    static constexpr int TYPES = RUBIK_BOLD + 1;
+
+    enum Name {
+        RUBIK_MEDIUM_CELL_SIZED,
+        RUBIK_MEDIUM_PRIMARY,
+        RUBIK_MEDIUM_SECONDARY,
+    };
+
+    static constexpr int NAMES = RUBIK_MEDIUM_SECONDARY + 1;
 };
-
-enum FontType {
-    FONT_RUBIK_LIGHT,
-    FONT_RUBIK_MEDIUM,
-    FONT_RUBIK_REGULAR,
-    FONT_RUBIK_BOLD,
-};
-
-constexpr int FONT_TYPES = FONT_RUBIK_BOLD + 1;
-
-enum FontName {
-    FONT_RUBIK_MEDIUM_CELL_SIZED,
-    FONT_RUBIK_MEDIUM_PRIMARY,
-    FONT_RUBIK_MEDIUM_SECONDARY,
-};
-
-constexpr int FONT_NAMES = FONT_RUBIK_MEDIUM_SECONDARY + 1;
-
 
 void init_global_fonts(int window_height);
 void init_game_fonts(int cell_size);
-Font get_font(FontName name);
+Font get_font(Font::Name name);
 void free_fonts();

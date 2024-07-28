@@ -35,7 +35,7 @@ public:
         init_colors(m_window);
         init_global_fonts(m_window_height);
 
-        const auto [r, g, b, a] = get_color(COLOR_BACKGROUND).rgb;
+        const auto [r, g, b, a] = get_color(Color::BACKGROUND).rgb;
         SDL_SetRenderDrawColor(m_renderer, r, g, b, a);
     }
 
