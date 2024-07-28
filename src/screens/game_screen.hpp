@@ -14,7 +14,6 @@ class Engine;
 
 class GameScreen final : virtual public Screen {
     Engine *m_engine;
-    SDL_Window *m_window;
     SDL_Renderer *m_renderer;
     int m_window_width;
     int m_window_height;
@@ -83,7 +82,6 @@ class GameScreen final : virtual public Screen {
 public:
     explicit GameScreen(Engine *engine) :
         m_engine(engine),
-        m_window(engine->get_window()),
         m_renderer(engine->get_renderer()),
         m_window_width(engine->get_window_width()),
         m_window_height(engine->get_window_height()),
