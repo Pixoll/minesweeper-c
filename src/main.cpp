@@ -41,7 +41,7 @@ EngineParameters start_sdl() {
     if (window == nullptr)
         throw_sdl_error("SDL_CreateWindow");
 
-    SDL_Surface *icon = IMG_Load("assets/images/icon.png");
+    SDL_Surface *icon = IMG_Load("assets/textures/icon.png");
     SDL_SetWindowIcon(window, icon);
     SDL_FreeSurface(icon);
 

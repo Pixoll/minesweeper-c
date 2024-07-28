@@ -21,12 +21,12 @@ Texture game_time_text_texture;
 Texture remaining_mines_text_texture;
 Texture remaining_mines_icon_texture;
 
-const auto cell_map_path = "assets/images/cell_map.png";
-const auto mine_image_path = "assets/images/mine.png";
-const auto flag_image_path = "assets/images/flag.png";
+const auto cell_map_path = "assets/textures/cell_map.png";
+const auto mine_image_path = "assets/textures/mine.png";
+const auto flag_image_path = "assets/textures/flag.png";
 
-const auto grid_line_horizontal_image_path = "assets/images/grid_line_horizontal.png";
-const auto grid_line_vertical_image_path = "assets/images/grid_line_vertical.png";
+const auto grid_line_horizontal_image_path = "assets/textures/grid_line_horizontal.png";
+const auto grid_line_vertical_image_path = "assets/textures/grid_line_vertical.png";
 
 Color colors[Color::NAMES_AMOUNT];
 
