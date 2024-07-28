@@ -93,7 +93,7 @@ public:
     }
 
     ~GameScreen() override {
-        free_fonts();
+        free_game_fonts();
         free_textures();
     }
 

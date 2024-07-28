@@ -38,9 +38,11 @@ Font get_font(const Font::Name name) {
     return fonts[name];
 }
 
-void free_fonts() {
-    for (auto &[font, size] : fonts) {
-        TTF_CloseFont(font);
-        font = nullptr;
-    }
+void free_global_fonts() {
+    TTF_CloseFont(fonts[Font::RUBIK_MEDIUM_PRIMARY].font);
+    TTF_CloseFont(fonts[Font::RUBIK_MEDIUM_SECONDARY].font);
+}
+
+void free_game_fonts() {
+    TTF_CloseFont(fonts[Font::RUBIK_MEDIUM_CELL_SIZED].font);
 }

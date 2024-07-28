@@ -39,7 +39,9 @@ public:
         SDL_SetRenderDrawColor(m_renderer, r, g, b, a);
     }
 
-    ~Engine() = default;
+    ~Engine() {
+        free_global_fonts();
+    }
 
     template <class ScreenT, typename... Args>
     void set_screen(Args... args) {
