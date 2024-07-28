@@ -25,10 +25,13 @@ Font load_font(const FontType type, const int size) {
     return {font, size};
 }
 
-void init_fonts(const int window_height, const int cell_size) {
-    fonts[FONT_RUBIK_MEDIUM_CELL_SIZED] = load_font(FONT_RUBIK_MEDIUM, cell_size * 0.5);
+void init_global_fonts(const int window_height) {
     fonts[FONT_RUBIK_MEDIUM_PRIMARY] = load_font(FONT_RUBIK_MEDIUM, window_height * 0.02);
     fonts[FONT_RUBIK_MEDIUM_SECONDARY] = load_font(FONT_RUBIK_MEDIUM, window_height * 0.01875);
+}
+
+void init_game_fonts(const int cell_size) {
+    fonts[FONT_RUBIK_MEDIUM_CELL_SIZED] = load_font(FONT_RUBIK_MEDIUM, cell_size * 0.5);
 }
 
 Font get_font(const FontName name) {

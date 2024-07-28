@@ -24,6 +24,8 @@ enum FontName {
 
 constexpr int FONT_NAMES = FONT_RUBIK_MEDIUM_SECONDARY + 1;
 
-void init_fonts(int window_height, int cell_size);
+
+void init_global_fonts(int window_height);
+void init_game_fonts(int cell_size);
 Font get_font(FontName name);
 void free_fonts();

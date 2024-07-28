@@ -5,6 +5,7 @@
 #include <SDL.h>
 #include <thread>
 
+#include "graphics/fonts.hpp"
 #include "graphics/textures.hpp"
 #include "screens/screen.hpp"
 
@@ -32,6 +33,7 @@ public:
         SDL_GetWindowSize(m_window, &m_window_width, &m_window_height);
 
         init_colors(m_window);
+        init_global_fonts(m_window_height);
 
         const auto [r, g, b, a] = get_color(COLOR_BACKGROUND).rgb;
         SDL_SetRenderDrawColor(m_renderer, r, g, b, a);

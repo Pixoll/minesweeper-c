@@ -88,7 +88,7 @@ public:
         m_game(15, 20, 50, engine->get_window_width(), engine->get_window_height()) {
         const Game::Measurements &measurements = m_game.get_measurements();
 
-        init_fonts(m_window_height, measurements.cell_size);
+        init_game_fonts(measurements.cell_size);
         init_textures(m_renderer, measurements);
     }
 
