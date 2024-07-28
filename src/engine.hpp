@@ -39,9 +39,7 @@ public:
         SDL_SetRenderDrawColor(m_renderer, r, g, b, a);
     }
 
-    ~Engine() {
-        free_global_fonts();
-    }
+    ~Engine() = default;
 
     template <class ScreenT, typename... Args>
     void set_screen(Args... args) {
@@ -88,5 +86,6 @@ public:
 
     exit_game_loop:
         m_screen = nullptr;
+        free_global_fonts();
     }
 };
