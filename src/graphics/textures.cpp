@@ -273,6 +273,12 @@ void init_grid_texture(SDL_Renderer *renderer, const Game::Measurements &measure
     grid_texture.surface = nullptr;
     grid_texture.texture = final_texture;
     grid_texture.area = grid_area;
+
+    SDL_FreeSurface(grid_line_h_surface);
+    SDL_DestroyTexture(grid_line_h_texture);
+
+    SDL_FreeSurface(grid_line_v_surface);
+    SDL_DestroyTexture(grid_line_v_texture);
 }
 
 void init_remaining_mines_icon_texture(SDL_Renderer *renderer) {
@@ -333,6 +339,8 @@ void init_textures(SDL_Renderer *renderer, const Game::Measurements &measurement
         COLOR_TRIGGERED_MINE,
         COLOR_TRIGGERED_MINE_BG
     );
+
+    free_texture(cell_map_texture);
 }
 
 Texture get_cell_texture(const TextureCellSubtype subtype, const TextureCellType type) {
@@ -381,8 +389,6 @@ void free_textures() {
     free_cell_textures_from(cell_textures[TEXTURE_CELL_FLAGGED_MINE]);
     free_cell_textures_from(cell_textures[TEXTURE_CELL_TRIGGERED_MINE]);
     free_cell_textures_from(cell_textures[TEXTURE_CELL_FLAG]);
-
-    free_texture(cell_map_texture);
 
     free_texture(grid_texture);
 
