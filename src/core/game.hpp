@@ -83,14 +83,16 @@ public:
 
         const int cell_offset = grid_line_width / 2;
 
-        m_measurements.cell_size = cell_size;
-        m_measurements.cell_offset = cell_offset;
-        m_measurements.grid_line_length = grid_line_length;
-        m_measurements.grid_line_width = grid_line_width;
-        m_measurements.grid_x_offset = grid_x_offset;
-        m_measurements.grid_y_offset = grid_y_offset;
-        m_measurements.grid_width = grid_width;
-        m_measurements.grid_height = grid_height;
+        m_measurements = {
+            cell_size,
+            cell_offset,
+            grid_line_length,
+            grid_line_width,
+            grid_x_offset,
+            grid_y_offset,
+            grid_width,
+            grid_height,
+        };
     }
 
     ~Game() = default;
