@@ -15,7 +15,7 @@ Texture grid_texture;
 Texture cell_map_texture;
 constexpr int cell_texture_size = 512;
 
-Texture cell_textures[Texture::CELL_SUBTYPES][Texture::CELL_TYPES];
+Texture cell_textures[GameTexture::CELL_SUBTYPES][GameTexture::CELL_TYPES];
 
 Texture cell_numbers_textures[8];
 
@@ -43,7 +43,7 @@ void init_cell_map_texture(SDL_Renderer *renderer) {
 void init_cell_textures_set(
     SDL_Renderer *renderer,
     const Game::Measurements &measurements,
-    Texture textures[Texture::CELL_TYPES],
+    Texture textures[GameTexture::CELL_TYPES],
     const char *image_path,
     const float image_scale_wrt_cell,
     const Color::Name image_color,
@@ -71,7 +71,7 @@ void init_cell_textures_set(
         image_texture.set_color_mod(get_color(image_color).rgb);
     }
 
-    for (int type = 0; type < Texture::CELL_TYPES; type++) {
+    for (int type = 0; type < GameTexture::CELL_TYPES; type++) {
         textures[type] = {renderer, texture_area};
 
         textures[type].set_as_render_target(renderer);
@@ -183,7 +183,7 @@ void init_game_textures(SDL_Renderer *renderer, const Game::Measurements &measur
     init_cell_textures_set(
         renderer,
         measurements,
-        cell_textures[Texture::CELL_COVERED],
+        cell_textures[GameTexture::CELL_COVERED],
         nullptr,
         0,
         Color::BACKGROUND,
@@ -192,7 +192,7 @@ void init_game_textures(SDL_Renderer *renderer, const Game::Measurements &measur
     init_cell_textures_set(
         renderer,
         measurements,
-        cell_textures[Texture::CELL_FLAG],
+        cell_textures[GameTexture::CELL_FLAG],
         flag_image_path,
         0.35,
         Color::FLAGGED_CELL,
@@ -201,7 +201,7 @@ void init_game_textures(SDL_Renderer *renderer, const Game::Measurements &measur
     init_cell_textures_set(
         renderer,
         measurements,
-        cell_textures[Texture::CELL_FLAGGED_MINE],
+        cell_textures[GameTexture::CELL_FLAGGED_MINE],
         mine_image_path,
         0.5,
         Color::FLAGGED_CELL,
@@ -210,7 +210,7 @@ void init_game_textures(SDL_Renderer *renderer, const Game::Measurements &measur
     init_cell_textures_set(
         renderer,
         measurements,
-        cell_textures[Texture::CELL_COVERED_MINE],
+        cell_textures[GameTexture::CELL_COVERED_MINE],
         mine_image_path,
         0.5,
         Color::BACKGROUND,
@@ -219,7 +219,7 @@ void init_game_textures(SDL_Renderer *renderer, const Game::Measurements &measur
     init_cell_textures_set(
         renderer,
         measurements,
-        cell_textures[Texture::CELL_TRIGGERED_MINE],
+        cell_textures[GameTexture::CELL_TRIGGERED_MINE],
         mine_image_path,
         0.5,
         Color::TRIGGERED_MINE,
@@ -229,7 +229,7 @@ void init_game_textures(SDL_Renderer *renderer, const Game::Measurements &measur
     cell_map_texture.destroy();
 }
 
-Texture get_cell_texture(const Texture::CellSubtype subtype, const Texture::CellType type) {
+Texture get_cell_texture(const GameTexture::CellSubtype subtype, const GameTexture::CellType type) {
     return cell_textures[subtype][type];
 }
 
@@ -242,12 +242,12 @@ Texture get_cell_number_texture(const int number) {
     return cell_numbers_textures[number];
 }
 
-Texture &get_game_texture(const Texture::Name name) {
+Texture &get_game_texture(const GameTexture::Name name) {
     switch (name) {
-        case Texture::GRID: return grid_texture;
-        case Texture::GAME_TIME_TEXT: return game_time_text_texture;
-        case Texture::REMAINING_MINES_TEXT: return remaining_mines_text_texture;
-        case Texture::REMAINING_MINES_ICON: return remaining_mines_icon_texture;
+        case GameTexture::GRID: return grid_texture;
+        case GameTexture::GAME_TIME_TEXT: return game_time_text_texture;
+        case GameTexture::REMAINING_MINES_TEXT: return remaining_mines_text_texture;
+        case GameTexture::REMAINING_MINES_ICON: return remaining_mines_icon_texture;
         default: {
             std::cerr << "Invalid m_texture name " << name << std::endl;
             exit(1);
@@ -255,8 +255,8 @@ Texture &get_game_texture(const Texture::Name name) {
     }
 }
 
-void free_cell_textures_from(Texture textures[Texture::CELL_TYPES]) {
-    for (int type = 0; type < Texture::CELL_TYPES; type++)
+void free_cell_textures_from(Texture textures[GameTexture::CELL_TYPES]) {
+    for (int type = 0; type < GameTexture::CELL_TYPES; type++)
         textures[type].destroy();
 }
 
@@ -268,11 +268,11 @@ void free_cell_numbers_textures() {
 void free_game_textures() {
     free_cell_numbers_textures();
 
-    free_cell_textures_from(cell_textures[Texture::CELL_COVERED]);
-    free_cell_textures_from(cell_textures[Texture::CELL_COVERED_MINE]);
-    free_cell_textures_from(cell_textures[Texture::CELL_FLAGGED_MINE]);
-    free_cell_textures_from(cell_textures[Texture::CELL_TRIGGERED_MINE]);
-    free_cell_textures_from(cell_textures[Texture::CELL_FLAG]);
+    free_cell_textures_from(cell_textures[GameTexture::CELL_COVERED]);
+    free_cell_textures_from(cell_textures[GameTexture::CELL_COVERED_MINE]);
+    free_cell_textures_from(cell_textures[GameTexture::CELL_FLAGGED_MINE]);
+    free_cell_textures_from(cell_textures[GameTexture::CELL_TRIGGERED_MINE]);
+    free_cell_textures_from(cell_textures[GameTexture::CELL_FLAG]);
 
     grid_texture.destroy();
     game_time_text_texture.destroy();
