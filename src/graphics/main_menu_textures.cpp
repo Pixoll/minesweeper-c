@@ -10,7 +10,7 @@
 Texture big_mine_texture;
 Texture title_texture;
 
-const auto big_mine_texture_path = "assets/textures/mine_big.png";
+const auto big_mine_path = "assets/textures/mine_big.png";
 
 void init_big_mine_texture(SDL_Renderer *renderer, const int window_width, const int window_height) {
     const int y = window_height * 0.1;
@@ -19,7 +19,7 @@ void init_big_mine_texture(SDL_Renderer *renderer, const int window_width, const
 
     big_mine_texture = {
         renderer,
-        big_mine_texture_path,
+        big_mine_path,
         {x, y, size, size}
     };
 
