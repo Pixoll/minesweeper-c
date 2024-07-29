@@ -3,6 +3,8 @@
 #include <SDL.h>
 #include <SDL_image.h>
 
+#include "colors.hpp"
+
 constexpr SDL_Rect NULL_RECT = {0, 0, 0, 0};
 
 class Texture {
@@ -38,6 +40,14 @@ public:
 
     ~Texture() = default;
 
+    [[nodiscard]] int get_y() const {
+        return m_area.y;
+    }
+
+    [[nodiscard]] int get_x() const {
+        return m_area.x;
+    }
+
     [[nodiscard]] int get_h() const {
         return m_area.h;
     }
@@ -67,6 +77,10 @@ public:
 
     void set_color_mod(const SDL_Color color) const {
         SDL_SetTextureColorMod(m_texture, color.r, color.g, color.b);
+    }
+
+    void set_color_mod(const Color::Name color) const {
+        set_color_mod(get_color(color).rgb);
     }
 
     void set_as_render_target(SDL_Renderer *renderer, const SDL_BlendMode blend_mode = SDL_BLENDMODE_BLEND) const {
