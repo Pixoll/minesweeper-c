@@ -252,27 +252,17 @@ Texture &get_game_texture(const GameTexture::Name name) {
     }
 }
 
-void free_cell_textures_from(Texture textures[GameTexture::CELL_TYPES]) {
-    for (int type = 0; type < GameTexture::CELL_TYPES; type++)
-        textures[type].destroy();
-}
-
-void free_cell_numbers_textures() {
-    for (int cell = Game::CELL_1; cell <= Game::CELL_8; cell++)
-        cell_numbers_textures[cell - Game::CELL_1].destroy();
-}
-
 void free_game_textures() {
-    free_cell_numbers_textures();
+    for (auto &texture : cell_numbers_textures)
+        texture.destroy();
 
-    free_cell_textures_from(cell_textures[GameTexture::CELL_COVERED]);
-    free_cell_textures_from(cell_textures[GameTexture::CELL_COVERED_MINE]);
-    free_cell_textures_from(cell_textures[GameTexture::CELL_FLAGGED_MINE]);
-    free_cell_textures_from(cell_textures[GameTexture::CELL_TRIGGERED_MINE]);
-    free_cell_textures_from(cell_textures[GameTexture::CELL_FLAG]);
+    for (auto &texture_set : cell_textures)
+        for (auto &texture : texture_set)
+            texture.destroy();
 
     grid_texture.destroy();
     game_time_text_texture.destroy();
+    remaining_mines_icon_texture.destroy();
     remaining_mines_text_texture.destroy();
 }
 
