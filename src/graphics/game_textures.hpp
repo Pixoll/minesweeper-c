@@ -92,8 +92,8 @@ public:
 };
 
 void init_game_textures(SDL_Renderer *renderer, const Game::Measurements &measurements);
-Texture &get_cell_texture(GameTexture::CellSubtype subtype, GameTexture::CellType type);
-Texture &get_cell_number_texture(int number);
+Texture get_cell_texture(GameTexture::CellSubtype subtype, GameTexture::CellType type);
+Texture get_cell_number_texture(int number);
 Texture &get_game_texture(GameTexture::Name name);
 void free_game_textures();
 void update_text_texture(

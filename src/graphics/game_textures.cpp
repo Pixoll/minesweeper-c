@@ -229,11 +229,11 @@ void init_game_textures(SDL_Renderer *renderer, const Game::Measurements &measur
     cell_map_texture.destroy();
 }
 
-Texture &get_cell_texture(const GameTexture::CellSubtype subtype, const GameTexture::CellType type) {
+Texture get_cell_texture(const GameTexture::CellSubtype subtype, const GameTexture::CellType type) {
     return cell_textures[subtype][type];
 }
 
-Texture &get_cell_number_texture(const int number) {
+Texture get_cell_number_texture(const int number) {
     if (number < 0 || number > 7) {
         std::cerr << "Number must be between 0 and 7 inclusive." << std::endl;
         exit(1);
@@ -249,7 +249,7 @@ Texture &get_game_texture(const GameTexture::Name name) {
         case GameTexture::REMAINING_MINES_TEXT: return remaining_mines_text_texture;
         case GameTexture::REMAINING_MINES_ICON: return remaining_mines_icon_texture;
         default: {
-            std::cerr << "Invalid texture name " << name << std::endl;
+            std::cerr << "Invalid m_texture name " << name << std::endl;
             exit(1);
         }
     }
