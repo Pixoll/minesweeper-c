@@ -170,20 +170,23 @@ void init_remaining_mines_textures(SDL_Renderer *renderer) {
     remaining_mines_icon_texture = {
         renderer,
         mine_image_path,
-        {10, 10, size, size},
+        {20, 20, size, size},
     };
 
     remaining_mines_text_texture = {renderer, Font::PRIMARY, "0", Color::WHITE};
-
     remaining_mines_text_texture.set_position(
-        remaining_mines_icon_texture.get_w() + 20,
-        10 + (remaining_mines_icon_texture.get_h() - remaining_mines_text_texture.get_h()) / 2
+        remaining_mines_icon_texture.get_x() + remaining_mines_icon_texture.get_w() + 10,
+        remaining_mines_icon_texture.get_y()
+        + (remaining_mines_icon_texture.get_h() - remaining_mines_text_texture.get_h()) / 2
     );
 }
 
 void init_game_time_texture(SDL_Renderer *renderer) {
     game_time_text_texture = {renderer, Font::SECONDARY, "0", Color::LIGHTER_GREY};
-    game_time_text_texture.set_position(10, game_time_text_texture.get_h() + 20);
+    game_time_text_texture.set_position(
+        20,
+        remaining_mines_icon_texture.get_y() + remaining_mines_icon_texture.get_h() + 10
+    );
 }
 }
 
