@@ -199,25 +199,14 @@ private:
 
         if (m_remaining_mines != current_remaining) {
             m_remaining_mines = current_remaining;
-            char remaining_string[int_length(current_remaining) + 1];
-            itoa(current_remaining, remaining_string, 10);
-            update_text_texture(
-                m_renderer,
-                remaining_mines_text_texture,
-                Font::PRIMARY,
-                Color::WHITE,
-                remaining_string
-            );
+
+            char remaining_mines_string[int_length(current_remaining) + 1];
+            itoa(current_remaining, remaining_mines_string, 10);
+
+            remaining_mines_text_texture.update_text(m_renderer, remaining_mines_string);
         }
 
-        remaining_mines_icon_texture.set_position(10, 10);
         remaining_mines_icon_texture.render(m_renderer);
-
-        remaining_mines_text_texture.set_position(
-            remaining_mines_icon_texture.get_w() + 20,
-            10 + (remaining_mines_icon_texture.get_h() - remaining_mines_text_texture.get_h()) / 2
-        );
-
         remaining_mines_text_texture.render(m_renderer);
     }
 
@@ -249,17 +238,11 @@ private:
         const time_t now = time(nullptr);
         if (m_last_game_time_drawn == 0 || (!m_game.is_over() && m_last_game_time_drawn < now)) {
             m_last_game_time_drawn = now;
+
             const string time_string = get_time_string(now - start_time);
-            update_text_texture(
-                m_renderer,
-                game_time_text_texture,
-                Font::SECONDARY,
-                Color::LIGHTER_GREY,
-                time_string.c_str()
-            );
+            game_time_text_texture.update_text(m_renderer, time_string.c_str());
         }
 
-        game_time_text_texture.set_position(10, game_time_text_texture.get_h() + 20);
         game_time_text_texture.render(m_renderer);
     }
 

@@ -15,7 +15,6 @@ Texture cell_map_texture;
 constexpr int cell_texture_size = 512;
 
 Texture cell_textures[GameTexture::CELL_SUBTYPES][GameTexture::CELL_TYPES];
-
 Texture cell_numbers_textures[8];
 
 Texture game_time_text_texture;
@@ -166,16 +165,34 @@ void init_grid_texture(SDL_Renderer *renderer, const Game::Measurements &measure
     grid_line_v_texture.destroy();
 }
 
-void init_remaining_mines_icon_texture(SDL_Renderer *renderer) {
-    remaining_mines_icon_texture = {renderer, mine_image_path};
-    remaining_mines_icon_texture.set_size(get_font(Font::PRIMARY).size);
+void init_remaining_mines_textures(SDL_Renderer *renderer) {
+    const int size = get_font(Font::PRIMARY).size;
+    remaining_mines_icon_texture = {
+        renderer,
+        mine_image_path,
+        {10, 10, size, size},
+    };
+
+    remaining_mines_text_texture = {renderer, Font::PRIMARY, "0", Color::WHITE};
+
+    remaining_mines_text_texture.set_position(
+        remaining_mines_icon_texture.get_w() + 20,
+        10 + (remaining_mines_icon_texture.get_h() - remaining_mines_text_texture.get_h()) / 2
+    );
+}
+
+void init_game_time_texture(SDL_Renderer *renderer) {
+    game_time_text_texture = {renderer, Font::SECONDARY, "0", Color::LIGHTER_GREY};
+    game_time_text_texture.set_position(10, game_time_text_texture.get_h() + 20);
+}
 }
 
 void init_game_textures(SDL_Renderer *renderer, const Game::Measurements &measurements) {
     init_grid_texture(renderer, measurements);
     init_cell_map_texture(renderer);
     init_cell_numbers_textures(renderer, measurements);
-    init_remaining_mines_icon_texture(renderer);
+    init_remaining_mines_textures(renderer);
+    init_game_time_texture(renderer);
 
     init_cell_textures_set(
         renderer,

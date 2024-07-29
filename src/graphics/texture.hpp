@@ -12,29 +12,35 @@ class Texture {
     SDL_Surface *m_surface = nullptr;
     SDL_Texture *m_texture = nullptr;
     SDL_Rect m_area{0, 0, 0, 0};
+    TTF_Font *m_font = nullptr;
+    SDL_Color m_font_color{0, 0, 0, 0};
 
 public:
     Texture() = default;
 
-    Texture(SDL_Surface *surface, SDL_Texture *texture, const SDL_Rect area) :
-        m_surface(surface),
-        m_texture(texture),
-        m_area(area) {}
+    Texture(SDL_Surface *surface, SDL_Texture *texture, const SDL_Rect area) : m_area(area) {
+        destroy();
+        m_surface = surface;
+        m_texture = texture;
+    }
 
     Texture(SDL_Texture *texture, const SDL_Rect area) : Texture(nullptr, texture, area) {}
 
     Texture(SDL_Renderer *renderer, const SDL_Rect area, const int access = SDL_TEXTUREACCESS_TARGET) : m_area(area) {
+        destroy();
         const Uint32 pixel_format = SDL_GetWindowSurface(SDL_RenderGetWindow(renderer))->format->format;
         m_texture = SDL_CreateTexture(renderer, pixel_format, access, m_area.w, m_area.h);
     }
 
     Texture(SDL_Renderer *renderer, const char *image_path) {
+        destroy();
         m_surface = IMG_Load(image_path);
         m_texture = SDL_CreateTextureFromSurface(renderer, m_surface);
         m_area = {0, 0, m_surface->w, m_surface->h};
     }
 
     Texture(SDL_Renderer *renderer, const char *image_path, const SDL_Rect area) : m_area(area) {
+        destroy();
         m_surface = IMG_Load(image_path);
         m_texture = SDL_CreateTextureFromSurface(renderer, m_surface);
     }
@@ -45,10 +51,11 @@ public:
         const char *text,
         const Color::Name color,
         const SDL_Point position = {0, 0}
-    ) {
-        m_surface = TTF_RenderText_Solid(get_font(font).font, text, get_color(color).rgb);
+    ) : m_font(get_font(font).font), m_font_color(get_color(color).rgb) {
+        destroy();
+        m_surface = TTF_RenderText_Solid(m_font, text, m_font_color);
         m_texture = SDL_CreateTextureFromSurface(renderer, m_surface);
-        m_area = {position.x, position.y, m_surface->w, m_surface->h};
+        m_area = {m_area.x || position.x, m_area.y || position.y, m_surface->w, m_surface->h};
     }
 
     ~Texture() = default;
@@ -99,6 +106,14 @@ public:
     void set_as_render_target(SDL_Renderer *renderer, const SDL_BlendMode blend_mode = SDL_BLENDMODE_BLEND) const {
         SDL_SetRenderTarget(renderer, m_texture);
         SDL_SetTextureBlendMode(m_texture, blend_mode);
+    }
+
+    void update_text(SDL_Renderer *renderer, const char *text) {
+        destroy();
+        m_surface = TTF_RenderText_Solid(m_font, text, m_font_color);
+        m_texture = SDL_CreateTextureFromSurface(renderer, m_surface);
+        m_area.h = m_surface->h;
+        m_area.w = m_surface->w;
     }
 
     void render(
