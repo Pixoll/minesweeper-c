@@ -85,6 +85,11 @@ public:
         m_area.w = size;
     }
 
+    void scale_by(const float factor) {
+        m_area.h *= factor;
+        m_area.w *= factor;
+    }
+
     void set_position(const int x, const int y) {
         m_area.x = x;
         m_area.y = y;

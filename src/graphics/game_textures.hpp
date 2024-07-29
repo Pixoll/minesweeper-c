@@ -86,10 +86,14 @@ public:
         GAME_TIME_TEXT,
         REMAINING_MINES_TEXT,
         REMAINING_MINES_ICON,
+        MOUSE_LEFT_ICON,
+        MOUSE_LEFT_TEXT,
+        MOUSE_RIGHT_ICON,
+        MOUSE_RIGHT_TEXT,
     };
 };
 
-void init_game_textures(SDL_Renderer *renderer, const Game::Measurements &measurements);
+void init_game_textures(SDL_Renderer *renderer, const Game::Measurements &measurements, int window_height);
 
 Texture get_cell_texture(GameTexture::CellSubtype subtype, GameTexture::CellType type);
 Texture get_cell_number_texture(int number);

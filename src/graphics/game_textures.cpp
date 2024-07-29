@@ -21,12 +21,20 @@ Texture game_time_text_texture;
 Texture remaining_mines_text_texture;
 Texture remaining_mines_icon_texture;
 
+Texture mouse_left_icon_texture;
+Texture mouse_left_text_texture;
+Texture mouse_right_icon_texture;
+Texture mouse_right_text_texture;
+
 const auto cell_map_path = "assets/textures/cell_map.png";
 const auto mine_image_path = "assets/textures/mine.png";
 const auto flag_image_path = "assets/textures/flag.png";
 
 const auto grid_line_horizontal_image_path = "assets/textures/grid_line_horizontal.png";
 const auto grid_line_vertical_image_path = "assets/textures/grid_line_vertical.png";
+
+const auto mouse_left_icon_path = "assets/textures/mouse_left.png";
+const auto mouse_right_icon_path = "assets/textures/mouse_right.png";
 
 void init_cell_map_texture(SDL_Renderer *renderer) {
     SDL_Surface *surface = IMG_Load(cell_map_path);
@@ -188,14 +196,40 @@ void init_game_time_texture(SDL_Renderer *renderer) {
         remaining_mines_icon_texture.get_y() + remaining_mines_icon_texture.get_h() + 10
     );
 }
+
+void init_mouse_controls_textures(SDL_Renderer *renderer, const int window_height) {
+    const float height = get_font(Font::PRIMARY).size * 2;
+
+    mouse_left_icon_texture = {renderer, mouse_left_icon_path};
+    mouse_left_icon_texture.set_position(20, window_height - height * 2 - 30);
+    mouse_left_icon_texture.scale_by(height / mouse_left_icon_texture.get_h());
+
+    mouse_left_text_texture = {renderer, Font::PRIMARY, "uncover", Color::WHITE};
+    mouse_left_text_texture.set_position(
+        mouse_left_icon_texture.get_x() + mouse_left_icon_texture.get_w() + 10,
+        mouse_left_icon_texture.get_y()
+        + (mouse_left_icon_texture.get_h() - mouse_left_text_texture.get_h()) / 2
+    );
+
+    mouse_right_icon_texture = {renderer, mouse_right_icon_path};
+    mouse_right_icon_texture.set_position(20, window_height - height - 20);
+    mouse_right_icon_texture.scale_by(height / mouse_right_icon_texture.get_h());
+
+    mouse_right_text_texture = {renderer, Font::PRIMARY, "flag", Color::WHITE};
+    mouse_right_text_texture.set_position(
+        mouse_right_icon_texture.get_x() + mouse_right_icon_texture.get_w() + 10,
+        mouse_right_icon_texture.get_y()
+        + (mouse_right_icon_texture.get_h() - mouse_right_text_texture.get_h()) / 2
+    );
 }
 
-void init_game_textures(SDL_Renderer *renderer, const Game::Measurements &measurements) {
+void init_game_textures(SDL_Renderer *renderer, const Game::Measurements &measurements, const int window_height) {
     init_grid_texture(renderer, measurements);
     init_cell_map_texture(renderer);
     init_cell_numbers_textures(renderer, measurements);
     init_remaining_mines_textures(renderer);
     init_game_time_texture(renderer);
+    init_mouse_controls_textures(renderer, window_height);
 
     init_cell_textures_set(
         renderer,
@@ -265,6 +299,10 @@ Texture &get_game_texture(const GameTexture::Name name) {
         case GameTexture::GAME_TIME_TEXT: return game_time_text_texture;
         case GameTexture::REMAINING_MINES_TEXT: return remaining_mines_text_texture;
         case GameTexture::REMAINING_MINES_ICON: return remaining_mines_icon_texture;
+        case GameTexture::MOUSE_LEFT_ICON: return mouse_left_icon_texture;
+        case GameTexture::MOUSE_LEFT_TEXT: return mouse_left_text_texture;
+        case GameTexture::MOUSE_RIGHT_ICON: return mouse_right_icon_texture;
+        case GameTexture::MOUSE_RIGHT_TEXT: return mouse_right_text_texture;
         default: {
             std::cerr << "Invalid m_texture name " << name << std::endl;
             exit(1);
@@ -284,6 +322,10 @@ void free_game_textures() {
     game_time_text_texture.destroy();
     remaining_mines_icon_texture.destroy();
     remaining_mines_text_texture.destroy();
+    mouse_left_icon_texture.destroy();
+    mouse_left_text_texture.destroy();
+    mouse_right_icon_texture.destroy();
+    mouse_right_text_texture.destroy();
 }
 
 void update_text_texture(

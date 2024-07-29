@@ -89,7 +89,7 @@ public:
         const Game::Measurements &measurements = m_game.get_measurements();
 
         init_game_fonts(measurements.cell_size);
-        init_game_textures(m_renderer, measurements);
+        init_game_textures(m_renderer, measurements, m_window_height);
     }
 
     ~GameScreen() override {
@@ -143,6 +143,7 @@ public:
         draw_grid();
         draw_remaining_mines();
         draw_game_time();
+        draw_mouse_controls();
 
         SDL_RenderPresent(m_renderer);
     }
@@ -193,7 +194,7 @@ private:
 
     void draw_remaining_mines() {
         Texture &remaining_mines_text_texture = get_game_texture(GameTexture::REMAINING_MINES_TEXT);
-        Texture &remaining_mines_icon_texture = get_game_texture(GameTexture::REMAINING_MINES_ICON);
+        const Texture &remaining_mines_icon_texture = get_game_texture(GameTexture::REMAINING_MINES_ICON);
 
         const int current_remaining = m_game.get_total_mines() - m_game.get_flagged_mines();
 
@@ -244,6 +245,18 @@ private:
         }
 
         game_time_text_texture.render(m_renderer);
+    }
+
+    void draw_mouse_controls() const {
+        const Texture &mouse_left_icon_texture = get_game_texture(GameTexture::MOUSE_LEFT_ICON);
+        const Texture &mouse_left_text_texture = get_game_texture(GameTexture::MOUSE_LEFT_TEXT);
+        const Texture &mouse_right_icon_texture = get_game_texture(GameTexture::MOUSE_RIGHT_ICON);
+        const Texture &mouse_right_text_texture = get_game_texture(GameTexture::MOUSE_RIGHT_TEXT);
+
+        mouse_left_icon_texture.render(m_renderer);
+        mouse_left_text_texture.render(m_renderer);
+        mouse_right_icon_texture.render(m_renderer);
+        mouse_right_text_texture.render(m_renderer);
     }
 
     [[nodiscard]] Texture get_grid_cell_texture(const Game::GridCell cell, const GameTexture::CellType type) const {
