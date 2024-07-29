@@ -86,7 +86,7 @@ void init_cell_textures_set(
         cell_map_texture.set_color_mod(white);
 
         if (image_path != nullptr && image_scale_wrt_cell != 0)
-            image_texture.render(renderer, NULL_RECT, image_texture.get_area());
+            image_texture.render(renderer);
 
         SDL_SetRenderTarget(renderer, nullptr);
     }

@@ -160,7 +160,7 @@ private:
         const int grid_y_offset = measurements.grid_y_offset;
 
         // Draw grid
-        grid_texture.render(m_renderer, NULL_RECT, grid_texture.get_area());
+        grid_texture.render(m_renderer);
 
         // Draw cells
         for (int i = 0; i < columns; i++) {
@@ -177,7 +177,7 @@ private:
                 Texture cell_texture = get_grid_cell_texture(cell, cell_type);
                 cell_texture.move(x, y);
 
-                cell_texture.render(m_renderer, NULL_RECT, cell_texture.get_area());
+                cell_texture.render(m_renderer);
             }
         }
     }
@@ -211,14 +211,14 @@ private:
         }
 
         remaining_mines_icon_texture.set_position(10, 10);
-        remaining_mines_icon_texture.render(m_renderer, NULL_RECT, remaining_mines_icon_texture.get_area());
+        remaining_mines_icon_texture.render(m_renderer);
 
         remaining_mines_text_texture.set_position(
             remaining_mines_icon_texture.get_w() + 20,
             10 + (remaining_mines_icon_texture.get_h() - remaining_mines_text_texture.get_h()) / 2
         );
 
-        remaining_mines_text_texture.render(m_renderer, NULL_RECT, remaining_mines_text_texture.get_area());
+        remaining_mines_text_texture.render(m_renderer);
     }
 
     static std::string get_time_string(const int seconds) {
@@ -260,7 +260,7 @@ private:
         }
 
         game_time_text_texture.set_position(10, game_time_text_texture.get_h() + 20);
-        game_time_text_texture.render(m_renderer, NULL_RECT, game_time_text_texture.get_area());
+        game_time_text_texture.render(m_renderer);
     }
 
     [[nodiscard]] Texture get_grid_cell_texture(const Game::GridCell cell, const GameTexture::CellType type) const {

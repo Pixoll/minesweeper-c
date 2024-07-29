@@ -74,12 +74,20 @@ public:
         SDL_SetTextureBlendMode(m_texture, blend_mode);
     }
 
-    void render(SDL_Renderer *renderer, const SDL_Rect source, const SDL_Rect destination = NULL_RECT) const {
+    void render(
+        SDL_Renderer *renderer,
+        const SDL_Rect source = NULL_RECT,
+        const SDL_Rect destination = NULL_RECT
+    ) const {
         SDL_RenderCopy(
             renderer,
             m_texture,
             is_null_rect(source) ? nullptr : &source,
-            is_null_rect(destination) ? nullptr : &destination
+            is_null_rect(destination)
+            ? is_null_rect(source)
+              ? &m_area
+              : nullptr
+            : &destination
         );
     }
 
