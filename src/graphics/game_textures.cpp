@@ -98,7 +98,7 @@ void init_cell_numbers_textures(SDL_Renderer *renderer, const Game::Measurements
     const int cell_size = measurements.cell_size;
     const int grid_line_width = measurements.grid_line_width;
 
-    TTF_Font *cell_sized_font = get_font(Font::RUBIK_MEDIUM_CELL_SIZED).font;
+    TTF_Font *cell_sized_font = get_font(Font::CELL_NUMBER).font;
 
     for (int cell = Game::CELL_1; cell <= Game::CELL_8; cell++) {
         char cell_text[2];
@@ -171,7 +171,7 @@ void init_grid_texture(SDL_Renderer *renderer, const Game::Measurements &measure
 
 void init_remaining_mines_icon_texture(SDL_Renderer *renderer) {
     remaining_mines_icon_texture = {renderer, mine_image_path};
-    remaining_mines_icon_texture.set_size(get_font(Font::RUBIK_MEDIUM_PRIMARY).size);
+    remaining_mines_icon_texture.set_size(get_font(Font::PRIMARY).size);
 }
 
 void init_game_textures(SDL_Renderer *renderer, const Game::Measurements &measurements) {

@@ -204,7 +204,7 @@ private:
             update_text_texture(
                 m_renderer,
                 remaining_mines_text_texture,
-                Font::RUBIK_MEDIUM_PRIMARY,
+                Font::PRIMARY,
                 Color::WHITE,
                 remaining_string
             );
@@ -253,7 +253,7 @@ private:
             update_text_texture(
                 m_renderer,
                 game_time_text_texture,
-                Font::RUBIK_MEDIUM_SECONDARY,
+                Font::SECONDARY,
                 Color::LIGHTER_GREY,
                 time_string.c_str()
             );

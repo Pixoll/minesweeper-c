@@ -16,16 +16,18 @@ struct Font {
     static constexpr int TYPES = RUBIK_BOLD + 1;
 
     enum Name {
-        RUBIK_MEDIUM_CELL_SIZED,
-        RUBIK_MEDIUM_PRIMARY,
-        RUBIK_MEDIUM_SECONDARY,
+        PRIMARY,
+        SECONDARY,
+        CELL_NUMBER,
     };
 
-    static constexpr int NAMES = RUBIK_MEDIUM_SECONDARY + 1;
+    static constexpr int NAMES = CELL_NUMBER + 1;
 };
 
 void init_global_fonts(int window_height);
 void init_game_fonts(int cell_size);
+
 Font get_font(Font::Name name);
+
 void free_global_fonts();
 void free_game_fonts();
