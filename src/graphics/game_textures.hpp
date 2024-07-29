@@ -98,11 +98,3 @@ Texture get_cell_number_texture(int number);
 Texture &get_game_texture(GameTexture::Name name);
 
 void free_game_textures();
-
-void update_text_texture(
-    SDL_Renderer *renderer,
-    Texture &texture,
-    Font::Name font,
-    Color::Name color,
-    const char *text
-);
