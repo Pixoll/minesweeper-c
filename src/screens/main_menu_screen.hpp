@@ -4,7 +4,7 @@
 
 #include "game_screen.hpp"
 #include "screen.hpp"
-#include "../graphics/main_screen_textures.hpp"
+#include "../graphics/main_menu_textures.hpp"
 
 class Engine;
 
@@ -21,7 +21,7 @@ public:
         m_window_width(engine->get_window_width()),
         m_window_height(engine->get_window_height()) {
         init_main_menu_fonts(m_window_height);
-        init_main_screen_textures(m_renderer, m_window_width, m_window_height);
+        init_main_menu_textures(m_renderer, m_window_width, m_window_height);
     }
 
     ~MainMenuScreen() override {

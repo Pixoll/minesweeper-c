@@ -4,6 +4,7 @@
 #include <SDL_image.h>
 
 #include "colors.hpp"
+#include "fonts.hpp"
 
 constexpr SDL_Rect NULL_RECT = {0, 0, 0, 0};
 
@@ -36,6 +37,18 @@ public:
     Texture(SDL_Renderer *renderer, const char *image_path, const SDL_Rect area) : m_area(area) {
         m_surface = IMG_Load(image_path);
         m_texture = SDL_CreateTextureFromSurface(renderer, m_surface);
+    }
+
+    Texture(
+        SDL_Renderer *renderer,
+        const Font::Name font,
+        const char *text,
+        const Color::Name color,
+        const SDL_Point position = {0, 0}
+    ) {
+        m_surface = TTF_RenderText_Solid(get_font(font).font, text, get_color(color).rgb);
+        m_texture = SDL_CreateTextureFromSurface(renderer, m_surface);
+        m_area = {position.x, position.y, m_surface->w, m_surface->h};
     }
 
     ~Texture() = default;

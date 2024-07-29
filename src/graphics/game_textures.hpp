@@ -102,7 +102,7 @@ void free_game_textures();
 void update_text_texture(
     SDL_Renderer *renderer,
     Texture &texture,
-    Font::Name font_name,
+    Font::Name font,
     Color::Name color,
     const char *text
 );

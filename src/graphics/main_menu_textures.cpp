@@ -1,8 +1,7 @@
-#include "main_screen_textures.hpp"
+#include "main_menu_textures.hpp"
 
 #include <iostream>
 #include <SDL.h>
-#include <SDL_ttf.h>
 
 #include "colors.hpp"
 #include "fonts.hpp"
@@ -28,26 +27,14 @@ void init_big_mine_texture(SDL_Renderer *renderer, const int window_width, const
 }
 
 void init_title_texture(SDL_Renderer *renderer, const int window_width) {
-    SDL_Surface *text_surface = TTF_RenderText_Solid(
-        get_font(Font::TITLE).font,
-        "Minesweeper",
-        get_color(Color::WHITE).rgb
+    title_texture = {renderer, Font::TITLE, "Minesweeper", Color::WHITE};
+    title_texture.set_position(
+        (window_width - title_texture.get_w()) / 2,
+        static_cast<int>((big_mine_texture.get_y() + big_mine_texture.get_h()) * 1.1)
     );
-    SDL_Texture *text_texture = SDL_CreateTextureFromSurface(renderer, text_surface);
-
-    title_texture = {
-        text_surface,
-        text_texture,
-        {
-            (window_width - text_surface->w) / 2,
-            static_cast<int>((big_mine_texture.get_y() + big_mine_texture.get_h()) * 1.1),
-            text_surface->w,
-            text_surface->h
-        }
-    };
 }
 
-void init_main_screen_textures(SDL_Renderer *renderer, const int window_width, const int window_height) {
+void init_main_menu_textures(SDL_Renderer *renderer, const int window_width, const int window_height) {
     init_big_mine_texture(renderer, window_width, window_height);
     init_title_texture(renderer, window_width);
 }

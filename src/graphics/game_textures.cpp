@@ -3,7 +3,6 @@
 #include <iostream>
 #include <SDL.h>
 #include <SDL_image.h>
-#include <SDL_ttf.h>
 
 #include "colors.hpp"
 #include "fonts.hpp"
@@ -98,23 +97,21 @@ void init_cell_numbers_textures(SDL_Renderer *renderer, const Game::Measurements
     const int cell_size = measurements.cell_size;
     const int grid_line_width = measurements.grid_line_width;
 
-    TTF_Font *cell_sized_font = get_font(Font::CELL_NUMBER).font;
-
     for (int cell = Game::CELL_1; cell <= Game::CELL_8; cell++) {
         char cell_text[2];
         snprintf(cell_text, 2, "%c", '0' + cell - Game::CELL_0);
-        const auto [rgb, value] = get_color(static_cast<Color::Name>(Color::GRID_1 + cell - Game::CELL_1));
 
-        SDL_Surface *text_surface = TTF_RenderText_Solid(cell_sized_font, cell_text, rgb);
-        SDL_Texture *text_texture = SDL_CreateTextureFromSurface(renderer, text_surface);
+        cell_numbers_textures[cell - Game::CELL_1] = {
+            renderer,
+            Font::CELL_NUMBER,
+            cell_text,
+            static_cast<Color::Name>(Color::GRID_1 + cell - Game::CELL_1)
+        };
 
-        SDL_Rect cell_area;
-        TTF_SizeText(cell_sized_font, cell_text, &cell_area.w, &cell_area.h);
-
-        cell_area.x = (grid_line_width + cell_size - cell_area.w) / 2;
-        cell_area.y = (grid_line_width + cell_size - cell_area.h) / 2;
-
-        cell_numbers_textures[cell - Game::CELL_1] = {text_surface, text_texture, cell_area};
+        cell_numbers_textures[cell - Game::CELL_1].set_position(
+            (grid_line_width + cell_size - cell_numbers_textures->get_w()) / 2,
+            (grid_line_width + cell_size - cell_numbers_textures->get_h()) / 2
+        );
     }
 }
 
@@ -282,18 +279,10 @@ void free_game_textures() {
 void update_text_texture(
     SDL_Renderer *renderer,
     Texture &texture,
-    const Font::Name font_name,
+    const Font::Name font,
     const Color::Name color,
     const char *text
 ) {
     texture.destroy();
-
-    SDL_Surface *text_surface = TTF_RenderText_Solid(get_font(font_name).font, text, get_color(color).rgb);
-    SDL_Texture *text_texture = SDL_CreateTextureFromSurface(renderer, text_surface);
-
-    texture = {
-        text_surface,
-        text_texture,
-        {0, 0, text_surface->w, text_surface->h},
-    };
+    texture = {renderer, font, text, color};
 }

@@ -31,7 +31,7 @@ add_executable(
         src/screens/screen.hpp
         src/screens/main_menu_screen.hpp
         src/screens/game_screen.hpp
-        src/graphics/main_screen_textures.cpp
+        src/graphics/main_menu_textures.cpp
         app.rc
 )
 
