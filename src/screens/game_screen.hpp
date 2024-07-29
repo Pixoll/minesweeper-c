@@ -174,7 +174,7 @@ private:
                     continue;
 
                 const GameTexture::CellType cell_type = get_cell_type(i, j, cell.flagged, cell.revealed);
-                Texture cell_texture = get_grid_cell_texture(cell, cell_type);
+                Texture &cell_texture = get_grid_cell_texture(cell, cell_type);
                 cell_texture.move(x, y);
 
                 cell_texture.render(m_renderer, NULL_RECT, cell_texture.get_area());
@@ -263,7 +263,7 @@ private:
         game_time_text_texture.render(m_renderer, NULL_RECT, game_time_text_texture.get_area());
     }
 
-    [[nodiscard]] Texture get_grid_cell_texture(const Game::GridCell cell, const GameTexture::CellType type) const {
+    [[nodiscard]] Texture &get_grid_cell_texture(const Game::GridCell cell, const GameTexture::CellType type) const {
         if (m_game.is_over() && !m_game.has_won() && cell.type == Game::CELL_MINE) {
             if (cell.flagged)
                 return get_cell_texture(GameTexture::CELL_FLAGGED_MINE, type);
