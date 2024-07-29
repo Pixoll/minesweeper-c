@@ -26,16 +26,16 @@ Font load_font(const Font::Type type, const int size) {
 }
 
 void init_global_fonts(const int window_height) {
-    fonts[Font::PRIMARY] = load_font(Font::RUBIK_MEDIUM, window_height * 0.02);
-    fonts[Font::SECONDARY] = load_font(Font::RUBIK_MEDIUM, window_height * 0.01875);
+    fonts[Font::PRIMARY] = load_font(Font::RUBIK_MEDIUM, window_height * 0.04);
+    fonts[Font::SECONDARY] = load_font(Font::RUBIK_MEDIUM, window_height * 0.0375);
 }
 
 void init_main_menu_fonts(const int window_height) {
-    fonts[Font::TITLE] = load_font(Font::RUBIK_REGULAR, window_height * 0.04);
+    fonts[Font::TITLE] = load_font(Font::RUBIK_REGULAR, window_height * 0.08);
 }
 
 void init_game_fonts(const int cell_size) {
-    fonts[Font::CELL_NUMBER] = load_font(Font::RUBIK_MEDIUM, cell_size * 0.5);
+    fonts[Font::CELL_NUMBER] = load_font(Font::RUBIK_MEDIUM, cell_size);
 }
 
 Font get_font(const Font::Name name) {

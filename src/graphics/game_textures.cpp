@@ -174,7 +174,7 @@ void init_grid_texture(SDL_Renderer *renderer, const Game::Measurements &measure
 }
 
 void init_remaining_mines_textures(SDL_Renderer *renderer) {
-    const int size = get_font(Font::PRIMARY).size;
+    const int size = get_font(Font::PRIMARY).size / 2;
     remaining_mines_icon_texture = {
         renderer,
         mine_image_path,
@@ -198,7 +198,7 @@ void init_game_time_texture(SDL_Renderer *renderer) {
 }
 
 void init_mouse_controls_textures(SDL_Renderer *renderer, const int window_height) {
-    const float height = get_font(Font::PRIMARY).size * 2;
+    const float height = get_font(Font::PRIMARY).size;
 
     mouse_left_icon_texture = {renderer, mouse_left_icon_path};
     mouse_left_icon_texture.set_position(20, window_height - height * 2 - 30);

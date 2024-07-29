@@ -55,7 +55,7 @@ public:
         destroy();
         m_surface = TTF_RenderText_Blended(m_font, text, m_font_color);
         m_texture = SDL_CreateTextureFromSurface(renderer, m_surface);
-        m_area = {m_area.x || position.x, m_area.y || position.y, m_surface->w, m_surface->h};
+        m_area = {m_area.x || position.x, m_area.y || position.y, m_surface->w / 2, m_surface->h / 2};
     }
 
     ~Texture() = default;
@@ -117,8 +117,8 @@ public:
         destroy();
         m_surface = TTF_RenderText_Blended(m_font, text, m_font_color);
         m_texture = SDL_CreateTextureFromSurface(renderer, m_surface);
-        m_area.h = m_surface->h;
-        m_area.w = m_surface->w;
+        m_area.h = m_surface->h / 2;
+        m_area.w = m_surface->w / 2;
     }
 
     void render(
