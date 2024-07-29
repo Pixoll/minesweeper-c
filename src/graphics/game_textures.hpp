@@ -2,8 +2,6 @@
 
 #include <SDL.h>
 
-#include "colors.hpp"
-#include "fonts.hpp"
 #include "texture.hpp"
 #include "../core/game.hpp"
 
