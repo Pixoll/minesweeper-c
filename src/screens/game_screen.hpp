@@ -80,12 +80,12 @@ class GameScreen final : virtual public Screen {
     };
 
 public:
-    explicit GameScreen(Engine *engine) :
+    explicit GameScreen(Engine *engine, const int rows, const int columns, const int mines_count) :
         m_engine(engine),
         m_renderer(engine->get_renderer()),
         m_window_width(engine->get_window_width()),
         m_window_height(engine->get_window_height()),
-        m_game(15, 20, 50, engine->get_window_width(), engine->get_window_height()) {
+        m_game(rows, columns, mines_count, engine->get_window_width(), engine->get_window_height()) {
         const Game::Measurements &measurements = m_game.get_measurements();
 
         init_game_fonts(measurements.cell_size);

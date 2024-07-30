@@ -36,7 +36,7 @@ public:
         if (event.button.button != SDL_BUTTON_LEFT)
             return;
 
-        m_engine->set_screen<GameScreen>(m_engine);
+        m_engine->set_screen<GameScreen>(m_engine, 15, 20, 50);
     }
 
     void render() override {
