@@ -52,7 +52,12 @@ public:
         destroy();
         m_surface = TTF_RenderText_Blended(m_font, text, m_font_color);
         m_texture = SDL_CreateTextureFromSurface(m_renderer, m_surface);
-        m_area = {m_area.x || position.x, m_area.y || position.y, m_surface->w, m_surface->h};
+        m_area = {
+            m_area.x == 0 ? position.x : m_area.x,
+            m_area.y == 0 ? position.y : m_area.y,
+            m_surface->w,
+            m_surface->h,
+        };
     }
 
     ~Texture() = default;
@@ -118,17 +123,32 @@ public:
         m_area.w = m_surface->w;
     }
 
-    void render(const SDL_Rect source = NULL_RECT, const SDL_Rect destination = NULL_RECT) const {
+    void render(const SDL_Rect source = NULL_RECT, const SDL_Point destination = {0, 0}) const {
+        const bool is_source_null = is_null_rect(source);
+
+        if (destination.x == 0 && destination.y == 0) {
+            SDL_RenderCopy(
+                m_renderer,
+                m_texture,
+                is_source_null ? nullptr : &source,
+                is_source_null ? &m_area : nullptr
+            );
+
+            return;
+        }
+
+        const SDL_Rect dest = {destination.x, destination.y, m_area.w, m_area.h};
+
         SDL_RenderCopy(
             m_renderer,
             m_texture,
-            is_null_rect(source) ? nullptr : &source,
-            is_null_rect(destination)
-            ? is_null_rect(source)
-              ? &m_area
-              : nullptr
-            : &destination
+            is_source_null ? nullptr : &source,
+            &dest
         );
+    }
+
+    void render(const int x, const int y) const {
+        render(NULL_RECT, {x, y});
     }
 
     void destroy() {

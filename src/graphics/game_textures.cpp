@@ -8,7 +8,8 @@
 #include "texture.hpp"
 #include "../core/game.hpp"
 
-Texture grid_texture;
+Texture h_grid_line_texture;
+Texture v_grid_line_texture;
 
 Texture cell_map_texture;
 constexpr int cell_texture_size = 512;
@@ -130,38 +131,19 @@ void init_grid_texture(SDL_Renderer *renderer, const Game::Measurements &measure
     const int grid_line_offset = (grid_line_width + cell_size - grid_line_length) / 2;
     const SDL_Color light_grey = get_color(Color::LIGHT_GREY).rgb;
 
-    grid_texture = {
+    h_grid_line_texture = {
         renderer,
-        {grid_x_offset, grid_y_offset, grid_width, grid_height},
+        grid_line_horizontal_image_path,
+        {grid_line_offset, 0, grid_line_length, grid_line_width},
     };
+    h_grid_line_texture.set_color_mod(light_grey);
 
-    grid_texture.set_as_render_target();
-
-    Texture grid_line_h_texture(renderer, grid_line_horizontal_image_path);
-    grid_line_h_texture.set_color_mod(light_grey);
-
-    Texture grid_line_v_texture(renderer, grid_line_vertical_image_path);
-    grid_line_v_texture.set_color_mod(light_grey);
-
-    for (int x = 0; x < grid_width - grid_line_width; x += cell_size) {
-        for (int y = 0; y < grid_height - grid_line_width; y += cell_size) {
-            if (x > 0)
-                grid_line_v_texture.render(
-                    NULL_RECT,
-                    {x, y + grid_line_offset, grid_line_width, grid_line_length}
-                );
-
-            if (y > 0)
-                grid_line_h_texture.render(
-                    NULL_RECT,
-                    {x + grid_line_offset, y, grid_line_length, grid_line_width}
-                );
-        }
-    }
-
-    SDL_SetRenderTarget(renderer, nullptr);
-    grid_line_h_texture.destroy();
-    grid_line_v_texture.destroy();
+    v_grid_line_texture = {
+        renderer,
+        grid_line_vertical_image_path,
+        {0, grid_line_offset, grid_line_width, grid_line_length},
+    };
+    v_grid_line_texture.set_color_mod(light_grey);
 }
 
 void init_remaining_mines_textures(SDL_Renderer *renderer) {
@@ -286,7 +268,8 @@ Texture get_cell_number_texture(const int number) {
 
 Texture &get_game_texture(const GameTexture::Name name) {
     switch (name) {
-        case GameTexture::GRID: return grid_texture;
+        case GameTexture::H_GRID_LINE: return h_grid_line_texture;
+        case GameTexture::V_GRID_LINE: return v_grid_line_texture;
         case GameTexture::GAME_TIME_TEXT: return game_time_text_texture;
         case GameTexture::REMAINING_MINES_TEXT: return remaining_mines_text_texture;
         case GameTexture::REMAINING_MINES_ICON: return remaining_mines_icon_texture;
@@ -309,7 +292,6 @@ void free_game_textures() {
         for (auto &texture : texture_set)
             texture.destroy();
 
-    grid_texture.destroy();
     game_time_text_texture.destroy();
     remaining_mines_icon_texture.destroy();
     remaining_mines_text_texture.destroy();

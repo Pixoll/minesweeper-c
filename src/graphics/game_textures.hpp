@@ -82,7 +82,8 @@ public:
     static constexpr int CELL_SUBTYPES = CELL_FLAG + 1;
 
     enum Name {
-        GRID,
+        H_GRID_LINE,
+        V_GRID_LINE,
         GAME_TIME_TEXT,
         REMAINING_MINES_TEXT,
         REMAINING_MINES_ICON,

@@ -150,8 +150,6 @@ public:
 
 private:
     void draw_grid() const {
-        const Texture &grid_texture = get_game_texture(GameTexture::GRID);
-
         const int rows = m_game.get_rows();
         const int columns = m_game.get_columns();
 
@@ -160,10 +158,9 @@ private:
         const int grid_x_offset = measurements.grid_x_offset;
         const int grid_y_offset = measurements.grid_y_offset;
 
-        // Draw grid
-        grid_texture.render();
+        const Texture &h_grid_line_texture = get_game_texture(GameTexture::H_GRID_LINE);
+        const Texture &v_grid_line_texture = get_game_texture(GameTexture::V_GRID_LINE);
 
-        // Draw cells
         for (int i = 0; i < columns; i++) {
             const int x = grid_x_offset + cell_size * i;
 
@@ -171,14 +168,29 @@ private:
                 const int y = grid_y_offset + cell_size * j;
                 const Game::GridCell cell = m_game.get_grid_cell(i, j);
 
-                if (cell.type == Game::CELL_0 && cell.revealed)
-                    continue;
+                // Draw cells
+                if (cell.type != Game::CELL_0 || !cell.revealed) {
+                    const GameTexture::CellType cell_type = get_cell_type(i, j, cell.flagged, cell.revealed);
+                    Texture cell_texture = get_grid_cell_texture(cell, cell_type);
 
-                const GameTexture::CellType cell_type = get_cell_type(i, j, cell.flagged, cell.revealed);
-                Texture cell_texture = get_grid_cell_texture(cell, cell_type);
-                cell_texture.move(x, y);
+                    cell_texture.move(x, y);
+                    cell_texture.render();
+                }
 
-                cell_texture.render();
+                // Draw grid
+                if (j != rows - 1 && (cell.revealed || m_game.get_grid_cell(i, j + 1).revealed)) {
+                    h_grid_line_texture.render(
+                        x + h_grid_line_texture.get_x(),
+                        y + cell_size + h_grid_line_texture.get_y()
+                    );
+                }
+
+                if (i != columns - 1 && (cell.revealed || m_game.get_grid_cell(i + 1, j).revealed)) {
+                    v_grid_line_texture.render(
+                        x + cell_size + v_grid_line_texture.get_x(),
+                        y + v_grid_line_texture.get_y()
+                    );
+                }
             }
         }
     }
@@ -245,7 +257,7 @@ private:
         game_time_text_texture.render();
     }
 
-    void draw_mouse_controls() const {
+    static void draw_mouse_controls() {
         get_game_texture(GameTexture::MOUSE_LEFT_ICON).render();
         get_game_texture(GameTexture::MOUSE_LEFT_TEXT).render();
         get_game_texture(GameTexture::MOUSE_RIGHT_ICON).render();
