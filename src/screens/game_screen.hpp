@@ -22,63 +22,6 @@ class GameScreen final : virtual public Screen {
     time_t m_last_game_time_drawn = 0;
     int m_remaining_mines = 0;
 
-    static constexpr GameTexture::CellType TEXTURE_CELL_SIDE_TYPE_ORDER[16] = {
-        GameTexture::CELL_NO_SIDES,
-        GameTexture::CELL_R,
-        GameTexture::CELL_L,
-        GameTexture::CELL_LR,
-        GameTexture::CELL_B,
-        GameTexture::CELL_BR,
-        GameTexture::CELL_BL,
-        GameTexture::CELL_BLR,
-        GameTexture::CELL_T,
-        GameTexture::CELL_TR,
-        GameTexture::CELL_TL,
-        GameTexture::CELL_TLR,
-        GameTexture::CELL_BT,
-        GameTexture::CELL_TBR,
-        GameTexture::CELL_TBL,
-        GameTexture::CELL_TBLR,
-    };
-
-    static constexpr GameTexture::CellType TEXTURE_CELL_CORNER_TYPE_ORDER[33] = {
-        GameTexture::CELL_TBLR_BRC,
-        GameTexture::CELL_TBLR_BLC,
-        GameTexture::CELL_TBLR_BLCRC,
-        GameTexture::CELL_TBLR_TRC,
-        GameTexture::CELL_TBLR_TRC_BRC,
-        GameTexture::CELL_TBLR_TRC_BLC,
-        GameTexture::CELL_TBLR_TRC_BLCRC,
-        GameTexture::CELL_TBLR_TLC,
-        GameTexture::CELL_TBLR_TLC_BRC,
-        GameTexture::CELL_TBLR_TLC_BLC,
-        GameTexture::CELL_TBLR_TLC_BLCRC,
-        GameTexture::CELL_TBLR_TLCRC,
-        GameTexture::CELL_TBLR_TLCRC_BRC,
-        GameTexture::CELL_TBLR_TLCRC_BLC,
-        GameTexture::CELL_TBLR_TLCRC_BLCRC,
-
-        GameTexture::CELL_BLR_BRC,
-        GameTexture::CELL_BLR_BLC,
-        GameTexture::CELL_BLR_BLCRC,
-        GameTexture::CELL_TBR_BRC,
-        GameTexture::CELL_TLR_TRC,
-        GameTexture::CELL_TBL_BLC,
-        GameTexture::CELL_TBR_TRC,
-        GameTexture::CELL_TBR_TRC_BRC,
-        GameTexture::CELL_TLR_TLC,
-        GameTexture::CELL_NO_SIDES,
-        GameTexture::CELL_NO_SIDES,
-        GameTexture::CELL_TBL_TLC,
-        GameTexture::CELL_TLR_TLCRC,
-        GameTexture::CELL_TBL_TLC_BLC,
-
-        GameTexture::CELL_BRC,
-        GameTexture::CELL_BLC,
-        GameTexture::CELL_TRC,
-        GameTexture::CELL_TLC,
-    };
-
 public:
     explicit GameScreen(Engine *engine, const int rows, const int columns, const int mines_count) :
         m_engine(engine),
@@ -307,6 +250,63 @@ private:
         return log2;
     }
 
+    static constexpr GameTexture::CellType TEXTURE_CELL_SIDE_TYPE_ORDER[16] = {
+        GameTexture::CELL_NO_SIDES,
+        GameTexture::CELL_R,
+        GameTexture::CELL_L,
+        GameTexture::CELL_LR,
+        GameTexture::CELL_B,
+        GameTexture::CELL_BR,
+        GameTexture::CELL_BL,
+        GameTexture::CELL_BLR,
+        GameTexture::CELL_T,
+        GameTexture::CELL_TR,
+        GameTexture::CELL_TL,
+        GameTexture::CELL_TLR,
+        GameTexture::CELL_BT,
+        GameTexture::CELL_TBR,
+        GameTexture::CELL_TBL,
+        GameTexture::CELL_TBLR,
+    };
+
+    static constexpr GameTexture::CellType TEXTURE_CELL_CORNER_TYPE_ORDER[33] = {
+        GameTexture::CELL_TBLR_BRC,
+        GameTexture::CELL_TBLR_BLC,
+        GameTexture::CELL_TBLR_BLCRC,
+        GameTexture::CELL_TBLR_TRC,
+        GameTexture::CELL_TBLR_TRC_BRC,
+        GameTexture::CELL_TBLR_TRC_BLC,
+        GameTexture::CELL_TBLR_TRC_BLCRC,
+        GameTexture::CELL_TBLR_TLC,
+        GameTexture::CELL_TBLR_TLC_BRC,
+        GameTexture::CELL_TBLR_TLC_BLC,
+        GameTexture::CELL_TBLR_TLC_BLCRC,
+        GameTexture::CELL_TBLR_TLCRC,
+        GameTexture::CELL_TBLR_TLCRC_BRC,
+        GameTexture::CELL_TBLR_TLCRC_BLC,
+        GameTexture::CELL_TBLR_TLCRC_BLCRC,
+
+        GameTexture::CELL_BLR_BRC,
+        GameTexture::CELL_BLR_BLC,
+        GameTexture::CELL_BLR_BLCRC,
+        GameTexture::CELL_TBR_BRC,
+        GameTexture::CELL_TLR_TRC,
+        GameTexture::CELL_TBL_BLC,
+        GameTexture::CELL_TBR_TRC,
+        GameTexture::CELL_TBR_TRC_BRC,
+        GameTexture::CELL_TLR_TLC,
+        GameTexture::CELL_NO_SIDES,
+        GameTexture::CELL_NO_SIDES,
+        GameTexture::CELL_TBL_TLC,
+        GameTexture::CELL_TLR_TLCRC,
+        GameTexture::CELL_TBL_TLC_BLC,
+
+        GameTexture::CELL_BRC,
+        GameTexture::CELL_BLC,
+        GameTexture::CELL_TRC,
+        GameTexture::CELL_TLC,
+    };
+
     [[nodiscard]] GameTexture::CellType get_cell_type(
         const int x,
         const int y,
@@ -333,6 +333,9 @@ private:
 
         if (TLR_BLR_C == 0b0000)
             return TEXTURE_CELL_SIDE_TYPE_ORDER[TBLR];
+
+        // TODO add comments, forgot how this works
+
         if (TBLR == 0b1111)
             return TEXTURE_CELL_CORNER_TYPE_ORDER[TLR_BLR_C - 1];
 
