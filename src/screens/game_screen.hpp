@@ -161,7 +161,7 @@ private:
         const int grid_y_offset = measurements.grid_y_offset;
 
         // Draw grid
-        grid_texture.render(m_renderer);
+        grid_texture.render();
 
         // Draw cells
         for (int i = 0; i < columns; i++) {
@@ -178,7 +178,7 @@ private:
                 Texture cell_texture = get_grid_cell_texture(cell, cell_type);
                 cell_texture.move(x, y);
 
-                cell_texture.render(m_renderer);
+                cell_texture.render();
             }
         }
     }
@@ -194,8 +194,6 @@ private:
 
     void draw_remaining_mines() {
         Texture &remaining_mines_text_texture = get_game_texture(GameTexture::REMAINING_MINES_TEXT);
-        const Texture &remaining_mines_icon_texture = get_game_texture(GameTexture::REMAINING_MINES_ICON);
-
         const int current_remaining = m_game.get_total_mines() - m_game.get_flagged_mines();
 
         if (m_remaining_mines != current_remaining) {
@@ -204,11 +202,11 @@ private:
             char remaining_mines_string[int_length(current_remaining) + 1];
             itoa(current_remaining, remaining_mines_string, 10);
 
-            remaining_mines_text_texture.update_text(m_renderer, remaining_mines_string);
+            remaining_mines_text_texture.update_text(remaining_mines_string);
         }
 
-        remaining_mines_icon_texture.render(m_renderer);
-        remaining_mines_text_texture.render(m_renderer);
+        get_game_texture(GameTexture::REMAINING_MINES_ICON).render();
+        remaining_mines_text_texture.render();
     }
 
     static std::string get_time_string(const int seconds) {
@@ -241,22 +239,17 @@ private:
             m_last_game_time_drawn = now;
 
             const string time_string = get_time_string(now - start_time);
-            game_time_text_texture.update_text(m_renderer, time_string.c_str());
+            game_time_text_texture.update_text(time_string.c_str());
         }
 
-        game_time_text_texture.render(m_renderer);
+        game_time_text_texture.render();
     }
 
     void draw_mouse_controls() const {
-        const Texture &mouse_left_icon_texture = get_game_texture(GameTexture::MOUSE_LEFT_ICON);
-        const Texture &mouse_left_text_texture = get_game_texture(GameTexture::MOUSE_LEFT_TEXT);
-        const Texture &mouse_right_icon_texture = get_game_texture(GameTexture::MOUSE_RIGHT_ICON);
-        const Texture &mouse_right_text_texture = get_game_texture(GameTexture::MOUSE_RIGHT_TEXT);
-
-        mouse_left_icon_texture.render(m_renderer);
-        mouse_left_text_texture.render(m_renderer);
-        mouse_right_icon_texture.render(m_renderer);
-        mouse_right_text_texture.render(m_renderer);
+        get_game_texture(GameTexture::MOUSE_LEFT_ICON).render();
+        get_game_texture(GameTexture::MOUSE_LEFT_TEXT).render();
+        get_game_texture(GameTexture::MOUSE_RIGHT_ICON).render();
+        get_game_texture(GameTexture::MOUSE_RIGHT_TEXT).render();
     }
 
     [[nodiscard]] Texture get_grid_cell_texture(const Game::GridCell cell, const GameTexture::CellType type) const {

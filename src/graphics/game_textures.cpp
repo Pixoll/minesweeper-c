@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include <SDL.h>
-#include <SDL_image.h>
 
 #include "colors.hpp"
 #include "fonts.hpp"
@@ -37,13 +36,7 @@ const auto mouse_left_icon_path = "assets/textures/mouse_left.png";
 const auto mouse_right_icon_path = "assets/textures/mouse_right.png";
 
 void init_cell_map_texture(SDL_Renderer *renderer) {
-    SDL_Surface *surface = IMG_Load(cell_map_path);
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-    cell_map_texture = {
-        surface,
-        texture,
-        {0, 0, surface->w, surface->h},
-    };
+    cell_map_texture = {renderer, cell_map_path};
 }
 
 void init_cell_textures_set(
@@ -80,19 +73,19 @@ void init_cell_textures_set(
     for (int type = 0; type < GameTexture::CELL_TYPES; type++) {
         textures[type] = {renderer, texture_area};
 
-        textures[type].set_as_render_target(renderer);
+        textures[type].set_as_render_target();
 
         const int map_index = type * cell_texture_size;
         const int map_x = map_index % cell_map_texture.get_w();
         const int map_y = map_index / cell_map_texture.get_h() * cell_texture_size;
 
         cell_map_texture.set_color_mod(cell_texture_color);
-        cell_map_texture.render(renderer, {map_x, map_y, cell_texture_size, cell_texture_size});
+        cell_map_texture.render({map_x, map_y, cell_texture_size, cell_texture_size});
 
         cell_map_texture.set_color_mod(white);
 
         if (image_path != nullptr && image_scale_wrt_cell != 0)
-            image_texture.render(renderer);
+            image_texture.render();
 
         SDL_SetRenderTarget(renderer, nullptr);
     }
@@ -142,7 +135,7 @@ void init_grid_texture(SDL_Renderer *renderer, const Game::Measurements &measure
         {grid_x_offset, grid_y_offset, grid_width, grid_height},
     };
 
-    grid_texture.set_as_render_target(renderer);
+    grid_texture.set_as_render_target();
 
     Texture grid_line_h_texture(renderer, grid_line_horizontal_image_path);
     grid_line_h_texture.set_color_mod(light_grey);
@@ -154,14 +147,12 @@ void init_grid_texture(SDL_Renderer *renderer, const Game::Measurements &measure
         for (int y = 0; y < grid_height - grid_line_width; y += cell_size) {
             if (x > 0)
                 grid_line_v_texture.render(
-                    renderer,
                     NULL_RECT,
                     {x, y + grid_line_offset, grid_line_width, grid_line_length}
                 );
 
             if (y > 0)
                 grid_line_h_texture.render(
-                    renderer,
                     NULL_RECT,
                     {x + grid_line_offset, y, grid_line_length, grid_line_width}
                 );

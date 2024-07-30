@@ -42,11 +42,8 @@ public:
     void render() override {
         SDL_RenderClear(m_renderer);
 
-        const Texture &big_mine_texture = get_main_menu_texture(MainMenuTexture::BIG_MINE);
-        big_mine_texture.render(m_renderer);
-
-        const Texture &title_texture = get_main_menu_texture(MainMenuTexture::TITLE);
-        title_texture.render(m_renderer);
+        get_main_menu_texture(MainMenuTexture::BIG_MINE).render();
+        get_main_menu_texture(MainMenuTexture::TITLE).render();
 
         SDL_RenderPresent(m_renderer);
     }
