@@ -268,7 +268,6 @@ public:
         if (m_total_mines == m_unrevealed_count) {
             m_over = true;
             m_won = true;
-            flag_all_unrevealed();
         }
     }
 
@@ -315,18 +314,6 @@ private:
 
                 coords[*counter] = {nx, ny};
                 *counter = *counter + 1;
-            }
-        }
-    }
-
-    void flag_all_unrevealed() {
-        for (int i = 0; i < m_columns; i++) {
-            for (int j = 0; j < m_rows; j++) {
-                if (m_grid[i][j].revealed || m_grid[i][j].flagged)
-                    continue;
-
-                m_grid[i][j].flagged = true;
-                m_flagged_mines++;
             }
         }
     }
