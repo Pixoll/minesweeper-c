@@ -53,8 +53,8 @@ public:
         m_surface = TTF_RenderText_Blended(m_font, text, m_font_color);
         m_texture = SDL_CreateTextureFromSurface(m_renderer, m_surface);
         m_area = {
-            m_area.x == 0 ? position.x : m_area.x,
-            m_area.y == 0 ? position.y : m_area.y,
+            position.x != 0 ? position.x : m_area.x,
+            position.y != 0 ? position.y : m_area.y,
             m_surface->w,
             m_surface->h,
         };
