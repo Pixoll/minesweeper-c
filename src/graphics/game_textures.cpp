@@ -262,6 +262,7 @@ Texture get_cell_number_texture(const int number) {
     return cell_numbers_textures[number];
 }
 
+// ReSharper disable once CppNotAllPathsReturnValue
 Texture &get_game_texture(const GameTexture::Name name) {
     switch (name) {
         case GameTexture::H_GRID_LINE: return h_grid_line_texture;
@@ -273,10 +274,6 @@ Texture &get_game_texture(const GameTexture::Name name) {
         case GameTexture::MOUSE_LEFT_TEXT: return mouse_left_text_texture;
         case GameTexture::MOUSE_RIGHT_ICON: return mouse_right_icon_texture;
         case GameTexture::MOUSE_RIGHT_TEXT: return mouse_right_text_texture;
-        default: {
-            std::cerr << "Invalid m_texture name " << name << std::endl;
-            exit(1);
-        }
     }
 }
 

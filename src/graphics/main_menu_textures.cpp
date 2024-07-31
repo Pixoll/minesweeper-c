@@ -39,14 +39,11 @@ void init_main_menu_textures(SDL_Renderer *renderer, const int window_width, con
     init_title_texture(renderer, window_width);
 }
 
+// ReSharper disable once CppNotAllPathsReturnValue
 Texture &get_main_menu_texture(const MainMenuTexture::Name name) {
     switch (name) {
         case MainMenuTexture::BIG_MINE: return big_mine_texture;
         case MainMenuTexture::TITLE: return title_texture;
-        default: {
-            std::cerr << "Invalid texture name " << name << std::endl;
-            exit(1);
-        }
     }
 }
 
