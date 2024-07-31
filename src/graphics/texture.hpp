@@ -10,7 +10,6 @@ constexpr SDL_Rect NULL_RECT = {0, 0, 0, 0};
 
 class Texture {
     SDL_Renderer *m_renderer = nullptr;
-    SDL_Surface *m_surface = nullptr;
     SDL_Texture *m_texture = nullptr;
     SDL_Rect m_area{0, 0, 0, 0};
     TTF_Font *m_font = nullptr;
@@ -31,15 +30,19 @@ public:
 
     Texture(SDL_Renderer *renderer, const char *image_path) : m_renderer(renderer) {
         destroy();
-        m_surface = IMG_Load(image_path);
-        m_texture = SDL_CreateTextureFromSurface(m_renderer, m_surface);
-        m_area = {0, 0, m_surface->w, m_surface->h};
+        SDL_Surface *surface = IMG_Load(image_path);
+        m_texture = SDL_CreateTextureFromSurface(m_renderer, surface);
+        m_area = {0, 0, surface->w, surface->h};
+
+        SDL_FreeSurface(surface);
     }
 
     Texture(SDL_Renderer *renderer, const char *image_path, const SDL_Rect area) : m_renderer(renderer), m_area(area) {
         destroy();
-        m_surface = IMG_Load(image_path);
-        m_texture = SDL_CreateTextureFromSurface(m_renderer, m_surface);
+        SDL_Surface *surface = IMG_Load(image_path);
+        m_texture = SDL_CreateTextureFromSurface(m_renderer, surface);
+
+        SDL_FreeSurface(surface);
     }
 
     Texture(
@@ -50,14 +53,16 @@ public:
         const SDL_Point position = {0, 0}
     ) : m_renderer(renderer), m_font(get_font(font).font), m_font_color(get_color(color).rgb) {
         destroy();
-        m_surface = TTF_RenderText_Blended(m_font, text, m_font_color);
-        m_texture = SDL_CreateTextureFromSurface(m_renderer, m_surface);
+        SDL_Surface *surface = TTF_RenderText_Blended(m_font, text, m_font_color);
+        m_texture = SDL_CreateTextureFromSurface(m_renderer, surface);
         m_area = {
             position.x != 0 ? position.x : m_area.x,
             position.y != 0 ? position.y : m_area.y,
-            m_surface->w,
-            m_surface->h,
+            surface->w,
+            surface->h,
         };
+
+        SDL_FreeSurface(surface);
     }
 
     ~Texture() = default;
@@ -157,10 +162,12 @@ public:
 
     void update_text(const char *text) {
         destroy();
-        m_surface = TTF_RenderText_Blended(m_font, text, m_font_color);
-        m_texture = SDL_CreateTextureFromSurface(m_renderer, m_surface);
-        m_area.h = m_surface->h;
-        m_area.w = m_surface->w;
+        SDL_Surface *surface = TTF_RenderText_Blended(m_font, text, m_font_color);
+        m_texture = SDL_CreateTextureFromSurface(m_renderer, surface);
+        m_area.h = surface->h;
+        m_area.w = surface->w;
+
+        SDL_FreeSurface(surface);
     }
 
     void render(const SDL_Rect source = NULL_RECT, const SDL_Point destination = {0, 0}) const {
@@ -195,9 +202,7 @@ public:
         if (m_texture == nullptr)
             return;
 
-        SDL_FreeSurface(m_surface);
         SDL_DestroyTexture(m_texture);
-        m_surface = nullptr;
         m_texture = nullptr;
     }
 
