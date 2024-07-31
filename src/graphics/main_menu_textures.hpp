@@ -9,6 +9,8 @@ public:
     enum Name {
         BIG_MINE,
         TITLE,
+        NEW_GAME_BUTTON,
+        CONTINUE_GAME_BUTTON,
     };
 };
 

@@ -44,6 +44,8 @@ public:
 
         get_main_menu_texture(MainMenuTexture::BIG_MINE).render();
         get_main_menu_texture(MainMenuTexture::TITLE).render();
+        get_main_menu_texture(MainMenuTexture::NEW_GAME_BUTTON).render();
+        // get_main_menu_texture(MainMenuTexture::CONTINUE_GAME_BUTTON).render();
 
         SDL_RenderPresent(m_renderer);
     }
