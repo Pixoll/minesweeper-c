@@ -26,8 +26,8 @@ Font load_font(const Font::Type type, const int size) {
 }
 
 void init_global_fonts(const int window_height) {
-    fonts[Font::PRIMARY] = load_font(Font::RUBIK_REGULAR, window_height * 0.02);
-    fonts[Font::SECONDARY] = load_font(Font::RUBIK_REGULAR, window_height * 0.01875);
+    fonts[Font::PRIMARY] = load_font(Font::RUBIK_REGULAR, window_height * 0.025);
+    fonts[Font::SECONDARY] = load_font(Font::RUBIK_REGULAR, window_height * 0.02);
 }
 
 void init_main_menu_fonts(const int window_height) {
