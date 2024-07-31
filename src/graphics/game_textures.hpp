@@ -91,6 +91,7 @@ public:
         MOUSE_LEFT_TEXT,
         MOUSE_RIGHT_ICON,
         MOUSE_RIGHT_TEXT,
+        BACK_BUTTON,
     };
 };
 

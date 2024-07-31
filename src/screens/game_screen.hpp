@@ -22,6 +22,9 @@ class GameScreen final : virtual public Screen {
     time_t m_last_game_time_drawn = 0;
     int m_remaining_mines = 0;
 
+    SDL_Cursor *const m_arrow_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
+    SDL_Cursor *const m_hand_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND);
+
 public:
     explicit GameScreen(Engine *engine, const int rows, const int columns, const int mines_count) :
         m_engine(engine),
@@ -41,6 +44,12 @@ public:
     }
 
     void run_logic(const SDL_Event &event) override {
+        int click_x, click_y;
+        SDL_GetMouseState(&click_x, &click_y);
+
+        const bool cursor_in_back_button = get_game_texture(GameTexture::BACK_BUTTON).contains(click_x, click_y);
+        SDL_SetCursor(cursor_in_back_button ? m_hand_cursor : m_arrow_cursor);
+
         if (event.type != SDL_MOUSEBUTTONDOWN)
             return;
 
@@ -49,12 +58,16 @@ public:
             return;
         }
 
-        int click_x, click_y;
-        SDL_GetMouseState(&click_x, &click_y);
-        const auto [x, y, inside] = m_game.calculate_grid_cell(click_x, click_y);
+        const auto [x, y, inside_cell] = m_game.calculate_grid_cell(click_x, click_y);
 
-        if (!inside)
+        if (!inside_cell) {
+            if (cursor_in_back_button && event.button.button == SDL_BUTTON_LEFT) {
+                m_engine->set_screen<MainMenuScreen>(m_engine);
+                SDL_SetCursor(m_arrow_cursor);
+            }
+
             return;
+        }
 
         switch (event.button.button) {
             case SDL_BUTTON_LEFT: {
@@ -86,7 +99,14 @@ public:
         draw_grid();
         draw_remaining_mines();
         draw_game_time();
-        draw_mouse_controls();
+
+        // game controls
+        get_game_texture(GameTexture::MOUSE_LEFT_ICON).render();
+        get_game_texture(GameTexture::MOUSE_LEFT_TEXT).render();
+        get_game_texture(GameTexture::MOUSE_RIGHT_ICON).render();
+        get_game_texture(GameTexture::MOUSE_RIGHT_TEXT).render();
+
+        get_game_texture(GameTexture::BACK_BUTTON).render();
 
         SDL_RenderPresent(m_renderer);
     }
@@ -198,13 +218,6 @@ private:
         }
 
         game_time_text_texture.render();
-    }
-
-    static void draw_mouse_controls() {
-        get_game_texture(GameTexture::MOUSE_LEFT_ICON).render();
-        get_game_texture(GameTexture::MOUSE_LEFT_TEXT).render();
-        get_game_texture(GameTexture::MOUSE_RIGHT_ICON).render();
-        get_game_texture(GameTexture::MOUSE_RIGHT_TEXT).render();
     }
 
     [[nodiscard]] Texture get_grid_cell_texture(const Game::GridCell cell, const GameTexture::CellType type) const {
