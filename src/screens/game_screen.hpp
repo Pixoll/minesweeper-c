@@ -53,11 +53,6 @@ public:
         if (event.type != SDL_MOUSEBUTTONDOWN)
             return;
 
-        if (m_game.is_over()) {
-            m_engine->set_screen<MainMenuScreen>(m_engine);
-            return;
-        }
-
         const auto [x, y, inside_cell] = m_game.calculate_grid_cell(click_x, click_y);
 
         if (!inside_cell) {
