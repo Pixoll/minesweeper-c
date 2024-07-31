@@ -114,6 +114,7 @@ Texture &get_main_menu_texture(const MainMenuTexture::Name name) {
         case MainMenuTexture::NEW_GAME_BUTTON: return new_game_button_texture;
         case MainMenuTexture::CONTINUE_GAME_BUTTON: return continue_game_button_texture;
     }
+    __builtin_unreachable();
 }
 
 void free_main_menu_textures() {

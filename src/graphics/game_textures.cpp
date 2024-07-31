@@ -286,6 +286,7 @@ Texture &get_game_texture(const GameTexture::Name name) {
         case GameTexture::MOUSE_RIGHT_TEXT: return mouse_right_text_texture;
         case GameTexture::BACK_BUTTON: return back_button_texture;
     }
+    __builtin_unreachable();
 }
 
 void free_game_textures() {
