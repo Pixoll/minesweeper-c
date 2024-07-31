@@ -171,11 +171,11 @@ void init_game_time_texture(SDL_Renderer *renderer) {
 }
 
 void init_mouse_controls_textures(SDL_Renderer *renderer, const int window_height) {
-    const float height = get_font(Font::PRIMARY).size * 2;
+    const int icon_height = get_font(Font::PRIMARY).size * 2;
 
     mouse_left_icon_texture = {renderer, mouse_left_icon_path};
-    mouse_left_icon_texture.set_position(20, window_height - height * 2 - 30);
-    mouse_left_icon_texture.scale_by(height / mouse_left_icon_texture.get_h());
+    mouse_left_icon_texture.set_position(20, window_height - icon_height * 2 - 30);
+    mouse_left_icon_texture.set_height(icon_height);
 
     mouse_left_text_texture = {renderer, Font::PRIMARY, "uncover", Color::WHITE};
     mouse_left_text_texture.set_position(
@@ -184,8 +184,8 @@ void init_mouse_controls_textures(SDL_Renderer *renderer, const int window_heigh
     );
 
     mouse_right_icon_texture = {renderer, mouse_right_icon_path};
-    mouse_right_icon_texture.set_position(20, window_height - height - 20);
-    mouse_right_icon_texture.scale_by(height / mouse_right_icon_texture.get_h());
+    mouse_right_icon_texture.set_position(20, window_height - icon_height - 20);
+    mouse_right_icon_texture.set_height(icon_height);
 
     mouse_right_text_texture = {renderer, Font::PRIMARY, "flag", Color::WHITE};
     mouse_right_text_texture.set_position(

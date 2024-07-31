@@ -88,9 +88,24 @@ public:
         m_area.w = size;
     }
 
-    void scale_by(const float factor) {
-        m_area.h *= factor;
+    /**
+     * Keeps the aspect ratio
+     */
+    void set_width(const float width) {
+        const float factor = width / m_area.w;
+
         m_area.w *= factor;
+        m_area.h *= factor;
+    }
+
+    /**
+     * Keeps the aspect ratio
+     */
+    void set_height(const float height) {
+        const float factor = height / m_area.h;
+
+        m_area.w *= factor;
+        m_area.h *= factor;
     }
 
     void set_position(const int x, const int y) {
