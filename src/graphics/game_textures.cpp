@@ -74,7 +74,7 @@ void init_cell_textures_set(
     for (int type = 0; type < GameTexture::CELL_TYPES; type++) {
         textures[type] = {renderer, texture_area};
 
-        textures[type].set_as_render_target();
+        const Texture::ScopedRender scoped_render = textures[type].set_as_render_target();
 
         const int map_index = type * cell_texture_size;
         const int map_x = map_index % cell_map_texture.get_w();
@@ -87,8 +87,6 @@ void init_cell_textures_set(
 
         if (image_path != nullptr && image_scale_wrt_cell != 0)
             image_texture.render();
-
-        SDL_SetRenderTarget(renderer, nullptr);
     }
 
     image_texture.destroy();

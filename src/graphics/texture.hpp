@@ -62,6 +62,26 @@ public:
 
     ~Texture() = default;
 
+    /**
+     * Automatically releases the render target upon scope exit
+     */
+    class ScopedRender {
+        SDL_Renderer *m_renderer;
+
+    public:
+        ScopedRender(
+            SDL_Renderer *renderer,
+            SDL_Texture *texture,
+            const SDL_BlendMode blend_mode
+        ) : m_renderer(renderer) {
+            SDL_SetRenderTarget(m_renderer, texture);
+            SDL_SetTextureBlendMode(texture, blend_mode);
+        }
+
+        ~ScopedRender() {
+            SDL_SetRenderTarget(m_renderer, nullptr);
+        }
+    };
 
     [[nodiscard]] int get_x() const {
         return m_area.x;
@@ -126,9 +146,8 @@ public:
         set_color_mod(get_color(color).rgb);
     }
 
-    void set_as_render_target(const SDL_BlendMode blend_mode = SDL_BLENDMODE_BLEND) const {
-        SDL_SetRenderTarget(m_renderer, m_texture);
-        SDL_SetTextureBlendMode(m_texture, blend_mode);
+    [[nodiscard]] ScopedRender set_as_render_target(const SDL_BlendMode blend_mode = SDL_BLENDMODE_BLEND) const {
+        return {m_renderer, m_texture, blend_mode};
     }
 
     void update_text(const char *text) {
