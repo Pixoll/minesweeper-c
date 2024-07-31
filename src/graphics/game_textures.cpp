@@ -56,8 +56,6 @@ void init_cell_textures_set(
     const int image_offset = (grid_line_width + cell_size - image_size) / 2 - cell_offset;
 
     const SDL_Rect texture_area = {cell_offset, cell_offset, cell_size, cell_size};
-    const SDL_Color cell_texture_color = get_color(cell_color).rgb;
-    const SDL_Color white = get_color(Color::WHITE).rgb;
 
     Texture image_texture{};
 
@@ -71,6 +69,8 @@ void init_cell_textures_set(
         image_texture.set_color_mod(image_color);
     }
 
+    cell_map_texture.set_color_mod(cell_color);
+
     for (int type = 0; type < GameTexture::CELL_TYPES; type++) {
         textures[type] = {renderer, texture_area};
 
@@ -80,15 +80,13 @@ void init_cell_textures_set(
         const int map_x = map_index % cell_map_texture.get_w();
         const int map_y = map_index / cell_map_texture.get_h() * cell_texture_size;
 
-        cell_map_texture.set_color_mod(cell_texture_color);
         cell_map_texture.render({map_x, map_y, cell_texture_size, cell_texture_size});
-
-        cell_map_texture.set_color_mod(white);
 
         if (image_path != nullptr && image_scale_wrt_cell != 0)
             image_texture.render();
     }
 
+    cell_map_texture.set_color_mod(Color::WHITE);
     image_texture.destroy();
 }
 
