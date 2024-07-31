@@ -68,7 +68,7 @@ void init_cell_textures_set(
             {image_offset, image_offset, image_size, image_size},
         };
 
-        image_texture.set_color_mod(get_color(image_color).rgb);
+        image_texture.set_color_mod(image_color);
     }
 
     for (int type = 0; type < GameTexture::CELL_TYPES; type++) {
@@ -180,8 +180,7 @@ void init_mouse_controls_textures(SDL_Renderer *renderer, const int window_heigh
     mouse_left_text_texture = {renderer, Font::PRIMARY, "uncover", Color::WHITE};
     mouse_left_text_texture.set_position(
         mouse_left_icon_texture.get_x() + mouse_left_icon_texture.get_w() + 10,
-        mouse_left_icon_texture.get_y()
-        + (mouse_left_icon_texture.get_h() - mouse_left_text_texture.get_h()) / 2
+        mouse_left_icon_texture.get_y() + (icon_height - mouse_left_text_texture.get_h()) / 2
     );
 
     mouse_right_icon_texture = {renderer, mouse_right_icon_path};
@@ -191,8 +190,7 @@ void init_mouse_controls_textures(SDL_Renderer *renderer, const int window_heigh
     mouse_right_text_texture = {renderer, Font::PRIMARY, "flag", Color::WHITE};
     mouse_right_text_texture.set_position(
         mouse_right_icon_texture.get_x() + mouse_right_icon_texture.get_w() + 10,
-        mouse_right_icon_texture.get_y()
-        + (mouse_right_icon_texture.get_h() - mouse_right_text_texture.get_h()) / 2
+        mouse_right_icon_texture.get_y() + (icon_height - mouse_right_text_texture.get_h()) / 2
     );
 }
 

@@ -62,20 +62,21 @@ public:
 
     ~Texture() = default;
 
-    [[nodiscard]] int get_y() const {
-        return m_area.y;
-    }
 
     [[nodiscard]] int get_x() const {
         return m_area.x;
     }
 
-    [[nodiscard]] int get_h() const {
-        return m_area.h;
+    [[nodiscard]] int get_y() const {
+        return m_area.y;
     }
 
     [[nodiscard]] int get_w() const {
         return m_area.w;
+    }
+
+    [[nodiscard]] int get_h() const {
+        return m_area.h;
     }
 
     [[nodiscard]] const SDL_Rect &get_area() const {
