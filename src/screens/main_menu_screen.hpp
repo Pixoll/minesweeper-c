@@ -14,6 +14,9 @@ class MainMenuScreen final : virtual public Screen {
     int m_window_width;
     int m_window_height;
 
+    SDL_Cursor *const m_arrow_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
+    SDL_Cursor *const m_hand_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND);
+
 public:
     explicit MainMenuScreen(Engine *engine) :
         m_engine(engine),
@@ -30,13 +33,21 @@ public:
     }
 
     void run_logic(const SDL_Event &event) override {
-        if (event.type != SDL_MOUSEBUTTONDOWN)
+        int click_x, click_y;
+        SDL_GetMouseState(&click_x, &click_y);
+
+        const bool cursor_in_new_game_button = get_main_menu_texture(MainMenuTexture::NEW_GAME_BUTTON)
+               .contains(click_x, click_y);
+
+        SDL_SetCursor(cursor_in_new_game_button ? m_hand_cursor : m_arrow_cursor);
+
+        if (event.type != SDL_MOUSEBUTTONDOWN || event.button.button != SDL_BUTTON_LEFT)
             return;
 
-        if (event.button.button != SDL_BUTTON_LEFT)
-            return;
-
-        m_engine->set_screen<GameScreen>(m_engine, 15, 20, 50);
+        if (cursor_in_new_game_button) {
+            m_engine->set_screen<GameScreen>(m_engine, 15, 20, 50);
+            SDL_SetCursor(m_arrow_cursor);
+        }
     }
 
     void render() override {

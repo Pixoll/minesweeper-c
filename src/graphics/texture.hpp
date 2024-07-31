@@ -103,6 +103,11 @@ public:
         return m_area;
     }
 
+    [[nodiscard]] bool contains(const int x, const int y) const {
+        const auto [ax, ay, w, h] = m_area;
+        return x >= ax && x <= ax + w && y >= ay && y <= ay + h;
+    }
+
     void set_size(const int size) {
         m_area.h = size;
         m_area.w = size;
