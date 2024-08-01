@@ -5,7 +5,6 @@
 #include <filesystem>
 #include <fstream>
 #include <random>
-#include <utility>
 #include <vector>
 
 class Game {
