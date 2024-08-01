@@ -87,6 +87,7 @@ public:
         m_unrevealed_count(rows * columns),
         m_grid(columns, std::vector(rows, GridCell{})) {
         m_measurements = calculate_measurements(window_width, window_height);
+        delete_save();
     }
 
     ~Game() = default;
@@ -324,11 +325,12 @@ public:
         return {rows, columns, total_mines, unrevealed_count, grid, flagged_mines, time_elapsed, measurements};
     }
 
+private:
     static void delete_save() {
-        std::filesystem::remove(SAVE_FILE_PATH);
+        if (save_exists())
+            std::filesystem::remove(SAVE_FILE_PATH);
     }
 
-private:
     [[nodiscard]] Measurements calculate_measurements(const int window_width, const int window_height) const {
         const float grid_ratio = static_cast<float>(m_columns) / m_rows;
         const float window_ratio = static_cast<float>(window_width) / window_height;
