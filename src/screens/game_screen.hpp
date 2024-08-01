@@ -18,7 +18,7 @@ class GameScreen final : virtual public Screen {
     int m_window_width;
     int m_window_height;
     Game m_game;
-    bool m_placed_mines = false;
+    bool m_placed_mines;
     time_t m_last_game_time_drawn = 0;
     int m_remaining_mines = 0;
 
@@ -31,7 +31,21 @@ public:
         m_renderer(engine->get_renderer()),
         m_window_width(engine->get_window_width()),
         m_window_height(engine->get_window_height()),
-        m_game(rows, columns, mines_count, engine->get_window_width(), engine->get_window_height()) {
+        m_game(rows, columns, mines_count, engine->get_window_width(), engine->get_window_height()),
+        m_placed_mines(false) {
+        const Game::Measurements &measurements = m_game.get_measurements();
+
+        init_game_fonts(measurements.cell_size);
+        init_game_textures(m_renderer, measurements, m_window_height);
+    }
+
+    explicit GameScreen(Engine *engine, const Game &game) :
+        m_engine(engine),
+        m_renderer(engine->get_renderer()),
+        m_window_width(engine->get_window_width()),
+        m_window_height(engine->get_window_height()),
+        m_game(game),
+        m_placed_mines(true) {
         const Game::Measurements &measurements = m_game.get_measurements();
 
         init_game_fonts(measurements.cell_size);
@@ -57,6 +71,9 @@ public:
 
         if (!inside_cell) {
             if (cursor_in_back_button && event.button.button == SDL_BUTTON_LEFT) {
+                if (m_game.get_start_time() != 0 && !m_game.is_over())
+                    m_game.save();
+
                 m_engine->set_screen<MainMenuScreen>(m_engine);
                 SDL_SetCursor(m_arrow_cursor);
             }

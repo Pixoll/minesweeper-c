@@ -38,15 +38,22 @@ public:
 
         const bool cursor_in_new_game_button = get_main_menu_texture(MainMenuTexture::NEW_GAME_BUTTON)
                .contains(click_x, click_y);
+        const bool cursor_in_continue_button = Game::save_exists()
+                && get_main_menu_texture(MainMenuTexture::CONTINUE_GAME_BUTTON).contains(click_x, click_y);
 
-        SDL_SetCursor(cursor_in_new_game_button ? m_hand_cursor : m_arrow_cursor);
+        SDL_SetCursor(cursor_in_new_game_button || cursor_in_continue_button ? m_hand_cursor : m_arrow_cursor);
 
         if (event.type != SDL_MOUSEBUTTONDOWN || event.button.button != SDL_BUTTON_LEFT)
             return;
 
+        SDL_SetCursor(m_arrow_cursor);
+
         if (cursor_in_new_game_button) {
             m_engine->set_screen<GameScreen>(m_engine, 15, 20, 50);
-            SDL_SetCursor(m_arrow_cursor);
+        }
+
+        if (cursor_in_continue_button) {
+            m_engine->set_screen<GameScreen>(m_engine, Game::load());
         }
     }
 
@@ -56,7 +63,9 @@ public:
         get_main_menu_texture(MainMenuTexture::BIG_MINE).render();
         get_main_menu_texture(MainMenuTexture::TITLE).render();
         get_main_menu_texture(MainMenuTexture::NEW_GAME_BUTTON).render();
-        // get_main_menu_texture(MainMenuTexture::CONTINUE_GAME_BUTTON).render();
+
+        if (Game::save_exists())
+            get_main_menu_texture(MainMenuTexture::CONTINUE_GAME_BUTTON).render();
 
         SDL_RenderPresent(m_renderer);
     }

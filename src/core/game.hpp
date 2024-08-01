@@ -2,7 +2,10 @@
 
 #include <cstdlib>
 #include <ctime>
+#include <filesystem>
+#include <fstream>
 #include <random>
+#include <utility>
 #include <vector>
 
 class Game {
@@ -18,7 +21,6 @@ public:
         CELL_7,
         CELL_8,
         CELL_MINE,
-        CELL_TYPES,
     };
 
     struct Measurements {
@@ -45,20 +47,38 @@ private:
         bool inside = false;
     };
 
-    typedef std::vector<std::vector<GridCell>> grid;
+    typedef std::vector<std::vector<GridCell>> grid_t;
 
     const int m_rows;
     const int m_columns;
     const int m_total_mines;
     int m_unrevealed_count;
-    grid m_grid{};
+    grid_t m_grid{};
     int m_flagged_mines = 0;
     time_t m_start_time = 0;
     bool m_over = false;
     bool m_won = false;
     Measurements m_measurements{};
-    std::mt19937_64 m_random_generator_engine{std::random_device{}()};
-    std::uniform_int_distribution<char> m_random_generator;
+
+    static constexpr auto SAVE_FILE_PATH = "save.bin";
+
+    Game(
+        const int rows,
+        const int columns,
+        const int total_mines,
+        const int unrevealed_count,
+        grid_t grid,
+        const int flagged_mines,
+        const time_t time_elapsed,
+        const Measurements &measurements
+    ) : m_rows(rows),
+        m_columns(columns),
+        m_total_mines(total_mines),
+        m_unrevealed_count(unrevealed_count),
+        m_grid(std::move(grid)),
+        m_flagged_mines(flagged_mines),
+        m_start_time(time(nullptr) - time_elapsed),
+        m_measurements(measurements) {}
 
 public:
     Game(const int rows, const int columns, const int mines_count, const int window_width, const int window_height) :
@@ -67,32 +87,7 @@ public:
         m_total_mines(mines_count),
         m_unrevealed_count(rows * columns),
         m_grid(columns, std::vector(rows, GridCell{})) {
-        const float grid_ratio = static_cast<float>(m_columns) / m_rows;
-        const float window_ratio = static_cast<float>(window_width) / window_height;
-
-        const int limitant_grid_side = grid_ratio > window_ratio ? m_columns : m_rows;
-        const int limitant_window_side = grid_ratio > window_ratio ? window_width : window_height;
-        const int cell_size = limitant_window_side * 0.975 / limitant_grid_side;
-
-        const int grid_line_length = cell_size * 0.65;
-        const int grid_line_width = cell_size * 0.03;
-        const int grid_width = cell_size * m_columns + grid_line_width;
-        const int grid_x_offset = (window_width - grid_width) / 2;
-        const int grid_height = cell_size * m_rows + grid_line_width;
-        const int grid_y_offset = (window_height - grid_height) / 2;
-
-        const int cell_offset = grid_line_width / 2;
-
-        m_measurements = {
-            cell_size,
-            cell_offset,
-            grid_line_length,
-            grid_line_width,
-            grid_x_offset,
-            grid_y_offset,
-            grid_width,
-            grid_height,
-        };
+        m_measurements = calculate_measurements(window_width, window_height);
     }
 
     ~Game() = default;
@@ -137,12 +132,13 @@ public:
         const time_t now = time(nullptr);
         m_start_time = now;
 
-        srand(now);
+        std::mt19937_64 random_number_generator_engine{std::random_device{}()};
+        std::uniform_int_distribution<char> random_number_generator;
 
         int placed_mines = 0;
         while (placed_mines < m_total_mines) {
-            const int nx = random_between(0, m_columns - 1);
-            const int ny = random_between(0, m_rows - 1);
+            const int nx = random_number_generator(random_number_generator_engine) % m_columns;
+            const int ny = random_number_generator(random_number_generator_engine) % m_rows;
 
             // Mines count at (x, y) must be 0
             if (nx >= x - 1 && nx <= x + 1 && ny >= y - 1 && ny <= y + 1)
@@ -271,9 +267,96 @@ public:
         }
     }
 
+    void save() const {
+        const time_t time_elapsed = time(nullptr) - m_start_time;
+
+        std::ofstream save_file(SAVE_FILE_PATH, std::ios::binary | std::ios::out);
+
+        save_file.write(reinterpret_cast<const char *>(&m_rows), sizeof(m_rows));
+        save_file.write(reinterpret_cast<const char *>(&m_columns), sizeof(m_columns));
+        save_file.write(reinterpret_cast<const char *>(&m_total_mines), sizeof(m_total_mines));
+        save_file.write(reinterpret_cast<const char *>(&m_unrevealed_count), sizeof(m_unrevealed_count));
+        save_file.write(reinterpret_cast<const char *>(&m_flagged_mines), sizeof(m_flagged_mines));
+        save_file.write(reinterpret_cast<const char *>(&time_elapsed), sizeof(time_elapsed));
+        save_file.write(reinterpret_cast<const char *>(&m_measurements), sizeof(m_measurements));
+
+        for (const auto &column : m_grid)
+            for (const auto &[type, flagged, revealed] : column) {
+                const char data = flagged << 7 | revealed << 6 | type;
+                save_file.write(&data, sizeof(data));
+            }
+
+        save_file.close();
+    }
+
+    static bool save_exists() {
+        return std::filesystem::exists(SAVE_FILE_PATH) && !std::filesystem::is_empty(SAVE_FILE_PATH);
+    }
+
+    static Game load() {
+        std::ifstream save_file(SAVE_FILE_PATH, std::ios::binary | std::ios::in);
+
+        int rows, columns, total_mines, unrevealed_count, flagged_mines;
+        time_t time_elapsed;
+        Measurements measurements;
+
+        save_file.read(reinterpret_cast<char *>(&rows), sizeof(rows));
+        save_file.read(reinterpret_cast<char *>(&columns), sizeof(columns));
+        save_file.read(reinterpret_cast<char *>(&total_mines), sizeof(total_mines));
+        save_file.read(reinterpret_cast<char *>(&unrevealed_count), sizeof(unrevealed_count));
+        save_file.read(reinterpret_cast<char *>(&flagged_mines), sizeof(flagged_mines));
+        save_file.read(reinterpret_cast<char *>(&time_elapsed), sizeof(time_elapsed));
+        save_file.read(reinterpret_cast<char *>(&measurements), sizeof(measurements));
+
+        grid_t grid(columns, std::vector(rows, GridCell{}));
+
+        for (auto &column : grid)
+            for (auto &[type, flagged, revealed] : column) {
+                char data;
+                save_file.read(&data, sizeof(data));
+                flagged = data >> 7 & 1;
+                revealed = data >> 6 & 1;
+                type = static_cast<CellType>(data & 0b111111);
+            }
+
+        save_file.close();
+        delete_save();
+
+        return {rows, columns, total_mines, unrevealed_count, grid, flagged_mines, time_elapsed, measurements};
+    }
+
+    static void delete_save() {
+        std::filesystem::remove(SAVE_FILE_PATH);
+    }
+
 private:
-    int random_between(const int min, const int max) {
-        return m_random_generator(m_random_generator_engine) % (max - min + 1) + min;
+    [[nodiscard]] Measurements calculate_measurements(const int window_width, const int window_height) const {
+        const float grid_ratio = static_cast<float>(m_columns) / m_rows;
+        const float window_ratio = static_cast<float>(window_width) / window_height;
+
+        const int limitant_grid_side = grid_ratio > window_ratio ? m_columns : m_rows;
+        const int limitant_window_side = grid_ratio > window_ratio ? window_width : window_height;
+        const int cell_size = limitant_window_side * 0.975 / limitant_grid_side;
+
+        const int grid_line_length = cell_size * 0.65;
+        const int grid_line_width = cell_size * 0.03;
+        const int grid_width = cell_size * m_columns + grid_line_width;
+        const int grid_x_offset = (window_width - grid_width) / 2;
+        const int grid_height = cell_size * m_rows + grid_line_width;
+        const int grid_y_offset = (window_height - grid_height) / 2;
+
+        const int cell_offset = grid_line_width / 2;
+
+        return {
+            cell_size,
+            cell_offset,
+            grid_line_length,
+            grid_line_width,
+            grid_x_offset,
+            grid_y_offset,
+            grid_width,
+            grid_height,
+        };
     }
 
     [[nodiscard]] CellType count_surrounding_mines(const int x, const int y) const {
