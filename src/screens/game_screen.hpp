@@ -64,6 +64,11 @@ public:
         const bool cursor_in_back_button = get_game_texture(GameTexture::BACK_BUTTON).contains(click_x, click_y);
         SDL_SetCursor(cursor_in_back_button ? m_hand_cursor : m_arrow_cursor);
 
+        if (event.type == SDL_QUIT && m_game.get_start_time() != 0 && !m_game.is_over()) {
+            m_game.save();
+            return;
+        }
+
         if (event.type != SDL_MOUSEBUTTONDOWN)
             return;
 

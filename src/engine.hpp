@@ -69,14 +69,10 @@ public:
 
         while (true) {
             while (SDL_PollEvent(&event) != 0) {
-                switch (event.type) {
-                    case SDL_QUIT:
-                        goto exit_game_loop;
+                m_screen->run_logic(event);
 
-                    default:
-                        m_screen->run_logic(event);
-                        break;
-                }
+                if (event.type == SDL_QUIT)
+                    goto exit_game_loop;
             }
 
             m_screen->render();
