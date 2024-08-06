@@ -282,15 +282,15 @@ private:
         const int cell_size = measurements.cell_size;
         const int grid_line_width = measurements.grid_line_width;
 
-        for (int cell = Game::CELL_1; cell <= Game::CELL_8; cell++) {
+        for (int cell = 0; cell < 8; cell++) {
             char cell_text[2];
-            snprintf(cell_text, 2, "%c", '0' + cell - Game::CELL_0);
+            snprintf(cell_text, 2, "%c", '0' + cell + 1);
 
             const auto cell_number_texture = std::make_shared<Texture>(
                 renderer,
                 Font::CELL_NUMBER,
                 cell_text,
-                static_cast<Color::Name>(Color::GRID_1 + cell - Game::CELL_1)
+                static_cast<Color::Name>(Color::GRID_1 + cell)
             );
 
             cell_number_texture->set_position(
@@ -298,7 +298,7 @@ private:
                 (grid_line_width + cell_size - cell_number_texture->get_h()) / 2
             );
 
-            m_cell_numbers_textures[cell - Game::CELL_1] = cell_number_texture;
+            m_cell_numbers_textures[cell] = cell_number_texture;
         }
     }
 
