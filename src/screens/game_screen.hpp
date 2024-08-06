@@ -145,8 +145,7 @@ private:
                     const GameTextureManager::CellType cell_type = get_cell_type(i, j, cell.flagged, cell.revealed);
                     const GameTexture cell_texture = get_grid_cell_texture(cell, cell_type);
 
-                    cell_texture->move(x, y);
-                    cell_texture->render();
+                    cell_texture->render(cell_texture->get_x() + x, cell_texture->get_y() + y);
                 }
 
                 // Draw grid

@@ -145,11 +145,6 @@ public:
         m_area.y = y;
     }
 
-    void move(const int x_pixels, const int y_pixels) {
-        m_area.x += x_pixels;
-        m_area.y += y_pixels;
-    }
-
     void set_color_mod(const SDL_Color color) const {
         SDL_SetTextureColorMod(m_texture, color.r, color.g, color.b);
     }
