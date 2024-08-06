@@ -157,8 +157,8 @@ public:
             cell_map_texture,
             FLAG_IMAGE_PATH,
             0.35,
-            Color::FLAGGED_CELL,
-            Color::FLAGGED_CELL_BG
+            Color::FLAG,
+            Color::FLAGGED_CELL
         );
         init_cell_textures_set(
             renderer,
@@ -167,8 +167,8 @@ public:
             cell_map_texture,
             MINE_IMAGE_PATH,
             0.5,
-            Color::FLAGGED_CELL,
-            Color::FLAGGED_CELL_BG
+            Color::FLAG,
+            Color::FLAGGED_CELL
         );
         init_cell_textures_set(
             renderer,
@@ -188,7 +188,7 @@ public:
             MINE_IMAGE_PATH,
             0.5,
             Color::TRIGGERED_MINE,
-            Color::TRIGGERED_MINE_BG
+            Color::TRIGGERED_CELL
         );
     }
 
@@ -245,7 +245,7 @@ private:
 
         const SDL_Rect texture_area = {cell_offset, cell_offset, cell_size, cell_size};
 
-        Texture image_texture{};
+        Texture image_texture;
 
         if (image_path != nullptr) {
             image_texture = {

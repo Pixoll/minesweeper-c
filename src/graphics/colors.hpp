@@ -35,10 +35,10 @@ struct Color {
         GRID_7,
         GRID_8,
 
+        FLAG,
         FLAGGED_CELL,
-        FLAGGED_CELL_BG,
         TRIGGERED_MINE,
-        TRIGGERED_MINE_BG,
+        TRIGGERED_CELL,
 
         BLACK,
         DARK_GREY,
@@ -73,10 +73,10 @@ public:
         colors[GRID_7] = {surface, "#bfbfbf"};  // #808080
         colors[GRID_8] = {surface, "#ffffff"};
 
-        colors[FLAGGED_CELL] = {surface, "#333333"};
-        colors[FLAGGED_CELL_BG] = {surface, "#606060"};
+        colors[FLAG] = {surface, "#333333"};
+        colors[FLAGGED_CELL] = {surface, "#606060"};
         colors[TRIGGERED_MINE] = {surface, "#431a0d"};
-        colors[TRIGGERED_MINE_BG] = {surface, "#b6350d"};
+        colors[TRIGGERED_CELL] = {surface, "#b6350d"};
 
         colors[BLACK] = {surface, "#000000"};
         colors[DARK_GREY] = {surface, "#1e1f1c"};
