@@ -24,14 +24,14 @@ add_executable(
         src/main.cpp
         src/engine.hpp
         src/core/game.hpp
-        src/graphics/colors.cpp
+        src/graphics/colors.hpp
         src/graphics/fonts.cpp
         src/graphics/texture.hpp
-        src/graphics/game_textures.cpp
+        src/texture_managers/game_texture_manager.hpp
+        src/texture_managers/main_menu_texture_manager.hpp
         src/screens/screen.hpp
         src/screens/main_menu_screen.hpp
         src/screens/game_screen.hpp
-        src/graphics/main_menu_textures.cpp
         app.rc
 )
 

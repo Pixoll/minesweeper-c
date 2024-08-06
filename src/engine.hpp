@@ -5,8 +5,8 @@
 #include <SDL.h>
 #include <thread>
 
+#include "graphics/colors.hpp"
 #include "graphics/fonts.hpp"
-#include "graphics/game_textures.hpp"
 #include "screens/screen.hpp"
 
 struct EngineParameters {
@@ -32,10 +32,10 @@ public:
           m_renderer(parameters.renderer) {
         SDL_GetWindowSize(m_window, &m_window_width, &m_window_height);
 
-        init_colors(m_window);
+        Color::init(m_window);
         init_global_fonts(m_window_height);
 
-        const auto [r, g, b, a] = get_color(Color::BACKGROUND).rgb;
+        const auto [r, g, b, a] = Color::get(Color::BACKGROUND).rgb;
         SDL_SetRenderDrawColor(m_renderer, r, g, b, a);
     }
 

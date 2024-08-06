@@ -48,8 +48,43 @@ struct Color {
         WHITE,
     };
 
+private:
     static constexpr int NAMES_AMOUNT = WHITE + 1;
+
+    static Color colors[NAMES_AMOUNT];
+
+public:
+    [[nodiscard]] static Color get(const Name name) {
+        return colors[name];
+    }
+
+    static void init(SDL_Window *window) {
+        const SDL_Surface *surface = SDL_GetWindowSurface(window);
+
+        colors[THEME] = {surface, "#d77f37"};
+        colors[BACKGROUND] = {surface, "#333333"};
+
+        colors[GRID_1] = {surface, "#b3b3ff"};  // #0000ff
+        colors[GRID_2] = {surface, "#b3ffb3"};  // #008000
+        colors[GRID_3] = {surface, "#ffb3b3"};  // #ff0000
+        colors[GRID_4] = {surface, "#4d4dff"};  // #000080
+        colors[GRID_5] = {surface, "#ff4d4d"};  // #800000
+        colors[GRID_6] = {surface, "#b3ffff"};  // #008080
+        colors[GRID_7] = {surface, "#bfbfbf"};  // #808080
+        colors[GRID_8] = {surface, "#ffffff"};
+
+        colors[FLAGGED_CELL] = {surface, "#333333"};
+        colors[FLAGGED_CELL_BG] = {surface, "#606060"};
+        colors[TRIGGERED_MINE] = {surface, "#431a0d"};
+        colors[TRIGGERED_MINE_BG] = {surface, "#b6350d"};
+
+        colors[BLACK] = {surface, "#000000"};
+        colors[DARK_GREY] = {surface, "#1e1f1c"};
+        colors[GREY] = {surface, "#333333"};
+        colors[LIGHT_GREY] = {surface, "#606060"};
+        colors[LIGHTER_GREY] = {surface, "#cfcfcf"};
+        colors[WHITE] = {surface, "#ffffff"};
+    }
 };
 
-void init_colors(SDL_Window *window);
-Color get_color(Color::Name name);
+Color Color::colors[] = {};

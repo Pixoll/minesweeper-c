@@ -7,17 +7,20 @@
 #include "screen.hpp"
 #include "../core/game.hpp"
 #include "../graphics/fonts.hpp"
-#include "../graphics/game_textures.hpp"
+#include "../texture_managers/game_texture_manager.hpp"
 
 class MainMenuScreen;
 class Engine;
 
 class GameScreen final : virtual public Screen {
+    using GameTexture = GameTextureManager::GameTexture;
+
     Engine *m_engine;
     SDL_Renderer *m_renderer;
     int m_window_width;
     int m_window_height;
     Game m_game;
+    GameTextureManager m_texture_manager;
     bool m_placed_mines;
     time_t m_last_game_time_drawn = 0;
     int m_remaining_mines = 0;
@@ -32,12 +35,8 @@ public:
         m_window_width(engine->get_window_width()),
         m_window_height(engine->get_window_height()),
         m_game(rows, columns, mines_count, engine->get_window_width(), engine->get_window_height()),
-        m_placed_mines(false) {
-        const Game::Measurements &measurements = m_game.get_measurements();
-
-        init_game_fonts(measurements.cell_size);
-        init_game_textures(m_renderer, measurements, m_window_height);
-    }
+        m_texture_manager(m_renderer, m_game.get_measurements(), m_window_height),
+        m_placed_mines(false) {}
 
     explicit GameScreen(Engine *engine, const Game &game) :
         m_engine(engine),
@@ -45,23 +44,17 @@ public:
         m_window_width(engine->get_window_width()),
         m_window_height(engine->get_window_height()),
         m_game(game),
-        m_placed_mines(true) {
-        const Game::Measurements &measurements = m_game.get_measurements();
+        m_texture_manager(m_renderer, m_game.get_measurements(), m_window_height),
+        m_placed_mines(true) {}
 
-        init_game_fonts(measurements.cell_size);
-        init_game_textures(m_renderer, measurements, m_window_height);
-    }
-
-    ~GameScreen() override {
-        free_game_fonts();
-        free_game_textures();
-    }
+    ~GameScreen() override = default;
 
     void run_logic(const SDL_Event &event) override {
         int click_x, click_y;
         SDL_GetMouseState(&click_x, &click_y);
 
-        const bool cursor_in_back_button = get_game_texture(GameTexture::BACK_BUTTON).contains(click_x, click_y);
+        const bool cursor_in_back_button = m_texture_manager.get(GameTextureManager::BACK_BUTTON)
+                                                           ->contains(click_x, click_y);
         SDL_SetCursor(cursor_in_back_button ? m_hand_cursor : m_arrow_cursor);
 
         if (event.type == SDL_QUIT && m_game.get_start_time() != 0 && !m_game.is_over()) {
@@ -118,12 +111,12 @@ public:
         draw_game_time();
 
         // game controls
-        get_game_texture(GameTexture::MOUSE_LEFT_ICON).render();
-        get_game_texture(GameTexture::MOUSE_LEFT_TEXT).render();
-        get_game_texture(GameTexture::MOUSE_RIGHT_ICON).render();
-        get_game_texture(GameTexture::MOUSE_RIGHT_TEXT).render();
+        m_texture_manager.get(GameTextureManager::MOUSE_LEFT_ICON)->render();
+        m_texture_manager.get(GameTextureManager::MOUSE_LEFT_TEXT)->render();
+        m_texture_manager.get(GameTextureManager::MOUSE_RIGHT_ICON)->render();
+        m_texture_manager.get(GameTextureManager::MOUSE_RIGHT_TEXT)->render();
 
-        get_game_texture(GameTexture::BACK_BUTTON).render();
+        m_texture_manager.get(GameTextureManager::BACK_BUTTON)->render();
 
         SDL_RenderPresent(m_renderer);
     }
@@ -138,8 +131,8 @@ private:
         const int grid_x_offset = measurements.grid_x_offset;
         const int grid_y_offset = measurements.grid_y_offset;
 
-        const Texture &h_grid_line_texture = get_game_texture(GameTexture::H_GRID_LINE);
-        const Texture &v_grid_line_texture = get_game_texture(GameTexture::V_GRID_LINE);
+        const GameTexture h_grid_line_texture = m_texture_manager.get(GameTextureManager::H_GRID_LINE);
+        const GameTexture v_grid_line_texture = m_texture_manager.get(GameTextureManager::V_GRID_LINE);
 
         for (int i = 0; i < columns; i++) {
             const int x = grid_x_offset + cell_size * i;
@@ -150,25 +143,25 @@ private:
 
                 // Draw cells
                 if (cell.type != Game::CELL_0 || !cell.revealed) {
-                    const GameTexture::CellType cell_type = get_cell_type(i, j, cell.flagged, cell.revealed);
-                    Texture cell_texture = get_grid_cell_texture(cell, cell_type);
+                    const GameTextureManager::CellType cell_type = get_cell_type(i, j, cell.flagged, cell.revealed);
+                    const GameTexture cell_texture = get_grid_cell_texture(cell, cell_type);
 
-                    cell_texture.move(x, y);
-                    cell_texture.render();
+                    cell_texture->move(x, y);
+                    cell_texture->render();
                 }
 
                 // Draw grid
                 if (j != rows - 1 && (cell.revealed || m_game.get_grid_cell(i, j + 1).revealed)) {
-                    h_grid_line_texture.render(
-                        x + h_grid_line_texture.get_x(),
-                        y + cell_size + h_grid_line_texture.get_y()
+                    h_grid_line_texture->render(
+                        x + h_grid_line_texture->get_x(),
+                        y + cell_size + h_grid_line_texture->get_y()
                     );
                 }
 
                 if (i != columns - 1 && (cell.revealed || m_game.get_grid_cell(i + 1, j).revealed)) {
-                    v_grid_line_texture.render(
-                        x + cell_size + v_grid_line_texture.get_x(),
-                        y + v_grid_line_texture.get_y()
+                    v_grid_line_texture->render(
+                        x + cell_size + v_grid_line_texture->get_x(),
+                        y + v_grid_line_texture->get_y()
                     );
                 }
             }
@@ -185,7 +178,9 @@ private:
     }
 
     void draw_remaining_mines() {
-        Texture &remaining_mines_text_texture = get_game_texture(GameTexture::REMAINING_MINES_TEXT);
+        const GameTexture remaining_mines_text_texture = m_texture_manager.get(
+            GameTextureManager::REMAINING_MINES_TEXT
+        );
         const int current_remaining = m_game.get_total_mines() - m_game.get_flagged_mines();
 
         if (m_remaining_mines != current_remaining) {
@@ -194,11 +189,11 @@ private:
             char remaining_mines_string[int_length(current_remaining) + 1];
             itoa(current_remaining, remaining_mines_string, 10);
 
-            remaining_mines_text_texture.update_text(remaining_mines_string);
+            remaining_mines_text_texture->update_text(remaining_mines_string);
         }
 
-        get_game_texture(GameTexture::REMAINING_MINES_ICON).render();
-        remaining_mines_text_texture.render();
+        m_texture_manager.get(GameTextureManager::REMAINING_MINES_ICON)->render();
+        remaining_mines_text_texture->render();
     }
 
     static std::string get_time_string(const int seconds) {
@@ -220,7 +215,7 @@ private:
     void draw_game_time() {
         using std::string;
 
-        Texture &game_time_text_texture = get_game_texture(GameTexture::GAME_TIME_TEXT);
+        const GameTexture game_time_text_texture = m_texture_manager.get(GameTextureManager::GAME_TIME_TEXT);
         const time_t start_time = m_game.get_start_time();
 
         if (start_time == 0)
@@ -231,30 +226,33 @@ private:
             m_last_game_time_drawn = now;
 
             const string time_string = get_time_string(now - start_time);
-            game_time_text_texture.update_text(time_string.c_str());
+            game_time_text_texture->update_text(time_string.c_str());
         }
 
-        game_time_text_texture.render();
+        game_time_text_texture->render();
     }
 
-    [[nodiscard]] Texture get_grid_cell_texture(const Game::GridCell cell, const GameTexture::CellType type) const {
+    [[nodiscard]] GameTexture get_grid_cell_texture(
+        const Game::GridCell cell,
+        const GameTextureManager::CellType type
+    ) const {
         if (m_game.is_over() && !m_game.has_won() && cell.type == Game::CELL_MINE) {
             if (cell.flagged)
-                return get_cell_texture(GameTexture::CELL_FLAGGED_MINE, type);
+                return m_texture_manager.get(GameTextureManager::CELL_FLAGGED_MINE, type);
 
             if (cell.revealed)
-                return get_cell_texture(GameTexture::CELL_TRIGGERED_MINE, type);
+                return m_texture_manager.get(GameTextureManager::CELL_TRIGGERED_MINE, type);
 
-            return get_cell_texture(GameTexture::CELL_COVERED_MINE, type);
+            return m_texture_manager.get(GameTextureManager::CELL_COVERED_MINE, type);
         }
 
         if (cell.flagged)
-            return get_cell_texture(GameTexture::CELL_FLAG, type);
+            return m_texture_manager.get(GameTextureManager::CELL_FLAG, type);
 
         if (!cell.revealed)
-            return get_cell_texture(GameTexture::CELL_COVERED, type);
+            return m_texture_manager.get(GameTextureManager::CELL_COVERED, type);
 
-        return get_cell_number_texture(cell.type - Game::CELL_1);
+        return m_texture_manager.get(cell.type - Game::CELL_1);
     }
 
     [[nodiscard]] bool verify_cell(const int x, const int y, const bool flagged) const {
@@ -280,71 +278,71 @@ private:
         return log2;
     }
 
-    static constexpr GameTexture::CellType TEXTURE_CELL_SIDE_TYPE_ORDER[16] = {
-        GameTexture::CELL_NO_SIDES,
-        GameTexture::CELL_R,
-        GameTexture::CELL_L,
-        GameTexture::CELL_LR,
-        GameTexture::CELL_B,
-        GameTexture::CELL_BR,
-        GameTexture::CELL_BL,
-        GameTexture::CELL_BLR,
-        GameTexture::CELL_T,
-        GameTexture::CELL_TR,
-        GameTexture::CELL_TL,
-        GameTexture::CELL_TLR,
-        GameTexture::CELL_BT,
-        GameTexture::CELL_TBR,
-        GameTexture::CELL_TBL,
-        GameTexture::CELL_TBLR,
+    static constexpr GameTextureManager::CellType TEXTURE_CELL_SIDE_TYPE_ORDER[16] = {
+        GameTextureManager::CELL_NO_SIDES,
+        GameTextureManager::CELL_R,
+        GameTextureManager::CELL_L,
+        GameTextureManager::CELL_LR,
+        GameTextureManager::CELL_B,
+        GameTextureManager::CELL_BR,
+        GameTextureManager::CELL_BL,
+        GameTextureManager::CELL_BLR,
+        GameTextureManager::CELL_T,
+        GameTextureManager::CELL_TR,
+        GameTextureManager::CELL_TL,
+        GameTextureManager::CELL_TLR,
+        GameTextureManager::CELL_BT,
+        GameTextureManager::CELL_TBR,
+        GameTextureManager::CELL_TBL,
+        GameTextureManager::CELL_TBLR,
     };
 
-    static constexpr GameTexture::CellType TEXTURE_CELL_CORNER_TYPE_ORDER[33] = {
-        GameTexture::CELL_TBLR_BRC,
-        GameTexture::CELL_TBLR_BLC,
-        GameTexture::CELL_TBLR_BLCRC,
-        GameTexture::CELL_TBLR_TRC,
-        GameTexture::CELL_TBLR_TRC_BRC,
-        GameTexture::CELL_TBLR_TRC_BLC,
-        GameTexture::CELL_TBLR_TRC_BLCRC,
-        GameTexture::CELL_TBLR_TLC,
-        GameTexture::CELL_TBLR_TLC_BRC,
-        GameTexture::CELL_TBLR_TLC_BLC,
-        GameTexture::CELL_TBLR_TLC_BLCRC,
-        GameTexture::CELL_TBLR_TLCRC,
-        GameTexture::CELL_TBLR_TLCRC_BRC,
-        GameTexture::CELL_TBLR_TLCRC_BLC,
-        GameTexture::CELL_TBLR_TLCRC_BLCRC,
+    static constexpr GameTextureManager::CellType TEXTURE_CELL_CORNER_TYPE_ORDER[33] = {
+        GameTextureManager::CELL_TBLR_BRC,
+        GameTextureManager::CELL_TBLR_BLC,
+        GameTextureManager::CELL_TBLR_BLCRC,
+        GameTextureManager::CELL_TBLR_TRC,
+        GameTextureManager::CELL_TBLR_TRC_BRC,
+        GameTextureManager::CELL_TBLR_TRC_BLC,
+        GameTextureManager::CELL_TBLR_TRC_BLCRC,
+        GameTextureManager::CELL_TBLR_TLC,
+        GameTextureManager::CELL_TBLR_TLC_BRC,
+        GameTextureManager::CELL_TBLR_TLC_BLC,
+        GameTextureManager::CELL_TBLR_TLC_BLCRC,
+        GameTextureManager::CELL_TBLR_TLCRC,
+        GameTextureManager::CELL_TBLR_TLCRC_BRC,
+        GameTextureManager::CELL_TBLR_TLCRC_BLC,
+        GameTextureManager::CELL_TBLR_TLCRC_BLCRC,
 
-        GameTexture::CELL_BLR_BRC,
-        GameTexture::CELL_BLR_BLC,
-        GameTexture::CELL_BLR_BLCRC,
-        GameTexture::CELL_TBR_BRC,
-        GameTexture::CELL_TLR_TRC,
-        GameTexture::CELL_TBL_BLC,
-        GameTexture::CELL_TBR_TRC,
-        GameTexture::CELL_TBR_TRC_BRC,
-        GameTexture::CELL_TLR_TLC,
-        GameTexture::CELL_NO_SIDES,
-        GameTexture::CELL_NO_SIDES,
-        GameTexture::CELL_TBL_TLC,
-        GameTexture::CELL_TLR_TLCRC,
-        GameTexture::CELL_TBL_TLC_BLC,
+        GameTextureManager::CELL_BLR_BRC,
+        GameTextureManager::CELL_BLR_BLC,
+        GameTextureManager::CELL_BLR_BLCRC,
+        GameTextureManager::CELL_TBR_BRC,
+        GameTextureManager::CELL_TLR_TRC,
+        GameTextureManager::CELL_TBL_BLC,
+        GameTextureManager::CELL_TBR_TRC,
+        GameTextureManager::CELL_TBR_TRC_BRC,
+        GameTextureManager::CELL_TLR_TLC,
+        GameTextureManager::CELL_NO_SIDES,
+        GameTextureManager::CELL_NO_SIDES,
+        GameTextureManager::CELL_TBL_TLC,
+        GameTextureManager::CELL_TLR_TLCRC,
+        GameTextureManager::CELL_TBL_TLC_BLC,
 
-        GameTexture::CELL_BRC,
-        GameTexture::CELL_BLC,
-        GameTexture::CELL_TRC,
-        GameTexture::CELL_TLC,
+        GameTextureManager::CELL_BRC,
+        GameTextureManager::CELL_BLC,
+        GameTextureManager::CELL_TRC,
+        GameTextureManager::CELL_TLC,
     };
 
-    [[nodiscard]] GameTexture::CellType get_cell_type(
+    [[nodiscard]] GameTextureManager::CellType get_cell_type(
         const int x,
         const int y,
         const bool flagged,
         const bool revealed
     ) const {
         if (revealed)
-            return GameTexture::CELL_NO_SIDES;
+            return GameTextureManager::CELL_NO_SIDES;
 
         const int rows = m_game.get_rows();
         const int columns = m_game.get_columns();
@@ -384,6 +382,6 @@ private:
         // Impossible to reach? Not reached in huge grid
         std::cerr << "Not impossible to reach" << std::endl;
 
-        return GameTexture::CELL_NO_SIDES;
+        return GameTextureManager::CELL_NO_SIDES;
     }
 };

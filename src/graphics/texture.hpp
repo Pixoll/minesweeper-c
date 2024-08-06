@@ -51,7 +51,7 @@ public:
         const char *text,
         const Color::Name color,
         const SDL_Point position = {0, 0}
-    ) : m_renderer(renderer), m_font(get_font(font).font), m_font_color(get_color(color).rgb) {
+    ) : m_renderer(renderer), m_font(get_font(font).font), m_font_color(Color::get(color).rgb) {
         destroy();
         SDL_Surface *surface = TTF_RenderText_Blended(m_font, text, m_font_color);
         m_texture = SDL_CreateTextureFromSurface(m_renderer, surface);
@@ -65,7 +65,9 @@ public:
         SDL_FreeSurface(surface);
     }
 
-    ~Texture() = default;
+    ~Texture() {
+        destroy();
+    }
 
     /**
      * Automatically releases the render target upon scope exit
@@ -153,7 +155,7 @@ public:
     }
 
     void set_color_mod(const Color::Name color) const {
-        set_color_mod(get_color(color).rgb);
+        set_color_mod(Color::get(color).rgb);
     }
 
     [[nodiscard]] ScopedRender set_as_render_target(const SDL_BlendMode blend_mode = SDL_BLENDMODE_BLEND) const {
