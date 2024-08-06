@@ -233,21 +233,21 @@ private:
         const CellSubtype cell_subtype,
         const GameTexture &cell_map_texture,
         const char *image_path,
-        const float image_scale_wrt_cell,
+        const float image_scale_respect_to_cell,
         const Color::Name image_color,
         const Color::Name cell_color
     ) {
         const int cell_size = measurements.cell_size;
         const int cell_offset = measurements.cell_offset;
         const int grid_line_width = measurements.grid_line_width;
-        const int image_size = cell_size * image_scale_wrt_cell;
+        const int image_size = cell_size * image_scale_respect_to_cell;
         const int image_offset = (grid_line_width + cell_size - image_size) / 2 - cell_offset;
 
         const SDL_Rect texture_area = {cell_offset, cell_offset, cell_size, cell_size};
 
         Texture image_texture{};
 
-        if (image_path != nullptr && image_scale_wrt_cell != 0) {
+        if (image_path != nullptr) {
             image_texture = {
                 renderer,
                 image_path,
@@ -269,7 +269,7 @@ private:
 
             cell_map_texture->render({map_x, map_y, CELL_TEXTURE_SIZE, CELL_TEXTURE_SIZE});
 
-            if (image_path != nullptr && image_scale_wrt_cell != 0)
+            if (image_path != nullptr)
                 image_texture.render();
 
             m_cell_textures[cell_subtype][type] = cell_texture;
