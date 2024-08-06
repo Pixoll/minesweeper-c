@@ -46,10 +46,12 @@ public:
 
         if (cursor_in_new_game_button) {
             m_engine->set_screen<GameScreen>(m_engine, 15, 20, 50);
+            return;
         }
 
         if (cursor_in_continue_button) {
             m_engine->set_screen<GameScreen>(m_engine, Game::load());
+            return;
         }
     }
 
