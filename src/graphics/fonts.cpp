@@ -13,8 +13,6 @@ const char *font_paths[Font::TYPES] = {
 
 Font fonts[Font::NAMES];
 
-void throw_sdl_error(const char *function_name, int code = 0);
-
 Font load_font(const Font::Type type, const int size) {
     TTF_Font *font = TTF_OpenFont(font_paths[type], size);
     if (font == nullptr) {
