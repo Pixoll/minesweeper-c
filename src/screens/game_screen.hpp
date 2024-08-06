@@ -78,6 +78,9 @@ public:
             return;
         }
 
+        if (m_game.is_over())
+            return;
+
         switch (event.button.button) {
             case SDL_BUTTON_LEFT: {
                 if (!m_placed_mines) {
