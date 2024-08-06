@@ -6,7 +6,6 @@
 
 #include "screen.hpp"
 #include "../core/game.hpp"
-#include "../graphics/fonts.hpp"
 #include "../texture_managers/game_texture_manager.hpp"
 
 class MainMenuScreen;
