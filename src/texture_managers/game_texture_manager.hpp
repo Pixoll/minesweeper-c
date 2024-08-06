@@ -199,7 +199,6 @@ public:
         return m_cell_numbers_textures[cell_number];
     }
 
-    // ReSharper disable once CppNotAllPathsReturnValue
     [[nodiscard]] GameTexture get(const Name name) const {
         switch (name) {
             case H_GRID_LINE: return m_h_grid_line_texture;
