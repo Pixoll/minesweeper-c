@@ -233,16 +233,16 @@ private:
 
         const SDL_Rect texture_area = {cell_offset, cell_offset, cell_size, cell_size};
 
-        Texture image_texture;
+        std::unique_ptr<Texture> image_texture;
 
         if (image_path != nullptr) {
-            image_texture = {
+            image_texture = std::make_unique<Texture>(
                 m_renderer,
                 image_path,
-                {image_offset, image_offset, image_size, image_size},
-            };
+                SDL_Rect{image_offset, image_offset, image_size, image_size}
+            );
 
-            image_texture.set_color_mod(image_color);
+            image_texture->set_color_mod(image_color);
         }
 
         cell_map_texture->set_color_mod(cell_color);
@@ -258,7 +258,7 @@ private:
             cell_map_texture->render({map_x, map_y, CELL_TEXTURE_SIZE, CELL_TEXTURE_SIZE});
 
             if (image_path != nullptr)
-                image_texture.render();
+                image_texture->render();
 
             m_cell_textures[cell_subtype][type] = cell_texture;
         }
