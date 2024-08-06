@@ -110,6 +110,10 @@ private:
     static constexpr auto MOUSE_RIGHT_ICON_PATH = "assets/textures/mouse_right.png";
     static constexpr auto BACK_BUTTON_IMAGE_PATH = "assets/textures/button_back.png";
 
+    SDL_Renderer *m_renderer;
+    const Game::Measurements &m_measurements;
+    const int m_window_height;
+
     GameTexture m_h_grid_line_texture;
     GameTexture m_v_grid_line_texture;
 
@@ -128,67 +132,53 @@ private:
     GameTexture m_back_button_texture;
 
 public:
-    GameTextureManager(SDL_Renderer *renderer, const Game::Measurements &measurements, const int window_height) {
+    GameTextureManager(SDL_Renderer *renderer, const Game::Measurements &measurements, const int window_height) :
+        m_renderer(renderer),
+        m_measurements(measurements),
+        m_window_height(window_height) {
         init_game_fonts(measurements.cell_size);
 
-        init_grid_lines_textures(renderer, measurements);
-        init_cell_numbers_textures(renderer, measurements);
-        init_back_button_texture(renderer);
-        init_remaining_mines_textures(renderer);
-        init_game_time_texture(renderer);
-        init_mouse_controls_textures(renderer, window_height);
+        init_grid_lines_textures();
+        init_cell_numbers_textures();
+        init_back_button_texture();
+        init_remaining_mines_textures();
+        init_game_time_texture();
+        init_mouse_controls_textures();
 
-        const auto cell_map_texture = std::make_shared<Texture>(renderer, CELL_MAP_IMAGE_PATH);
+        const auto cell_map_texture = std::make_shared<Texture>(m_renderer, CELL_MAP_IMAGE_PATH);
 
+        init_cell_textures_set(CELL_COVERED, cell_map_texture, Color::THEME);
         init_cell_textures_set(
-            renderer,
-            measurements,
-            CELL_COVERED,
-            cell_map_texture,
-            nullptr,
-            0,
-            Color::BACKGROUND,
-            Color::THEME
-        );
-        init_cell_textures_set(
-            renderer,
-            measurements,
             CELL_FLAG,
             cell_map_texture,
+            Color::FLAGGED_CELL,
             FLAG_IMAGE_PATH,
             0.35,
-            Color::FLAG,
-            Color::FLAGGED_CELL
+            Color::FLAG
         );
         init_cell_textures_set(
-            renderer,
-            measurements,
             CELL_FLAGGED_MINE,
             cell_map_texture,
+            Color::FLAGGED_CELL,
             MINE_IMAGE_PATH,
             0.5,
-            Color::FLAG,
-            Color::FLAGGED_CELL
+            Color::FLAG
         );
         init_cell_textures_set(
-            renderer,
-            measurements,
             CELL_COVERED_MINE,
             cell_map_texture,
+            Color::THEME,
             MINE_IMAGE_PATH,
             0.5,
-            Color::BACKGROUND,
-            Color::THEME
+            Color::BACKGROUND
         );
         init_cell_textures_set(
-            renderer,
-            measurements,
             CELL_TRIGGERED_MINE,
             cell_map_texture,
+            Color::TRIGGERED_CELL,
             MINE_IMAGE_PATH,
             0.5,
-            Color::TRIGGERED_MINE,
-            Color::TRIGGERED_CELL
+            Color::TRIGGERED_MINE
         );
     }
 
@@ -228,18 +218,16 @@ public:
 
 private:
     void init_cell_textures_set(
-        SDL_Renderer *renderer,
-        const Game::Measurements &measurements,
         const CellSubtype cell_subtype,
         const GameTexture &cell_map_texture,
-        const char *image_path,
-        const float image_scale_respect_to_cell,
-        const Color::Name image_color,
-        const Color::Name cell_color
+        const Color::Name cell_color,
+        const char *image_path = nullptr,
+        const float image_scale_respect_to_cell = 0,
+        const Color::Name image_color = Color::BACKGROUND
     ) {
-        const int cell_size = measurements.cell_size;
-        const int cell_offset = measurements.cell_offset;
-        const int grid_line_width = measurements.grid_line_width;
+        const int cell_size = m_measurements.cell_size;
+        const int cell_offset = m_measurements.cell_offset;
+        const int grid_line_width = m_measurements.grid_line_width;
         const int image_size = cell_size * image_scale_respect_to_cell;
         const int image_offset = (grid_line_width + cell_size - image_size) / 2 - cell_offset;
 
@@ -249,7 +237,7 @@ private:
 
         if (image_path != nullptr) {
             image_texture = {
-                renderer,
+                m_renderer,
                 image_path,
                 {image_offset, image_offset, image_size, image_size},
             };
@@ -260,7 +248,7 @@ private:
         cell_map_texture->set_color_mod(cell_color);
 
         for (int type = 0; type < CELL_TYPES; type++) {
-            const auto cell_texture = std::make_shared<Texture>(renderer, texture_area);
+            const auto cell_texture = std::make_shared<Texture>(m_renderer, texture_area);
             const Texture::ScopedRender scoped_render = cell_texture->set_as_render_target();
 
             const int map_index = type * CELL_TEXTURE_SIZE;
@@ -278,16 +266,16 @@ private:
         cell_map_texture->set_color_mod(Color::WHITE);
     }
 
-    void init_cell_numbers_textures(SDL_Renderer *renderer, const Game::Measurements &measurements) {
-        const int cell_size = measurements.cell_size;
-        const int grid_line_width = measurements.grid_line_width;
+    void init_cell_numbers_textures() {
+        const int cell_size = m_measurements.cell_size;
+        const int grid_line_width = m_measurements.grid_line_width;
 
         for (int cell = 0; cell < 8; cell++) {
             char cell_text[2];
             snprintf(cell_text, 2, "%c", '0' + cell + 1);
 
             const auto cell_number_texture = std::make_shared<Texture>(
-                renderer,
+                m_renderer,
                 Font::CELL_NUMBER,
                 cell_text,
                 static_cast<Color::Name>(Color::GRID_1 + cell)
@@ -302,7 +290,7 @@ private:
         }
     }
 
-    void init_grid_lines_textures(SDL_Renderer *renderer, const Game::Measurements &measurements) {
+    void init_grid_lines_textures() {
         const auto &[
             cell_size,
             cell_offset,
@@ -312,42 +300,42 @@ private:
             grid_y_offset,
             grid_width,
             grid_height
-        ] = measurements;
+        ] = m_measurements;
 
         const int grid_line_offset = (grid_line_width + cell_size - grid_line_length) / 2;
         const SDL_Color light_grey = Color::get(Color::LIGHT_GREY).rgb;
 
         m_h_grid_line_texture = std::make_shared<Texture>(
-            renderer,
+            m_renderer,
             H_GRID_LINE_IMAGE_PATH,
             SDL_Rect{grid_line_offset, 0, grid_line_length, grid_line_width}
         );
         m_h_grid_line_texture->set_color_mod(light_grey);
 
         m_v_grid_line_texture = std::make_shared<Texture>(
-            renderer,
+            m_renderer,
             V_GRID_LINE_IMAGE_PATH,
             SDL_Rect{0, grid_line_offset, grid_line_width, grid_line_length}
         );
         m_v_grid_line_texture->set_color_mod(light_grey);
     }
 
-    void init_back_button_texture(SDL_Renderer *renderer) {
+    void init_back_button_texture() {
         const int height = get_font(Font::PRIMARY).size * 1.25;
-        m_back_button_texture = std::make_shared<Texture>(renderer, BACK_BUTTON_IMAGE_PATH);
+        m_back_button_texture = std::make_shared<Texture>(m_renderer, BACK_BUTTON_IMAGE_PATH);
         m_back_button_texture->set_position(20, 20);
         m_back_button_texture->set_height(height);
     }
 
-    void init_remaining_mines_textures(SDL_Renderer *renderer) {
+    void init_remaining_mines_textures() {
         const int size = get_font(Font::PRIMARY).size;
         m_remaining_mines_icon_texture = std::make_shared<Texture>(
-            renderer,
+            m_renderer,
             MINE_IMAGE_PATH,
             SDL_Rect{20, m_back_button_texture->get_y() + m_back_button_texture->get_h() + 20, size, size}
         );
 
-        m_remaining_mines_text_texture = std::make_shared<Texture>(renderer, Font::PRIMARY, "0", Color::WHITE);
+        m_remaining_mines_text_texture = std::make_shared<Texture>(m_renderer, Font::PRIMARY, "0", Color::WHITE);
         m_remaining_mines_text_texture->set_position(
             m_remaining_mines_icon_texture->get_x() + m_remaining_mines_icon_texture->get_w() + 10,
             m_remaining_mines_icon_texture->get_y()
@@ -355,32 +343,32 @@ private:
         );
     }
 
-    void init_game_time_texture(SDL_Renderer *renderer) {
-        m_game_time_text_texture = std::make_shared<Texture>(renderer, Font::SECONDARY, "0", Color::LIGHTER_GREY);
+    void init_game_time_texture() {
+        m_game_time_text_texture = std::make_shared<Texture>(m_renderer, Font::SECONDARY, "0", Color::LIGHTER_GREY);
         m_game_time_text_texture->set_position(
             20,
             m_remaining_mines_icon_texture->get_y() + m_remaining_mines_icon_texture->get_h() + 10
         );
     }
 
-    void init_mouse_controls_textures(SDL_Renderer *renderer, const int window_height) {
+    void init_mouse_controls_textures() {
         const int icon_height = get_font(Font::PRIMARY).size * 2;
 
-        m_mouse_left_icon_texture = std::make_shared<Texture>(renderer, MOUSE_LEFT_ICON_PATH);
-        m_mouse_left_icon_texture->set_position(20, window_height - icon_height * 2 - 30);
+        m_mouse_left_icon_texture = std::make_shared<Texture>(m_renderer, MOUSE_LEFT_ICON_PATH);
+        m_mouse_left_icon_texture->set_position(20, m_window_height - icon_height * 2 - 30);
         m_mouse_left_icon_texture->set_height(icon_height);
 
-        m_mouse_left_text_texture = std::make_shared<Texture>(renderer, Font::PRIMARY, "uncover", Color::WHITE);
+        m_mouse_left_text_texture = std::make_shared<Texture>(m_renderer, Font::PRIMARY, "uncover", Color::WHITE);
         m_mouse_left_text_texture->set_position(
             m_mouse_left_icon_texture->get_x() + m_mouse_left_icon_texture->get_w() + 10,
             m_mouse_left_icon_texture->get_y() + (icon_height - m_mouse_left_text_texture->get_h()) / 2
         );
 
-        m_mouse_right_icon_texture = std::make_shared<Texture>(renderer, MOUSE_RIGHT_ICON_PATH);
-        m_mouse_right_icon_texture->set_position(20, window_height - icon_height - 20);
+        m_mouse_right_icon_texture = std::make_shared<Texture>(m_renderer, MOUSE_RIGHT_ICON_PATH);
+        m_mouse_right_icon_texture->set_position(20, m_window_height - icon_height - 20);
         m_mouse_right_icon_texture->set_height(icon_height);
 
-        m_mouse_right_text_texture = std::make_shared<Texture>(renderer, Font::PRIMARY, "flag", Color::WHITE);
+        m_mouse_right_text_texture = std::make_shared<Texture>(m_renderer, Font::PRIMARY, "flag", Color::WHITE);
         m_mouse_right_text_texture->set_position(
             m_mouse_right_icon_texture->get_x() + m_mouse_right_icon_texture->get_w() + 10,
             m_mouse_right_icon_texture->get_y() + (icon_height - m_mouse_right_text_texture->get_h()) / 2
