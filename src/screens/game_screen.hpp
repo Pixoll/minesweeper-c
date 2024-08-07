@@ -198,12 +198,12 @@ private:
     }
 
     static std::string get_time_string(const int seconds) {
-        using std::string, std::to_string;
+        using std::to_string;
 
         const int sec = seconds % 60;
         const int min = seconds / 60;
 
-        string time_string;
+        std::string time_string;
 
         if (min == 0)
             time_string += to_string(sec) + "S";
@@ -214,8 +214,6 @@ private:
     }
 
     void draw_game_time() {
-        using std::string;
-
         const GameTexture game_time_text_texture = m_texture_manager.get(GameTextureManager::GAME_TIME_TEXT);
         const time_t start_time = m_game.get_start_time();
 
@@ -226,7 +224,7 @@ private:
         if (m_last_game_time_drawn == 0 || (!m_game.is_over() && m_last_game_time_drawn < now)) {
             m_last_game_time_drawn = now;
 
-            const string time_string = get_time_string(now - start_time);
+            const std::string time_string = get_time_string(now - start_time);
             game_time_text_texture->update_text(time_string.c_str());
         }
 

@@ -72,13 +72,13 @@ void quit_sdl(SDL_Renderer *renderer, SDL_Window *window) {
 }
 
 void throw_sdl_error(const char *function_name, const int code) {
-    using std::cerr, std::endl;
+    using std::cerr;
 
     cerr << "Error ";
 
     if (code != 0)
         cerr << code << " ";
 
-    cerr << "at " << function_name << "(): " << SDL_GetError() << endl;
+    cerr << "at " << function_name << "(): " << SDL_GetError() << std::endl;
     exit(1);
 }

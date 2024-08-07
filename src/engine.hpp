@@ -16,10 +16,8 @@ struct EngineParameters {
 };
 
 class Engine {
-    using microseconds = std::chrono::microseconds;
-
     std::unique_ptr<Screen> m_screen{};
-    microseconds m_render_interval_microsecs;
+    std::chrono::microseconds m_render_interval_microsecs;
     SDL_Window *m_window;
     SDL_Renderer *m_renderer;
     int m_window_width = 0;
