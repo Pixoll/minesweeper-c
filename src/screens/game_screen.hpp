@@ -261,17 +261,17 @@ private:
         return !revealed && flagged == cell_flagged;
     }
 
-    static bool verify_corners_with_mask(const int corners, const int mask) {
-        const bool bits_outside_of_mask = corners & ~mask;
-        const bool bits_in_mask = corners & mask;
+    static bool exclusively_has_corners(const int corners, const int required_corners) {
+        const bool bits_outside_of_mask = corners & ~required_corners;
+        const bool bits_in_mask = corners & required_corners;
         return !bits_outside_of_mask && bits_in_mask;
     }
 
-    static int is_pow2(const int x) {
+    static int has_single_corner(const int x) {
         return x > 0 && !(x & x - 1);
     }
 
-    static int int_log2(int x) {
+    static int obtain_single_corner(int x) {
         int log2 = 0;
         while (x >>= 1)
             log2++;
@@ -363,22 +363,20 @@ private:
         if (TLR_BLR_C == 0b0000)
             return TEXTURE_CELL_SIDE_TYPE_ORDER[TBLR];
 
-        // TODO add comments, forgot how this works
-
         if (TBLR == 0b1111)
             return TEXTURE_CELL_CORNER_TYPE_ORDER[TLR_BLR_C - 1];
 
-        if (TBLR == 0b0111 && verify_corners_with_mask(TLR_BLR_C, 0b0011))
+        if (TBLR == 0b0111 && exclusively_has_corners(TLR_BLR_C, 0b0011))
             return TEXTURE_CELL_CORNER_TYPE_ORDER[TLR_BLR_C + 14];
-        if (TBLR == 0b1011 && verify_corners_with_mask(TLR_BLR_C, 0b1100))
+        if (TBLR == 0b1011 && exclusively_has_corners(TLR_BLR_C, 0b1100))
             return TEXTURE_CELL_CORNER_TYPE_ORDER[TLR_BLR_C + 15];
-        if (TBLR == 0b1101 && verify_corners_with_mask(TLR_BLR_C, 0b0101))
+        if (TBLR == 0b1101 && exclusively_has_corners(TLR_BLR_C, 0b0101))
             return TEXTURE_CELL_CORNER_TYPE_ORDER[TLR_BLR_C + 17];
-        if (TBLR == 0b1110 && verify_corners_with_mask(TLR_BLR_C, 0b1010))
+        if (TBLR == 0b1110 && exclusively_has_corners(TLR_BLR_C, 0b1010))
             return TEXTURE_CELL_CORNER_TYPE_ORDER[TLR_BLR_C + 18];
 
-        if (is_pow2(TLR_BLR_C))
-            return TEXTURE_CELL_CORNER_TYPE_ORDER[int_log2(TLR_BLR_C) + 29];
+        if (has_single_corner(TLR_BLR_C))
+            return TEXTURE_CELL_CORNER_TYPE_ORDER[obtain_single_corner(TLR_BLR_C) + 29];
 
         // Impossible to reach? Not reached in huge grid
         std::cerr << "Not impossible to reach" << std::endl;
