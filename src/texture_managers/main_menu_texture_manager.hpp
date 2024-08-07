@@ -4,7 +4,7 @@
 #include <SDL.h>
 
 #include "../graphics/color.hpp"
-#include "../graphics/fonts.hpp"
+#include "../graphics/font.hpp"
 #include "../graphics/texture.hpp"
 
 class MainMenuTextureManager {

@@ -6,7 +6,7 @@
 
 #include "../game.hpp"
 #include "../graphics/color.hpp"
-#include "../graphics/fonts.hpp"
+#include "../graphics/font.hpp"
 #include "../graphics/texture.hpp"
 
 class GameTextureManager {
