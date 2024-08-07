@@ -56,7 +56,7 @@ public:
                                                            ->contains(click_x, click_y);
         SDL_SetCursor(cursor_in_back_button ? m_hand_cursor : m_arrow_cursor);
 
-        if (event.type == SDL_QUIT && m_game.get_start_time() != 0 && !m_game.is_over()) {
+        if (event.type == SDL_QUIT && m_game.has_started() && !m_game.is_over()) {
             m_game.save();
             return;
         }
@@ -68,7 +68,7 @@ public:
 
         if (!inside_cell) {
             if (cursor_in_back_button && event.button.button == SDL_BUTTON_LEFT) {
-                if (m_game.get_start_time() != 0 && !m_game.is_over())
+                if (m_game.has_started() && !m_game.is_over())
                     m_game.save();
 
                 m_engine->set_screen<MainMenuScreen>(m_engine);
@@ -185,7 +185,7 @@ private:
         const GameTexture remaining_mines_text_texture = m_texture_manager.get(
             GameTextureManager::REMAINING_MINES_TEXT
         );
-        const int current_remaining = m_game.get_total_mines() - m_game.get_flagged_mines();
+        const int current_remaining = m_game.get_remaining_mines();
 
         if (m_remaining_mines != current_remaining) {
             m_remaining_mines = current_remaining;

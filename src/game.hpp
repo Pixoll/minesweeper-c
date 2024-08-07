@@ -100,16 +100,16 @@ public:
         return m_columns;
     }
 
-    [[nodiscard]] int get_total_mines() const {
-        return m_total_mines;
-    }
-
-    [[nodiscard]] int get_flagged_mines() const {
-        return m_flagged_mines;
+    [[nodiscard]] int get_remaining_mines() const {
+        return m_total_mines - m_flagged_mines;
     }
 
     [[nodiscard]] time_t get_start_time() const {
         return m_start_time;
+    }
+
+    [[nodiscard]] bool has_started() const {
+        return m_start_time != 0;
     }
 
     [[nodiscard]] const Measurements &get_measurements() const {
