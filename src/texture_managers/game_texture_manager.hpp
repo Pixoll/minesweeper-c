@@ -5,7 +5,7 @@
 #include <SDL.h>
 
 #include "../game.hpp"
-#include "../graphics/colors.hpp"
+#include "../graphics/color.hpp"
 #include "../graphics/fonts.hpp"
 #include "../graphics/texture.hpp"
 

@@ -5,7 +5,7 @@
 #include <SDL.h>
 #include <thread>
 
-#include "graphics/colors.hpp"
+#include "graphics/color.hpp"
 #include "graphics/fonts.hpp"
 #include "screens/screen.hpp"
 

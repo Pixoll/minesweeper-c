@@ -3,7 +3,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 
-#include "colors.hpp"
+#include "color.hpp"
 #include "fonts.hpp"
 
 constexpr SDL_Rect NULL_RECT = {0, 0, 0, 0};
