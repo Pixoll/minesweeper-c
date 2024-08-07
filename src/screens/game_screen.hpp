@@ -256,7 +256,7 @@ private:
         return m_texture_manager.get(cell.type - Game::CELL_1);
     }
 
-    [[nodiscard]] bool verify_cell(const int x, const int y, const bool flagged) const {
+    [[nodiscard]] bool cell_matches_type(const int x, const int y, const bool flagged) const {
         const auto [type, cell_flagged, revealed] = m_game.get_grid_cell(x, y);
         return !revealed && flagged == cell_flagged;
     }
@@ -348,14 +348,14 @@ private:
         const int rows = m_game.get_rows();
         const int columns = m_game.get_columns();
 
-        const bool T = y - 1 >= 0 && verify_cell(x, y - 1, flagged);
-        const bool B = y + 1 <= rows - 1 && verify_cell(x, y + 1, flagged);
-        const bool L = x - 1 >= 0 && verify_cell(x - 1, y, flagged);
-        const bool R = x + 1 <= columns - 1 && verify_cell(x + 1, y, flagged);
-        const bool TLC = T && L && verify_cell(x - 1, y - 1, flagged);
-        const bool TRC = T && R && verify_cell(x + 1, y - 1, flagged);
-        const bool BLC = B && L && verify_cell(x - 1, y + 1, flagged);
-        const bool BRC = B && R && verify_cell(x + 1, y + 1, flagged);
+        const bool T = y - 1 >= 0 && cell_matches_type(x, y - 1, flagged);
+        const bool B = y + 1 <= rows - 1 && cell_matches_type(x, y + 1, flagged);
+        const bool L = x - 1 >= 0 && cell_matches_type(x - 1, y, flagged);
+        const bool R = x + 1 <= columns - 1 && cell_matches_type(x + 1, y, flagged);
+        const bool TLC = T && L && cell_matches_type(x - 1, y - 1, flagged);
+        const bool TRC = T && R && cell_matches_type(x + 1, y - 1, flagged);
+        const bool BLC = B && L && cell_matches_type(x - 1, y + 1, flagged);
+        const bool BRC = B && R && cell_matches_type(x + 1, y + 1, flagged);
 
         const int TBLR = T << 3 | B << 2 | L << 1 | R;
         const int TLR_BLR_C = TLC << 3 | TRC << 2 | BLC << 1 | BRC;
