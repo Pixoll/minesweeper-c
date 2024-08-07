@@ -33,9 +33,9 @@ public:
         SDL_GetWindowSize(m_window, &m_window_width, &m_window_height);
 
         Color::init(m_window);
-        init_global_fonts(m_window_height);
+        Font::init_shared(m_window_height);
 
-        const auto [r, g, b, a] = Color::get(Color::BACKGROUND).rgb;
+        const auto [r, g, b, a] = Color::get(Color::BACKGROUND).get_rgb();
         SDL_SetRenderDrawColor(m_renderer, r, g, b, a);
     }
 
@@ -82,6 +82,6 @@ public:
 
     exit_game_loop:
         m_screen = nullptr;
-        free_global_fonts();
+        Font::free_shared();
     }
 };

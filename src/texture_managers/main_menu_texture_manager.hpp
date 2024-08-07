@@ -27,10 +27,11 @@ private:
     MainMenuTexture m_new_game_button_texture;
     MainMenuTexture m_continue_game_button_texture;
 
-public:
-    MainMenuTextureManager(SDL_Renderer *renderer, const int window_width, const int window_height) {
-        init_main_menu_fonts(window_height);
+    Font m_title_font;
 
+public:
+    MainMenuTextureManager(SDL_Renderer *renderer, const int window_width, const int window_height) :
+        m_title_font(Font::RUBIK_LIGHT, window_height * 0.04) {
         init_big_mine_texture(renderer, window_width, window_height);
         init_title_texture(renderer, window_width);
 
@@ -40,9 +41,7 @@ public:
         init_continute_game_button(renderer, width, x);
     }
 
-    ~MainMenuTextureManager() {
-        free_main_menu_fonts();
-    }
+    ~MainMenuTextureManager() = default;
 
     [[nodiscard]] MainMenuTexture get(const Name name) const {
         switch (name) {
@@ -70,7 +69,7 @@ private:
     }
 
     void init_title_texture(SDL_Renderer *renderer, const int window_width) {
-        m_title_texture = std::make_shared<Texture>(renderer, Font::TITLE, "Minesweeper", Color::WHITE);
+        m_title_texture = std::make_shared<Texture>(renderer, m_title_font.get_font(), "Minesweeper", Color::WHITE);
         m_title_texture->set_position(
             (window_width - m_title_texture->get_w()) / 2,
             static_cast<int>((m_big_mine_texture->get_y() + m_big_mine_texture->get_h()) * 1.1)
@@ -95,7 +94,7 @@ private:
 
         button_texture.render();
 
-        Texture text_texture(renderer, Font::PRIMARY, "New game", Color::WHITE);
+        Texture text_texture(renderer, Font::get_shared(Font::PRIMARY)->get_font(), "New game", Color::WHITE);
         text_texture.set_position(
             (button_texture.get_w() - text_texture.get_w()) / 2,
             (button_texture.get_h() - text_texture.get_h()) / 2
@@ -121,7 +120,7 @@ private:
 
         button_texture.render();
 
-        Texture text_texture(renderer, Font::PRIMARY, "Continue", Color::WHITE);
+        Texture text_texture(renderer, Font::get_shared(Font::PRIMARY)->get_font(), "Continue", Color::WHITE);
         text_texture.set_position(
             (button_texture.get_w() - text_texture.get_w()) / 2,
             (button_texture.get_h() - text_texture.get_h()) / 2

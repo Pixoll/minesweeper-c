@@ -131,13 +131,14 @@ private:
 
     GameTexture m_back_button_texture;
 
+    Font m_cell_number_font;
+
 public:
     GameTextureManager(SDL_Renderer *renderer, const Game::Measurements &measurements, const int window_height) :
         m_renderer(renderer),
         m_measurements(measurements),
-        m_window_height(window_height) {
-        init_game_fonts(measurements.cell_size);
-
+        m_window_height(window_height),
+        m_cell_number_font(Font::RUBIK_REGULAR, m_measurements.cell_size * 0.5) {
         init_grid_lines_textures();
         init_cell_numbers_textures();
         init_back_button_texture();
@@ -182,9 +183,7 @@ public:
         );
     }
 
-    ~GameTextureManager() {
-        free_game_fonts();
-    }
+    ~GameTextureManager() = default;
 
     [[nodiscard]] GameTexture get(const CellSubtype subtype, const CellType type) const {
         return m_cell_textures[subtype][type];
@@ -275,7 +274,7 @@ private:
 
             const auto cell_number_texture = std::make_shared<Texture>(
                 m_renderer,
-                Font::CELL_NUMBER,
+                m_cell_number_font.get_font(),
                 cell_text,
                 static_cast<Color::Name>(Color::GRID_1 + cell)
             );
@@ -302,7 +301,7 @@ private:
         ] = m_measurements;
 
         const int grid_line_offset = (grid_line_width + cell_size - grid_line_length) / 2;
-        const SDL_Color light_grey = Color::get(Color::LIGHT_GREY).rgb;
+        const SDL_Color light_grey = Color::get(Color::LIGHT_GREY).get_rgb();
 
         m_h_grid_line_texture = std::make_shared<Texture>(
             m_renderer,
@@ -320,21 +319,26 @@ private:
     }
 
     void init_back_button_texture() {
-        const int height = get_font(Font::PRIMARY).size * 1.25;
+        const int height = Font::get_shared(Font::PRIMARY)->get_size() * 1.25;
         m_back_button_texture = std::make_shared<Texture>(m_renderer, BACK_BUTTON_IMAGE_PATH);
         m_back_button_texture->set_position(20, 20);
         m_back_button_texture->set_height(height);
     }
 
     void init_remaining_mines_textures() {
-        const int size = get_font(Font::PRIMARY).size;
+        const int size = Font::get_shared(Font::PRIMARY)->get_size();
         m_remaining_mines_icon_texture = std::make_shared<Texture>(
             m_renderer,
             MINE_IMAGE_PATH,
             SDL_Rect{20, m_back_button_texture->get_y() + m_back_button_texture->get_h() + 20, size, size}
         );
 
-        m_remaining_mines_text_texture = std::make_shared<Texture>(m_renderer, Font::PRIMARY, "0", Color::WHITE);
+        m_remaining_mines_text_texture = std::make_shared<Texture>(
+            m_renderer,
+            Font::get_shared(Font::PRIMARY)->get_font(),
+            "0",
+            Color::WHITE
+        );
         m_remaining_mines_text_texture->set_position(
             m_remaining_mines_icon_texture->get_x() + m_remaining_mines_icon_texture->get_w() + 10,
             m_remaining_mines_icon_texture->get_y()
@@ -343,7 +347,12 @@ private:
     }
 
     void init_game_time_texture() {
-        m_game_time_text_texture = std::make_shared<Texture>(m_renderer, Font::SECONDARY, "0", Color::LIGHTER_GREY);
+        m_game_time_text_texture = std::make_shared<Texture>(
+            m_renderer,
+            Font::get_shared(Font::SECONDARY)->get_font(),
+            "0",
+            Color::LIGHTER_GREY
+        );
         m_game_time_text_texture->set_position(
             20,
             m_remaining_mines_icon_texture->get_y() + m_remaining_mines_icon_texture->get_h() + 10
@@ -351,13 +360,18 @@ private:
     }
 
     void init_mouse_controls_textures() {
-        const int icon_height = get_font(Font::PRIMARY).size * 2;
+        const int icon_height = Font::get_shared(Font::PRIMARY)->get_size() * 2;
 
         m_mouse_left_icon_texture = std::make_shared<Texture>(m_renderer, MOUSE_LEFT_ICON_PATH);
         m_mouse_left_icon_texture->set_position(20, m_window_height - icon_height * 2 - 30);
         m_mouse_left_icon_texture->set_height(icon_height);
 
-        m_mouse_left_text_texture = std::make_shared<Texture>(m_renderer, Font::PRIMARY, "uncover", Color::WHITE);
+        m_mouse_left_text_texture = std::make_shared<Texture>(
+            m_renderer,
+            Font::get_shared(Font::PRIMARY)->get_font(),
+            "uncover",
+            Color::WHITE
+        );
         m_mouse_left_text_texture->set_position(
             m_mouse_left_icon_texture->get_x() + m_mouse_left_icon_texture->get_w() + 10,
             m_mouse_left_icon_texture->get_y() + (icon_height - m_mouse_left_text_texture->get_h()) / 2
@@ -367,7 +381,12 @@ private:
         m_mouse_right_icon_texture->set_position(20, m_window_height - icon_height - 20);
         m_mouse_right_icon_texture->set_height(icon_height);
 
-        m_mouse_right_text_texture = std::make_shared<Texture>(m_renderer, Font::PRIMARY, "flag", Color::WHITE);
+        m_mouse_right_text_texture = std::make_shared<Texture>(
+            m_renderer,
+            Font::get_shared(Font::PRIMARY)->get_font(),
+            "flag",
+            Color::WHITE
+        );
         m_mouse_right_text_texture->set_position(
             m_mouse_right_icon_texture->get_x() + m_mouse_right_icon_texture->get_w() + 10,
             m_mouse_right_icon_texture->get_y() + (icon_height - m_mouse_right_text_texture->get_h()) / 2

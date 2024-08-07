@@ -3,25 +3,8 @@
 #include <cstdlib>
 #include <SDL.h>
 
-struct Color {
-    SDL_Color rgb{0, 0, 0, 0};
-    Uint32 value = 0;
-
-    Color() = default;
-
-    Color(const SDL_Surface *surface, const char *hex_color) {
-        if (hex_color[0] == '#')
-            hex_color++;  // shift left once
-
-        const int raw_rgb = strtol(hex_color, nullptr, 16);
-        const Uint8 r = raw_rgb >> 16 & 0xff;
-        const Uint8 g = raw_rgb >> 8 & 0xff;
-        const Uint8 b = raw_rgb & 0xff;
-
-        rgb = {r, g, b, 255};
-        value = SDL_MapRGB(surface->format, r, g, b);
-    }
-
+class Color {
+public:
     enum Name {
         BACKGROUND,
         THEME,
@@ -53,7 +36,33 @@ private:
 
     static Color colors[NAMES_AMOUNT];
 
+    SDL_Color m_rgb{0, 0, 0, 0};
+    Uint32 m_value = 0;
+
 public:
+    Color() = default;
+
+    Color(const SDL_Surface *surface, const char *hex_color) {
+        if (hex_color[0] == '#')
+            hex_color++;  // shift left once
+
+        const int raw_rgb = strtol(hex_color, nullptr, 16);
+        const Uint8 r = raw_rgb >> 16 & 0xff;
+        const Uint8 g = raw_rgb >> 8 & 0xff;
+        const Uint8 b = raw_rgb & 0xff;
+
+        m_rgb = {r, g, b, 255};
+        m_value = SDL_MapRGB(surface->format, r, g, b);
+    }
+
+    [[nodiscard]] SDL_Color get_rgb() const {
+        return m_rgb;
+    }
+
+    [[nodiscard]] Uint32 get_value() const {
+        return m_value;
+    }
+
     [[nodiscard]] static Color get(const Name name) {
         return colors[name];
     }

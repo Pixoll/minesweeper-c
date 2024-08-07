@@ -4,7 +4,6 @@
 #include <SDL_image.h>
 
 #include "color.hpp"
-#include "fonts.hpp"
 
 constexpr SDL_Rect NULL_RECT = {0, 0, 0, 0};
 
@@ -22,7 +21,8 @@ public:
         SDL_Renderer *renderer,
         const SDL_Rect area,
         const int access = SDL_TEXTUREACCESS_TARGET
-    ) : m_renderer(renderer), m_area(area) {
+    ) : m_renderer(renderer),
+        m_area(area) {
         const Uint32 pixel_format = SDL_GetWindowSurface(SDL_RenderGetWindow(m_renderer))->format->format;
         m_texture = SDL_CreateTexture(m_renderer, pixel_format, access, m_area.w, m_area.h);
     }
@@ -44,11 +44,13 @@ public:
 
     Texture(
         SDL_Renderer *renderer,
-        const Font::Name font,
+        TTF_Font *font,
         const char *text,
         const Color::Name color,
         const SDL_Point position = {0, 0}
-    ) : m_renderer(renderer), m_font(get_font(font).font), m_font_color(Color::get(color).rgb) {
+    ) : m_renderer(renderer),
+        m_font(font),
+        m_font_color(Color::get(color).get_rgb()) {
         SDL_Surface *surface = TTF_RenderText_Blended(m_font, text, m_font_color);
         m_texture = SDL_CreateTextureFromSurface(m_renderer, surface);
         m_area = {
@@ -146,7 +148,7 @@ public:
     }
 
     void set_color_mod(const Color::Name color) const {
-        set_color_mod(Color::get(color).rgb);
+        set_color_mod(Color::get(color).get_rgb());
     }
 
     [[nodiscard]] ScopedRender set_as_render_target(const SDL_BlendMode blend_mode = SDL_BLENDMODE_BLEND) const {

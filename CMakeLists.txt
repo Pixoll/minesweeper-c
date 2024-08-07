@@ -25,7 +25,7 @@ add_executable(
         src/engine.hpp
         src/game.hpp
         src/graphics/color.hpp
-        src/graphics/fonts.cpp
+        src/graphics/fonts.hpp
         src/graphics/texture.hpp
         src/texture_managers/game_texture_manager.hpp
         src/texture_managers/main_menu_texture_manager.hpp
