@@ -92,6 +92,7 @@ public:
         MOUSE_RIGHT_ICON,
         MOUSE_RIGHT_TEXT,
         BACK_BUTTON,
+        CLICK_TO_START,
     };
 
     using GameTexture = std::shared_ptr<Texture>;
@@ -112,6 +113,7 @@ private:
 
     SDL_Renderer *m_renderer;
     const Game::Measurements &m_measurements;
+    const int m_window_width;
     const int m_window_height;
 
     GameTexture m_h_grid_line_texture;
@@ -131,12 +133,19 @@ private:
 
     GameTexture m_back_button_texture;
 
+    GameTexture m_click_to_start_texture;
+
     Font m_cell_number_font;
 
 public:
-    GameTextureManager(SDL_Renderer *renderer, const Game::Measurements &measurements, const int window_height) :
-        m_renderer(renderer),
+    GameTextureManager(
+        SDL_Renderer *renderer,
+        const Game::Measurements &measurements,
+        const int window_width,
+        const int window_height
+    ) : m_renderer(renderer),
         m_measurements(measurements),
+        m_window_width(window_width),
         m_window_height(window_height),
         m_cell_number_font(Font::RUBIK_REGULAR, m_measurements.cell_size * 0.5) {
         init_grid_lines_textures();
@@ -145,6 +154,7 @@ public:
         init_remaining_mines_textures();
         init_game_time_texture();
         init_mouse_controls_textures();
+        init_click_to_start_texture();
 
         const auto cell_map_texture = std::make_shared<Texture>(m_renderer, CELL_MAP_IMAGE_PATH);
 
@@ -210,6 +220,7 @@ public:
             case MOUSE_RIGHT_ICON: return m_mouse_right_icon_texture;
             case MOUSE_RIGHT_TEXT: return m_mouse_right_text_texture;
             case BACK_BUTTON: return m_back_button_texture;
+            case CLICK_TO_START: return m_click_to_start_texture;
         }
         __builtin_unreachable();
     }
@@ -390,6 +401,19 @@ private:
         m_mouse_right_text_texture->set_position(
             m_mouse_right_icon_texture->get_x() + m_mouse_right_icon_texture->get_w() + 10,
             m_mouse_right_icon_texture->get_y() + (icon_height - m_mouse_right_text_texture->get_h()) / 2
+        );
+    }
+
+    void init_click_to_start_texture() {
+        m_click_to_start_texture = std::make_shared<Texture>(
+            m_renderer,
+            Font::get_shared(Font::PRIMARY)->get_font(),
+            "Click to start",
+            Color::BACKGROUND
+        );
+        m_click_to_start_texture->set_position(
+            (m_window_width - m_click_to_start_texture->get_w()) / 2,
+            (m_window_height - m_click_to_start_texture->get_h()) / 2
         );
     }
 };

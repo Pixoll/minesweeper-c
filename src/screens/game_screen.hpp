@@ -20,7 +20,7 @@ class GameScreen final : virtual public Screen {
     int m_window_height;
     Game m_game;
     GameTextureManager m_texture_manager;
-    bool m_placed_mines;
+    bool m_started_game;
     time_t m_last_game_time_drawn = 0;
     int m_remaining_mines = 0;
 
@@ -34,8 +34,8 @@ public:
         m_window_width(engine->get_window_width()),
         m_window_height(engine->get_window_height()),
         m_game(rows, columns, mines_count, engine->get_window_width(), engine->get_window_height()),
-        m_texture_manager(m_renderer, m_game.get_measurements(), m_window_height),
-        m_placed_mines(false) {}
+        m_texture_manager(m_renderer, m_game.get_measurements(), m_window_width, m_window_height),
+        m_started_game(false) {}
 
     explicit GameScreen(Engine *engine, const Game &game) :
         m_engine(engine),
@@ -43,8 +43,8 @@ public:
         m_window_width(engine->get_window_width()),
         m_window_height(engine->get_window_height()),
         m_game(game),
-        m_texture_manager(m_renderer, m_game.get_measurements(), m_window_height),
-        m_placed_mines(true) {}
+        m_texture_manager(m_renderer, m_game.get_measurements(), m_window_width, m_window_height),
+        m_started_game(true) {}
 
     ~GameScreen() override = default;
 
@@ -83,9 +83,9 @@ public:
 
         switch (event.button.button) {
             case SDL_BUTTON_LEFT: {
-                if (!m_placed_mines) {
+                if (!m_started_game) {
                     m_game.place_grid_mines(x, y);
-                    m_placed_mines = true;
+                    m_started_game = true;
                 }
 
                 m_game.reveal_cell(x, y);
@@ -93,7 +93,7 @@ public:
             }
 
             case SDL_BUTTON_RIGHT: {
-                if (!m_placed_mines)
+                if (!m_started_game)
                     break;
 
                 m_game.toggle_cell_flag(x, y);
@@ -119,6 +119,9 @@ public:
         m_texture_manager.get(GameTextureManager::MOUSE_RIGHT_TEXT)->render();
 
         m_texture_manager.get(GameTextureManager::BACK_BUTTON)->render();
+
+        if (!m_started_game)
+            m_texture_manager.get(GameTextureManager::CLICK_TO_START)->render();
 
         SDL_RenderPresent(m_renderer);
     }
