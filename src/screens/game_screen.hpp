@@ -110,7 +110,8 @@ public:
 
         draw_grid();
         draw_remaining_mines();
-        draw_game_time();
+        if (m_game.has_started())
+            draw_game_time();
 
         // game controls
         m_texture_manager.get(GameTextureManager::MOUSE_LEFT_ICON)->render();
@@ -219,11 +220,8 @@ private:
     void draw_game_time() {
         const GameTexture game_time_text_texture = m_texture_manager.get(GameTextureManager::GAME_TIME_TEXT);
         const time_t start_time = m_game.get_start_time();
-
-        if (start_time == 0)
-            return;
-
         const time_t now = time(nullptr);
+
         if (m_last_game_time_drawn == 0 || (!m_game.is_over() && m_last_game_time_drawn < now)) {
             m_last_game_time_drawn = now;
 
