@@ -23,7 +23,7 @@ add_executable(
         minesweeper
         src/main.cpp
         src/engine.hpp
-        src/core/game.hpp
+        src/game.hpp
         src/graphics/colors.hpp
         src/graphics/fonts.cpp
         src/graphics/texture.hpp

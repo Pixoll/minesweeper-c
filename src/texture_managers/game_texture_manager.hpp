@@ -4,7 +4,7 @@
 #include <memory>
 #include <SDL.h>
 
-#include "../core/game.hpp"
+#include "../game.hpp"
 #include "../graphics/colors.hpp"
 #include "../graphics/fonts.hpp"
 #include "../graphics/texture.hpp"
