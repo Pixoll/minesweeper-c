@@ -51,6 +51,7 @@ public:
 
     ~Font() {
         TTF_CloseFont(m_font);
+        m_font = nullptr;
     }
 
     [[nodiscard]] TTF_Font *get_font() const {
@@ -71,7 +72,7 @@ public:
     }
 
     static void free_shared() {
-        for (Shared font : shared_fonts)
+        for (Shared &font : shared_fonts)
             font.reset();
     }
 };
