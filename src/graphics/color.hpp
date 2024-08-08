@@ -32,9 +32,9 @@ public:
     };
 
 private:
-    static constexpr int NAMES_AMOUNT = WHITE + 1;
+    static constexpr int NAMES = WHITE + 1;
 
-    static Color colors[NAMES_AMOUNT];
+    static Color colors[NAMES];
 
     SDL_Color m_rgb{0, 0, 0, 0};
     Uint32 m_value = 0;

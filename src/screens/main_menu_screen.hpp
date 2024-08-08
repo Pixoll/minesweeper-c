@@ -65,6 +65,9 @@ public:
         if (Game::save_exists())
             m_texture_manager.get(MainMenuTextureManager::CONTINUE_GAME_BUTTON)->render();
 
+        m_texture_manager.get(MainMenuTextureManager::LEFT_ARROW)->render();
+        m_texture_manager.get(MainMenuTextureManager::RIGHT_ARROW)->render();
+
         SDL_RenderPresent(m_renderer);
     }
 };

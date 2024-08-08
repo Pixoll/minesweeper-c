@@ -3,6 +3,7 @@
 #include <memory>
 #include <SDL.h>
 
+// #include "../game.hpp"
 #include "../graphics/color.hpp"
 #include "../graphics/font.hpp"
 #include "../graphics/texture.hpp"
@@ -14,6 +15,8 @@ public:
         TITLE,
         NEW_GAME_BUTTON,
         CONTINUE_GAME_BUTTON,
+        LEFT_ARROW,
+        RIGHT_ARROW,
     };
 
     using MainMenuTexture = std::shared_ptr<Texture>;
@@ -21,6 +24,8 @@ public:
 private:
     static constexpr auto BIG_MINE_IMAGE_PATH = "assets/textures/mine_big.png";
     static constexpr auto GAME_BUTTON_IMAGE_PATH = "assets/textures/button_game.png";
+    static constexpr auto LEFT_ARROW_IMAGE_PATH = "assets/textures/arrow_left.png";
+    static constexpr auto RIGHT_ARROW_IMAGE_PATH = "assets/textures/arrow_right.png";
 
     SDL_Renderer *m_renderer;
     const int m_window_width;
@@ -31,6 +36,9 @@ private:
 
     MainMenuTexture m_new_game_button_texture;
     MainMenuTexture m_continue_game_button_texture;
+
+    MainMenuTexture m_left_arrow_texture;
+    MainMenuTexture m_right_arrow_texture;
 
     Font m_title_font;
 
@@ -46,7 +54,8 @@ public:
         const int width = m_big_mine_texture->get_w() * 1.86f;
         const int x = m_big_mine_texture->get_x() + (m_big_mine_texture->get_w() - width) / 2;
         init_new_game_button(width, x);
-        init_continute_game_button(width, x);
+        init_continute_game_button();
+        init_difficulty_buttons();
     }
 
     ~MainMenuTextureManager() = default;
@@ -57,11 +66,17 @@ public:
             case TITLE: return m_title_texture;
             case NEW_GAME_BUTTON: return m_new_game_button_texture;
             case CONTINUE_GAME_BUTTON: return m_continue_game_button_texture;
+            case LEFT_ARROW: return m_left_arrow_texture;
+            case RIGHT_ARROW: return m_right_arrow_texture;
         }
         __builtin_unreachable();
     }
 
 private:
+    // static Game::Difficulty get_next_difficulty(const Game::Difficulty difficulty) {
+    //
+    // }
+
     void init_big_mine_texture() {
         const int y = m_window_height * 0.1;
         const int size = m_window_height * 0.25;
@@ -89,6 +104,12 @@ private:
         button_texture.set_color_mod(Color::LIGHTER_GREY);
         button_texture.set_width(width);
 
+        Texture text_texture(m_renderer, Font::get_shared(Font::PRIMARY)->get_font(), "New game", Color::WHITE);
+        text_texture.set_position(
+            (button_texture.get_w() - text_texture.get_w()) / 2,
+            (button_texture.get_h() - text_texture.get_h()) / 2
+        );
+
         m_new_game_button_texture = std::make_shared<Texture>(
             m_renderer,
             SDL_Rect{
@@ -98,41 +119,59 @@ private:
                 button_texture.get_h(),
             }
         );
+
         const Texture::ScopedRender scoped_render = m_new_game_button_texture->set_as_render_target();
 
         button_texture.render();
-
-        Texture text_texture(m_renderer, Font::get_shared(Font::PRIMARY)->get_font(), "New game", Color::WHITE);
-        text_texture.set_position(
-            (button_texture.get_w() - text_texture.get_w()) / 2,
-            (button_texture.get_h() - text_texture.get_h()) / 2
-        );
         text_texture.render();
     }
 
-    void init_continute_game_button(const int width, const int x) {
+    void init_continute_game_button() {
+        const int width = m_new_game_button_texture->get_w();
+
         Texture button_texture(m_renderer, GAME_BUTTON_IMAGE_PATH);
         button_texture.set_color_mod(Color::LIGHTER_GREY);
         button_texture.set_width(width);
-
-        m_continue_game_button_texture = std::make_shared<Texture>(
-            m_renderer,
-            SDL_Rect{
-                x,
-                static_cast<int>(m_new_game_button_texture->get_y() + m_new_game_button_texture->get_h() * 1.5),
-                width,
-                button_texture.get_h(),
-            }
-        );
-        const Texture::ScopedRender scoped_render = m_continue_game_button_texture->set_as_render_target();
-
-        button_texture.render();
 
         Texture text_texture(m_renderer, Font::get_shared(Font::PRIMARY)->get_font(), "Continue", Color::WHITE);
         text_texture.set_position(
             (button_texture.get_w() - text_texture.get_w()) / 2,
             (button_texture.get_h() - text_texture.get_h()) / 2
         );
+
+        m_continue_game_button_texture = std::make_shared<Texture>(
+            m_renderer,
+            SDL_Rect{
+                m_new_game_button_texture->get_x(),
+                static_cast<int>(m_new_game_button_texture->get_y() + m_new_game_button_texture->get_h() * 1.5),
+                width,
+                button_texture.get_h(),
+            }
+        );
+
+        const Texture::ScopedRender scoped_render = m_continue_game_button_texture->set_as_render_target();
+
+        button_texture.render();
         text_texture.render();
+    }
+
+    void init_difficulty_buttons() {
+        const int button_width = m_new_game_button_texture->get_w();
+        const int arrow_offset = button_width * 0.09;
+        const Font::Shared font = Font::get_shared(Font::PRIMARY);
+
+        const int h = font->get_size();
+        const int y = m_new_game_button_texture->get_y() - m_new_game_button_texture->get_h() - h / 2;
+
+        m_left_arrow_texture = std::make_shared<Texture>(m_renderer, LEFT_ARROW_IMAGE_PATH);
+        m_left_arrow_texture->set_position(m_new_game_button_texture->get_x() + arrow_offset, y);
+        m_left_arrow_texture->set_height(h);
+
+        m_right_arrow_texture = std::make_shared<Texture>(m_renderer, RIGHT_ARROW_IMAGE_PATH);
+        m_right_arrow_texture->set_position(
+            m_new_game_button_texture->get_x() + button_width - arrow_offset - m_left_arrow_texture->get_w(),
+            y
+        );
+        m_right_arrow_texture->set_height(h);
     }
 };

@@ -22,6 +22,15 @@ public:
         CELL_MINE,
     };
 
+    enum Difficulty {
+        DIFFIC_BEGINNER,
+        DIFFIC_EASY,
+        DIFFIC_MEDIUM,
+        DIFFIC_HARD,
+        DIFFIC_HUGE,
+        DIFFIC_EXTREME,
+    };
+
     struct Measurements {
         int cell_size = 0;
         int cell_offset = 0;
@@ -40,6 +49,12 @@ public:
     };
 
 private:
+    struct Setting {
+        const int rows;
+        const int columns;
+        const int mines;
+    };
+
     struct GridCoords {
         int x = -1;
         int y = -1;
@@ -47,6 +62,18 @@ private:
     };
 
     typedef std::vector<std::vector<GridCell>> grid_t;
+
+    static constexpr int DIFFICULTIES = DIFFIC_EXTREME + 1;
+    static constexpr auto SAVE_FILE_PATH = "save.bin";
+
+    static constexpr Setting DIFFICULTY_TO_SETTING[DIFFICULTIES] = {
+        {12, 22, 12},  // BEGINNER
+        {7, 10, 10},   // EASY
+        {12, 22, 40},  // MEDIUM
+        {18, 32, 100}, // HARD
+        {27, 48, 220}, // HUGE
+        {18, 32, 150}, // EXTREME
+    };
 
     const int m_rows;
     const int m_columns;
@@ -58,8 +85,6 @@ private:
     bool m_over = false;
     bool m_won = false;
     Measurements m_measurements{};
-
-    static constexpr auto SAVE_FILE_PATH = "save.bin";
 
     Game(
         const int rows,
@@ -89,6 +114,15 @@ public:
         m_measurements = calculate_measurements(window_width, window_height);
         delete_save();
     }
+
+    Game(const Difficulty difficulty, const int window_width, const int window_height)
+        : Game(
+            DIFFICULTY_TO_SETTING[difficulty].rows,
+            DIFFICULTY_TO_SETTING[difficulty].columns,
+            DIFFICULTY_TO_SETTING[difficulty].mines,
+            window_width,
+            window_height
+        ) {}
 
     ~Game() = default;
 
