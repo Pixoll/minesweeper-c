@@ -56,21 +56,27 @@ public:
 
         if (cursor_in_new_game_button) {
             m_engine->set_screen<GameScreen>(m_engine, m_selected_difficulty);
+            SDL_SetCursor(m_arrow_cursor);
             return;
         }
 
         if (cursor_in_continue_button) {
             m_engine->set_screen<GameScreen>(m_engine, Game::load());
+            SDL_SetCursor(m_arrow_cursor);
             return;
         }
 
         if (cursor_in_left_arrow) {
             m_selected_difficulty = static_cast<Game::Difficulty>(m_selected_difficulty - 1);
+            if (m_selected_difficulty == Game::DIFFIC_LOWEST)
+                SDL_SetCursor(m_arrow_cursor);
             return;
         }
 
         if (cursor_in_right_arrow) {
             m_selected_difficulty = static_cast<Game::Difficulty>(m_selected_difficulty + 1);
+            if (m_selected_difficulty == Game::DIFFIC_HIGHEST)
+                SDL_SetCursor(m_arrow_cursor);
             return;
         }
     }
