@@ -32,7 +32,7 @@ public:
     };
 
     static constexpr int DIFFICULTIES = DIFFIC_HIGHEST + 1;
-    static constexpr const char *DIFFICULTY_NAMES[DIFFICULTIES] {
+    static constexpr const char *DIFFICULTY_NAMES[DIFFICULTIES]{
         "Beginner",
         "Easy",
         "Medium",
@@ -240,8 +240,7 @@ public:
             return;
 
         GridCoords unrevealed[9];
-        int unrevealed_count = 0;
-        get_surrounding_unrevealed(x, y, unrevealed, &unrevealed_count);
+        const int unrevealed_count = get_surrounding_unrevealed(x, y, unrevealed);
 
         if (unrevealed_count != type - CELL_0)
             return;
@@ -428,7 +427,9 @@ private:
         return static_cast<CellType>(surrounding);
     }
 
-    void get_surrounding_unrevealed(const int x, const int y, GridCoords *coords, int *counter) const {
+    int get_surrounding_unrevealed(const int x, const int y, GridCoords coords[9]) const {
+        int count = 0;
+
         for (int i = -1; i <= 1; i++) {
             const int nx = x + i;
 
@@ -441,13 +442,14 @@ private:
                 if (ny < 0 || ny > m_rows - 1 || m_grid[nx][ny].revealed)
                     continue;
 
-                coords[*counter] = {nx, ny};
-                *counter = *counter + 1;
+                coords[count++] = {nx, ny};
             }
         }
+
+        return count;
     }
 
-    bool reveal_non_flagged(const int x, const int y, GridCoords *coords, int *counter) {
+    bool reveal_non_flagged(const int x, const int y, GridCoords coords[9], int *counter) {
         bool revealed_mine = false;
 
         for (int i = -1; i <= 1; i++) {
