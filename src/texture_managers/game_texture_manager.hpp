@@ -330,7 +330,7 @@ private:
     }
 
     void init_back_button_texture() {
-        const int height = Font::get_shared(Font::PRIMARY)->get_size() * 1.25;
+        const int height = Font::get_shared(Font::PRIMARY)->get_size();
         m_back_button_texture = std::make_shared<Texture>(m_renderer, BACK_BUTTON_IMAGE_PATH);
         m_back_button_texture->set_position(20, 20);
         m_back_button_texture->set_height(height);
