@@ -14,7 +14,7 @@ class MainMenuScreen final : virtual public Screen {
     int m_window_width;
     int m_window_height;
     MainMenuTextureManager m_texture_manager;
-    Game::Difficulty m_selected_difficulty = Game::DIFFIC_LOWEST;
+    static Game::Difficulty selected_difficulty;
 
     SDL_Cursor *const m_arrow_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
     SDL_Cursor *const m_hand_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND);
@@ -39,10 +39,10 @@ public:
         const bool cursor_in_continue_button = Game::save_exists()
                 && m_texture_manager.get(MainMenuTextureManager::CONTINUE_GAME_BUTTON)->contains(click_x, click_y);
 
-        const bool cursor_in_left_arrow = m_selected_difficulty != Game::DIFFIC_LOWEST &&
+        const bool cursor_in_left_arrow = selected_difficulty != Game::DIFFIC_LOWEST &&
                 m_texture_manager.get(MainMenuTextureManager::LEFT_ARROW)->contains(click_x, click_y);
 
-        const bool cursor_in_right_arrow = m_selected_difficulty != Game::DIFFIC_HIGHEST &&
+        const bool cursor_in_right_arrow = selected_difficulty != Game::DIFFIC_HIGHEST &&
                 m_texture_manager.get(MainMenuTextureManager::RIGHT_ARROW)->contains(click_x, click_y);
 
         SDL_SetCursor(
@@ -55,7 +55,7 @@ public:
             return;
 
         if (cursor_in_new_game_button) {
-            m_engine->set_screen<GameScreen>(m_engine, m_selected_difficulty);
+            m_engine->set_screen<GameScreen>(m_engine, selected_difficulty);
             SDL_SetCursor(m_arrow_cursor);
             return;
         }
@@ -67,15 +67,15 @@ public:
         }
 
         if (cursor_in_left_arrow) {
-            m_selected_difficulty = static_cast<Game::Difficulty>(m_selected_difficulty - 1);
-            if (m_selected_difficulty == Game::DIFFIC_LOWEST)
+            selected_difficulty = static_cast<Game::Difficulty>(selected_difficulty - 1);
+            if (selected_difficulty == Game::DIFFIC_LOWEST)
                 SDL_SetCursor(m_arrow_cursor);
             return;
         }
 
         if (cursor_in_right_arrow) {
-            m_selected_difficulty = static_cast<Game::Difficulty>(m_selected_difficulty + 1);
-            if (m_selected_difficulty == Game::DIFFIC_HIGHEST)
+            selected_difficulty = static_cast<Game::Difficulty>(selected_difficulty + 1);
+            if (selected_difficulty == Game::DIFFIC_HIGHEST)
                 SDL_SetCursor(m_arrow_cursor);
             return;
         }
@@ -91,13 +91,15 @@ public:
         if (Game::save_exists())
             m_texture_manager.get(MainMenuTextureManager::CONTINUE_GAME_BUTTON)->render();
 
-        if (m_selected_difficulty != Game::DIFFIC_LOWEST)
+        if (selected_difficulty != Game::DIFFIC_LOWEST)
             m_texture_manager.get(MainMenuTextureManager::LEFT_ARROW)->render();
-        if (m_selected_difficulty != Game::DIFFIC_HIGHEST)
+        if (selected_difficulty != Game::DIFFIC_HIGHEST)
             m_texture_manager.get(MainMenuTextureManager::RIGHT_ARROW)->render();
 
-        m_texture_manager.get(m_selected_difficulty)->render();
+        m_texture_manager.get(selected_difficulty)->render();
 
         SDL_RenderPresent(m_renderer);
     }
 };
+
+Game::Difficulty MainMenuScreen::selected_difficulty = Game::DIFFIC_LOWEST;
