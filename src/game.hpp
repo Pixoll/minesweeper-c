@@ -23,12 +23,22 @@ public:
     };
 
     enum Difficulty {
-        DIFFIC_BEGINNER,
+        DIFFIC_LOWEST,
         DIFFIC_EASY,
         DIFFIC_MEDIUM,
         DIFFIC_HARD,
         DIFFIC_HUGE,
-        DIFFIC_EXTREME,
+        DIFFIC_HIGHEST,
+    };
+
+    static constexpr int DIFFICULTIES = DIFFIC_HIGHEST + 1;
+    static constexpr const char *DIFFICULTY_NAMES[DIFFICULTIES] {
+        "Beginner",
+        "Easy",
+        "Medium",
+        "Hard",
+        "Huge",
+        "Extreme",
     };
 
     struct Measurements {
@@ -63,16 +73,15 @@ private:
 
     typedef std::vector<std::vector<GridCell>> grid_t;
 
-    static constexpr int DIFFICULTIES = DIFFIC_EXTREME + 1;
     static constexpr auto SAVE_FILE_PATH = "save.bin";
 
     static constexpr Setting DIFFICULTY_TO_SETTING[DIFFICULTIES] = {
-        {12, 22, 12},  // BEGINNER
+        {12, 22, 12},  // BEGINNER (LOWEST)
         {7, 10, 10},   // EASY
         {12, 22, 40},  // MEDIUM
         {18, 32, 100}, // HARD
         {27, 48, 220}, // HUGE
-        {18, 32, 150}, // EXTREME
+        {18, 32, 150}, // EXTREME (HIGHEST)
     };
 
     const int m_rows;

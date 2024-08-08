@@ -3,7 +3,7 @@
 #include <memory>
 #include <SDL.h>
 
-// #include "../game.hpp"
+#include "../game.hpp"
 #include "../graphics/color.hpp"
 #include "../graphics/font.hpp"
 #include "../graphics/texture.hpp"
@@ -39,6 +39,7 @@ private:
 
     MainMenuTexture m_left_arrow_texture;
     MainMenuTexture m_right_arrow_texture;
+    MainMenuTexture m_difficulty_textures[Game::DIFFICULTIES];
 
     Font m_title_font;
 
@@ -56,6 +57,7 @@ public:
         init_new_game_button(width, x);
         init_continute_game_button();
         init_difficulty_buttons();
+        init_difficulty_textures();
     }
 
     ~MainMenuTextureManager() = default;
@@ -72,11 +74,11 @@ public:
         __builtin_unreachable();
     }
 
-private:
-    // static Game::Difficulty get_next_difficulty(const Game::Difficulty difficulty) {
-    //
-    // }
+    [[nodiscard]] MainMenuTexture get(const Game::Difficulty difficulty) const {
+        return m_difficulty_textures[difficulty];
+    }
 
+private:
     void init_big_mine_texture() {
         const int y = m_window_height * 0.1;
         const int size = m_window_height * 0.25;
@@ -156,10 +158,9 @@ private:
     }
 
     void init_difficulty_buttons() {
+        const Font::Shared font = Font::get_shared(Font::PRIMARY);
         const int button_width = m_new_game_button_texture->get_w();
         const int arrow_offset = button_width * 0.09;
-        const Font::Shared font = Font::get_shared(Font::PRIMARY);
-
         const int h = font->get_size();
         const int y = m_new_game_button_texture->get_y() - m_new_game_button_texture->get_h() - h / 2;
 
@@ -173,5 +174,23 @@ private:
             y
         );
         m_right_arrow_texture->set_height(h);
+    }
+
+    void init_difficulty_textures() {
+        const Font::Shared font = Font::get_shared(Font::PRIMARY);
+        const int button_width = m_new_game_button_texture->get_w();
+        const int x_offset = m_new_game_button_texture->get_x();
+        const int y = m_new_game_button_texture->get_y() - m_new_game_button_texture->get_h() - font->get_size() / 2;
+
+        for (int i = 0; i < Game::DIFFICULTIES; i++) {
+            MainMenuTexture &difficulty_texture = m_difficulty_textures[i];
+            difficulty_texture = std::make_shared<Texture>(
+                m_renderer,
+                font->get_font(),
+                Game::DIFFICULTY_NAMES[i],
+                Color::WHITE
+            );
+            difficulty_texture->set_position(x_offset + (button_width - difficulty_texture->get_w()) / 2, y);
+        }
     }
 };
