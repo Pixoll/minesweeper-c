@@ -54,8 +54,6 @@ public:
         if (event.type != SDL_MOUSEBUTTONDOWN || event.button.button != SDL_BUTTON_LEFT)
             return;
 
-        SDL_SetCursor(m_arrow_cursor);
-
         if (cursor_in_new_game_button) {
             m_engine->set_screen<GameScreen>(m_engine, m_selected_difficulty);
             return;
