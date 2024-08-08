@@ -28,15 +28,6 @@ class GameScreen final : virtual public Screen {
     SDL_Cursor *const m_hand_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND);
 
 public:
-    explicit GameScreen(Engine *engine, const int rows, const int columns, const int mines_count) :
-        m_engine(engine),
-        m_renderer(engine->get_renderer()),
-        m_window_width(engine->get_window_width()),
-        m_window_height(engine->get_window_height()),
-        m_game(rows, columns, mines_count, engine->get_window_width(), engine->get_window_height()),
-        m_texture_manager(m_renderer, m_game.get_measurements(), m_window_width, m_window_height),
-        m_started_game(false) {}
-
     explicit GameScreen(Engine *engine, const Game::Difficulty difficulty) :
         m_engine(engine),
         m_renderer(engine->get_renderer()),

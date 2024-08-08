@@ -73,7 +73,15 @@ private:
 
     typedef std::vector<std::vector<GridCell>> grid_t;
 
-    static constexpr auto SAVE_FILE_PATH = "save.bin";
+    static constexpr auto SAVES_DIR_PATH = "saves/";
+    static constexpr const char *SAVE_FILE_PATH_BY_DIFFICULTY[DIFFICULTIES] = {
+        "saves/beginner.bin",
+        "saves/easy.bin",
+        "saves/medium.bin",
+        "saves/hard.bin",
+        "saves/huge.bin",
+        "saves/extreme.bin",
+    };
 
     static constexpr Setting DIFFICULTY_TO_SETTING[DIFFICULTIES] = {
         {12, 22, 12},  // BEGINNER (LOWEST)
@@ -87,6 +95,7 @@ private:
     const int m_rows;
     const int m_columns;
     const int m_total_mines;
+    const Difficulty m_difficulty;
     int m_unrevealed_count;
     grid_t m_grid{};
     int m_flagged_mines = 0;
@@ -99,6 +108,7 @@ private:
         const int rows,
         const int columns,
         const int total_mines,
+        const Difficulty difficulty,
         const int unrevealed_count,
         grid_t grid,
         const int flagged_mines,
@@ -107,6 +117,7 @@ private:
     ) : m_rows(rows),
         m_columns(columns),
         m_total_mines(total_mines),
+        m_difficulty(difficulty),
         m_unrevealed_count(unrevealed_count),
         m_grid(std::move(grid)),
         m_flagged_mines(flagged_mines),
@@ -114,24 +125,16 @@ private:
         m_measurements(measurements) {}
 
 public:
-    Game(const int rows, const int columns, const int mines_count, const int window_width, const int window_height) :
-        m_rows(rows),
-        m_columns(columns),
-        m_total_mines(mines_count),
-        m_unrevealed_count(rows * columns),
-        m_grid(columns, std::vector(rows, GridCell{})) {
-        m_measurements = calculate_measurements(window_width, window_height);
-        delete_save();
+    Game(const Difficulty difficulty, const int window_width, const int window_height) :
+        m_rows(DIFFICULTY_TO_SETTING[difficulty].rows),
+        m_columns(DIFFICULTY_TO_SETTING[difficulty].columns),
+        m_total_mines(DIFFICULTY_TO_SETTING[difficulty].mines),
+        m_difficulty(difficulty),
+        m_unrevealed_count(m_rows * m_columns),
+        m_grid(m_columns, std::vector(m_rows, GridCell{})),
+        m_measurements(calculate_measurements(window_width, window_height)) {
+        delete_save(difficulty);
     }
-
-    Game(const Difficulty difficulty, const int window_width, const int window_height)
-        : Game(
-            DIFFICULTY_TO_SETTING[difficulty].rows,
-            DIFFICULTY_TO_SETTING[difficulty].columns,
-            DIFFICULTY_TO_SETTING[difficulty].mines,
-            window_width,
-            window_height
-        ) {}
 
     ~Game() = default;
 
@@ -312,7 +315,10 @@ public:
     void save() const {
         const time_t time_elapsed = time(nullptr) - m_start_time;
 
-        std::ofstream save_file(SAVE_FILE_PATH, std::ios::binary | std::ios::out);
+        if (!std::filesystem::exists(SAVES_DIR_PATH))
+            std::filesystem::create_directory(SAVES_DIR_PATH);
+
+        std::ofstream save_file(SAVE_FILE_PATH_BY_DIFFICULTY[m_difficulty], std::ios::binary | std::ios::out);
 
         save_file.write(reinterpret_cast<const char *>(&m_rows), sizeof(m_rows));
         save_file.write(reinterpret_cast<const char *>(&m_columns), sizeof(m_columns));
@@ -331,12 +337,13 @@ public:
         save_file.close();
     }
 
-    static bool save_exists() {
-        return std::filesystem::exists(SAVE_FILE_PATH) && !std::filesystem::is_empty(SAVE_FILE_PATH);
+    static bool save_exists(const Difficulty difficulty) {
+        const char *path = SAVE_FILE_PATH_BY_DIFFICULTY[difficulty];
+        return std::filesystem::exists(path) && !std::filesystem::is_empty(path);
     }
 
-    static Game load() {
-        std::ifstream save_file(SAVE_FILE_PATH, std::ios::binary | std::ios::in);
+    static Game load(const Difficulty difficulty) {
+        std::ifstream save_file(SAVE_FILE_PATH_BY_DIFFICULTY[difficulty], std::ios::binary | std::ios::in);
 
         int rows, columns, total_mines, unrevealed_count, flagged_mines;
         time_t time_elapsed;
@@ -362,15 +369,25 @@ public:
             }
 
         save_file.close();
-        delete_save();
+        delete_save(difficulty);
 
-        return {rows, columns, total_mines, unrevealed_count, grid, flagged_mines, time_elapsed, measurements};
+        return {
+            rows,
+            columns,
+            total_mines,
+            difficulty,
+            unrevealed_count,
+            grid,
+            flagged_mines,
+            time_elapsed,
+            measurements
+        };
     }
 
 private:
-    static void delete_save() {
-        if (save_exists())
-            std::filesystem::remove(SAVE_FILE_PATH);
+    static void delete_save(const Difficulty difficulty) {
+        if (save_exists(difficulty))
+            std::filesystem::remove(SAVE_FILE_PATH_BY_DIFFICULTY[difficulty]);
     }
 
     [[nodiscard]] Measurements calculate_measurements(const int window_width, const int window_height) const {

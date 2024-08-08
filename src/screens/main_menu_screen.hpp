@@ -36,7 +36,7 @@ public:
         const bool cursor_in_new_game_button = m_texture_manager.get(MainMenuTextureManager::NEW_GAME_BUTTON)
                                                                ->contains(click_x, click_y);
 
-        const bool cursor_in_continue_button = Game::save_exists()
+        const bool cursor_in_continue_button = Game::save_exists(selected_difficulty)
                 && m_texture_manager.get(MainMenuTextureManager::CONTINUE_GAME_BUTTON)->contains(click_x, click_y);
 
         const bool cursor_in_left_arrow = selected_difficulty != Game::DIFFIC_LOWEST &&
@@ -61,7 +61,7 @@ public:
         }
 
         if (cursor_in_continue_button) {
-            m_engine->set_screen<GameScreen>(m_engine, Game::load());
+            m_engine->set_screen<GameScreen>(m_engine, Game::load(selected_difficulty));
             SDL_SetCursor(m_arrow_cursor);
             return;
         }
@@ -88,7 +88,7 @@ public:
         m_texture_manager.get(MainMenuTextureManager::TITLE)->render();
         m_texture_manager.get(MainMenuTextureManager::NEW_GAME_BUTTON)->render();
 
-        if (Game::save_exists())
+        if (Game::save_exists(selected_difficulty))
             m_texture_manager.get(MainMenuTextureManager::CONTINUE_GAME_BUTTON)->render();
 
         if (selected_difficulty != Game::DIFFIC_LOWEST)
