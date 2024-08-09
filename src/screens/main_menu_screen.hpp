@@ -9,6 +9,8 @@
 class Engine;
 
 class MainMenuScreen final : virtual public Screen {
+    using TextureName = MainMenuTextureManager::Name;
+
     Engine *m_engine;
     SDL_Renderer *m_renderer;
     int m_window_width;
@@ -30,20 +32,20 @@ public:
     ~MainMenuScreen() override = default;
 
     void run_logic(const SDL_Event &event) override {
-        int click_x, click_y;
-        SDL_GetMouseState(&click_x, &click_y);
+        SDL_Point cursor_pos;
+        SDL_GetMouseState(&cursor_pos.x, &cursor_pos.y);
 
-        const bool cursor_in_new_game_button = m_texture_manager.get(MainMenuTextureManager::NEW_GAME_BUTTON)
-                                                               ->contains(click_x, click_y);
+        const bool cursor_in_new_game_button = m_texture_manager.get(TextureName::NEW_GAME_BUTTON)
+                                                               ->contains(cursor_pos);
 
         const bool cursor_in_continue_button = Game::save_exists(selected_difficulty)
-                && m_texture_manager.get(MainMenuTextureManager::CONTINUE_GAME_BUTTON)->contains(click_x, click_y);
+                && m_texture_manager.get(TextureName::CONTINUE_GAME_BUTTON)->contains(cursor_pos);
 
-        const bool cursor_in_left_arrow = selected_difficulty != Game::DIFFIC_LOWEST &&
-                m_texture_manager.get(MainMenuTextureManager::LEFT_ARROW)->contains(click_x, click_y);
+        const bool cursor_in_left_arrow = selected_difficulty != Game::DIFFIC_LOWEST
+                && m_texture_manager.get(TextureName::LEFT_ARROW)->contains(cursor_pos);
 
-        const bool cursor_in_right_arrow = selected_difficulty != Game::DIFFIC_HIGHEST &&
-                m_texture_manager.get(MainMenuTextureManager::RIGHT_ARROW)->contains(click_x, click_y);
+        const bool cursor_in_right_arrow = selected_difficulty != Game::DIFFIC_HIGHEST
+                && m_texture_manager.get(TextureName::RIGHT_ARROW)->contains(cursor_pos);
 
         SDL_SetCursor(
             cursor_in_new_game_button || cursor_in_continue_button || cursor_in_left_arrow || cursor_in_right_arrow
@@ -84,17 +86,18 @@ public:
     void render() override {
         SDL_RenderClear(m_renderer);
 
-        m_texture_manager.get(MainMenuTextureManager::BIG_MINE)->render();
-        m_texture_manager.get(MainMenuTextureManager::TITLE)->render();
-        m_texture_manager.get(MainMenuTextureManager::NEW_GAME_BUTTON)->render();
+        m_texture_manager.get(TextureName::BIG_MINE)->render();
+        m_texture_manager.get(TextureName::TITLE)->render();
+        m_texture_manager.get(TextureName::NEW_GAME_BUTTON)->render();
 
         if (Game::save_exists(selected_difficulty))
-            m_texture_manager.get(MainMenuTextureManager::CONTINUE_GAME_BUTTON)->render();
+            m_texture_manager.get(TextureName::CONTINUE_GAME_BUTTON)->render();
 
         if (selected_difficulty != Game::DIFFIC_LOWEST)
-            m_texture_manager.get(MainMenuTextureManager::LEFT_ARROW)->render();
+            m_texture_manager.get(TextureName::LEFT_ARROW)->render();
+
         if (selected_difficulty != Game::DIFFIC_HIGHEST)
-            m_texture_manager.get(MainMenuTextureManager::RIGHT_ARROW)->render();
+            m_texture_manager.get(TextureName::RIGHT_ARROW)->render();
 
         m_texture_manager.get(selected_difficulty)->render();
 

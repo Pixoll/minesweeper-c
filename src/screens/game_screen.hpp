@@ -13,6 +13,7 @@ class Engine;
 
 class GameScreen final : virtual public Screen {
     using GameTexture = GameTextureManager::GameTexture;
+    using TextureName = GameTextureManager::Name;
 
     Engine *m_engine;
     SDL_Renderer *m_renderer;
@@ -49,11 +50,10 @@ public:
     ~GameScreen() override = default;
 
     void run_logic(const SDL_Event &event) override {
-        int click_x, click_y;
-        SDL_GetMouseState(&click_x, &click_y);
+        SDL_Point cursor_pos;
+        SDL_GetMouseState(&cursor_pos.x, &cursor_pos.y);
 
-        const bool cursor_in_back_button = m_texture_manager.get(GameTextureManager::BACK_BUTTON)
-                                                           ->contains(click_x, click_y);
+        const bool cursor_in_back_button = m_texture_manager.get(TextureName::BACK_BUTTON)->contains(cursor_pos);
         SDL_SetCursor(cursor_in_back_button ? m_hand_cursor : m_arrow_cursor);
 
         if (event.type == SDL_QUIT && m_game.has_started() && !m_game.is_over()) {
@@ -64,7 +64,7 @@ public:
         if (event.type != SDL_MOUSEBUTTONDOWN)
             return;
 
-        const auto [x, y, inside_cell] = m_game.calculate_grid_cell(click_x, click_y);
+        const auto [x, y, inside_cell] = m_game.calculate_grid_cell(cursor_pos.x, cursor_pos.y);
 
         if (!inside_cell) {
             if (cursor_in_back_button && event.button.button == SDL_BUTTON_LEFT) {
@@ -113,16 +113,15 @@ public:
         if (m_game.has_started())
             draw_game_time();
 
-        // game controls
-        m_texture_manager.get(GameTextureManager::MOUSE_LEFT_ICON)->render();
-        m_texture_manager.get(GameTextureManager::MOUSE_LEFT_TEXT)->render();
-        m_texture_manager.get(GameTextureManager::MOUSE_RIGHT_ICON)->render();
-        m_texture_manager.get(GameTextureManager::MOUSE_RIGHT_TEXT)->render();
+        m_texture_manager.get(TextureName::MOUSE_LEFT_ICON)->render();
+        m_texture_manager.get(TextureName::MOUSE_LEFT_TEXT)->render();
+        m_texture_manager.get(TextureName::MOUSE_RIGHT_ICON)->render();
+        m_texture_manager.get(TextureName::MOUSE_RIGHT_TEXT)->render();
 
-        m_texture_manager.get(GameTextureManager::BACK_BUTTON)->render();
+        m_texture_manager.get(TextureName::BACK_BUTTON)->render();
 
         if (!m_started_game)
-            m_texture_manager.get(GameTextureManager::CLICK_TO_START)->render();
+            m_texture_manager.get(TextureName::CLICK_TO_START)->render();
 
         SDL_RenderPresent(m_renderer);
     }

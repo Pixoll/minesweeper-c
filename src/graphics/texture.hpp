@@ -108,7 +108,8 @@ public:
         return m_area;
     }
 
-    [[nodiscard]] bool contains(const int x, const int y) const {
+    [[nodiscard]] bool contains(const SDL_Point point) const {
+        const auto [x, y] = point;
         const auto [ax, ay, w, h] = m_area;
         return x >= ax && x <= ax + w && y >= ay && y <= ay + h;
     }
