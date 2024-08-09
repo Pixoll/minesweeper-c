@@ -98,6 +98,8 @@ public:
 
         m_texture_manager.get(selected_difficulty)->render();
 
+        m_texture_manager.get(MainMenuTextureManager::SETTINGS_BUTTON)->render();
+
         SDL_RenderPresent(m_renderer);
     }
 };

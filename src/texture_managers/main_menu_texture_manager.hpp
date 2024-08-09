@@ -17,6 +17,7 @@ public:
         CONTINUE_GAME_BUTTON,
         LEFT_ARROW,
         RIGHT_ARROW,
+        SETTINGS_BUTTON,
     };
 
     using MainMenuTexture = std::shared_ptr<Texture>;
@@ -26,6 +27,7 @@ private:
     static constexpr auto GAME_BUTTON_IMAGE_PATH = "assets/textures/button_game.png";
     static constexpr auto LEFT_ARROW_IMAGE_PATH = "assets/textures/arrow_left.png";
     static constexpr auto RIGHT_ARROW_IMAGE_PATH = "assets/textures/arrow_right.png";
+    static constexpr auto SETTINGS_BUTTON_IMAGE_PATH = "assets/textures/button_settings.png";
 
     SDL_Renderer *m_renderer;
     const int m_window_width;
@@ -40,6 +42,8 @@ private:
     MainMenuTexture m_left_arrow_texture;
     MainMenuTexture m_right_arrow_texture;
     MainMenuTexture m_difficulty_textures[Game::DIFFICULTIES];
+
+    MainMenuTexture m_settings_button_texture;
 
     Font m_title_font;
 
@@ -58,6 +62,8 @@ public:
         init_continute_game_button();
         init_difficulty_buttons();
         init_difficulty_textures();
+
+        init_bottom_buttons();
     }
 
     ~MainMenuTextureManager() = default;
@@ -70,6 +76,7 @@ public:
             case CONTINUE_GAME_BUTTON: return m_continue_game_button_texture;
             case LEFT_ARROW: return m_left_arrow_texture;
             case RIGHT_ARROW: return m_right_arrow_texture;
+            case SETTINGS_BUTTON: return m_settings_button_texture;
         }
         __builtin_unreachable();
     }
@@ -192,5 +199,16 @@ private:
             );
             difficulty_texture->set_position(x_offset + (button_width - difficulty_texture->get_w()) / 2, y);
         }
+    }
+
+    void init_bottom_buttons() {
+        const int height = Font::get_shared(Font::PRIMARY)->get_size() * 1.5;
+
+        m_settings_button_texture = std::make_shared<Texture>(m_renderer, SETTINGS_BUTTON_IMAGE_PATH);
+        m_settings_button_texture->set_height(height);
+        m_settings_button_texture->set_position(
+            (m_window_width - m_settings_button_texture->get_w()) / 2,
+            m_window_height - height - 30
+        );
     }
 };
