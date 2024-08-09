@@ -81,7 +81,7 @@ public:
         CELL_FLAG,
     };
 
-    enum Name {
+    enum TextureName {
         H_GRID_LINE,
         V_GRID_LINE,
         GAME_TIME_TEXT,
@@ -208,7 +208,7 @@ public:
         return m_cell_numbers_textures[cell_number];
     }
 
-    [[nodiscard]] GameTexture get(const Name name) const {
+    [[nodiscard]] GameTexture get(const TextureName name) const {
         switch (name) {
             case H_GRID_LINE: return m_h_grid_line_texture;
             case V_GRID_LINE: return m_v_grid_line_texture;

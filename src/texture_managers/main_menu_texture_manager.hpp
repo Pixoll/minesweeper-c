@@ -10,7 +10,7 @@
 
 class MainMenuTextureManager {
 public:
-    enum Name {
+    enum TextureName {
         BIG_MINE,
         TITLE,
         NEW_GAME_BUTTON,
@@ -68,7 +68,7 @@ public:
 
     ~MainMenuTextureManager() = default;
 
-    [[nodiscard]] MainMenuTexture get(const Name name) const {
+    [[nodiscard]] MainMenuTexture get(const TextureName name) const {
         switch (name) {
             case BIG_MINE: return m_big_mine_texture;
             case TITLE: return m_title_texture;

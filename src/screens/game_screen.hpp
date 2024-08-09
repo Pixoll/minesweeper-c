@@ -13,7 +13,7 @@ class Engine;
 
 class GameScreen final : virtual public Screen {
     using GameTexture = GameTextureManager::GameTexture;
-    using TextureName = GameTextureManager::Name;
+    using TextureName = GameTextureManager::TextureName;
 
     Engine *m_engine;
     SDL_Renderer *m_renderer;

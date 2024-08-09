@@ -9,7 +9,7 @@
 class Engine;
 
 class MainMenuScreen final : virtual public Screen {
-    using TextureName = MainMenuTextureManager::Name;
+    using TextureName = MainMenuTextureManager::TextureName;
 
     Engine *m_engine;
     SDL_Renderer *m_renderer;
