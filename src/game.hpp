@@ -403,7 +403,7 @@ private:
         const int grid_width = cell_size * m_columns;
         const int grid_x_offset = (window_width - grid_width) / 2;
         const int grid_height = cell_size * m_rows;
-        const int grid_y_offset = (window_height - grid_height) / 2;
+        const int grid_y_offset = lround((window_height - grid_height) / 2.0 + window_height * 0.0375);
 
         return {
             cell_size,

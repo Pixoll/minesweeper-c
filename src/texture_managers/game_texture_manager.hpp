@@ -330,17 +330,15 @@ private:
     void init_back_button_texture() {
         const int height = Font::get_shared(Font::PRIMARY)->get_size();
         m_back_button_texture = std::make_shared<Texture>(m_renderer, BACK_BUTTON_IMAGE_PATH);
-        m_back_button_texture->set_position(20, 20);
+        m_back_button_texture->set_position(30, 30);
         m_back_button_texture->set_height(height);
     }
 
     void init_remaining_mines_textures() {
-        const int size = Font::get_shared(Font::PRIMARY)->get_size();
-        m_remaining_mines_icon_texture = std::make_shared<Texture>(
-            m_renderer,
-            MINE_IMAGE_PATH,
-            SDL_Rect{20, m_back_button_texture->get_y() + m_back_button_texture->get_h() + 20, size, size}
-        );
+        const int icon_size = Font::get_shared(Font::PRIMARY)->get_size();
+
+        m_remaining_mines_icon_texture = std::make_shared<Texture>(m_renderer, MINE_IMAGE_PATH);
+        m_remaining_mines_icon_texture->set_height(icon_size);
 
         m_remaining_mines_text_texture = std::make_shared<Texture>(
             m_renderer,
@@ -348,10 +346,17 @@ private:
             "0",
             Color::WHITE
         );
+
+        const int text_x_offset = m_remaining_mines_icon_texture->get_w() + 10;
+
+        m_remaining_mines_icon_texture->set_position(
+            (m_window_width - text_x_offset - m_remaining_mines_text_texture->get_w()) / 2,
+            30
+        );
+
         m_remaining_mines_text_texture->set_position(
-            m_remaining_mines_icon_texture->get_x() + m_remaining_mines_icon_texture->get_w() + 10,
-            m_remaining_mines_icon_texture->get_y()
-            + (m_remaining_mines_icon_texture->get_h() - m_remaining_mines_text_texture->get_h()) / 2
+            m_remaining_mines_icon_texture->get_x() + text_x_offset,
+            m_remaining_mines_icon_texture->get_y() + (icon_size - m_remaining_mines_text_texture->get_h()) / 2
         );
     }
 
@@ -362,8 +367,9 @@ private:
             "0",
             Color::LIGHTER_GREY
         );
+
         m_game_time_text_texture->set_position(
-            20,
+            (m_window_width - m_game_time_text_texture->get_w()) / 2,
             m_remaining_mines_icon_texture->get_y() + m_remaining_mines_icon_texture->get_h() + 10
         );
     }
@@ -372,7 +378,7 @@ private:
         const int icon_height = Font::get_shared(Font::PRIMARY)->get_size() * 2;
 
         m_mouse_left_icon_texture = std::make_shared<Texture>(m_renderer, MOUSE_LEFT_ICON_PATH);
-        m_mouse_left_icon_texture->set_position(20, m_window_height - icon_height * 2 - 30);
+        m_mouse_left_icon_texture->set_position(30, m_window_height - icon_height * 2 - 30);
         m_mouse_left_icon_texture->set_height(icon_height);
 
         m_mouse_left_text_texture = std::make_shared<Texture>(
@@ -387,7 +393,7 @@ private:
         );
 
         m_mouse_right_icon_texture = std::make_shared<Texture>(m_renderer, MOUSE_RIGHT_ICON_PATH);
-        m_mouse_right_icon_texture->set_position(20, m_window_height - icon_height - 20);
+        m_mouse_right_icon_texture->set_position(30, m_window_height - icon_height - 20);
         m_mouse_right_icon_texture->set_height(icon_height);
 
         m_mouse_right_text_texture = std::make_shared<Texture>(

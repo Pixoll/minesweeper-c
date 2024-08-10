@@ -144,6 +144,10 @@ public:
         m_area.y = y;
     }
 
+    void set_x(const int x) {
+        m_area.x = x;
+    }
+
     void set_color_mod(const SDL_Color color) const {
         SDL_SetTextureColorMod(m_texture, color.r, color.g, color.b);
     }

@@ -226,6 +226,7 @@ private:
 
             const std::string time_string = get_time_string(now - start_time);
             game_time_text_texture->update_text(time_string.c_str());
+            game_time_text_texture->set_x((m_window_width - game_time_text_texture->get_w()) / 2);
         }
 
         game_time_text_texture->render();

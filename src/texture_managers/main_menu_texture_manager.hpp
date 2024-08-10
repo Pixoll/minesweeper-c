@@ -114,11 +114,11 @@ private:
 
     void init_quit_button() {
         const int size = Font::get_shared(Font::PRIMARY)->get_size();
-        const int x = m_window_width - size - 20;
+        const int x = m_window_width - size - 30;
         m_quit_button_texture = std::make_shared<Texture>(
             m_renderer,
             QUIT_BUTTON_IMAGE_PATH,
-            SDL_Rect{x, 20, size, size}
+            SDL_Rect{x, 30, size, size}
         );
     }
 
