@@ -29,13 +29,18 @@ EngineParameters start_sdl() {
     if (sdl_init_error < 0)
         throw_sdl_error("SDL_Init", sdl_init_error);
 
+    SDL_DisplayMode current_display_mode;
+    const int display_mode_error = SDL_GetCurrentDisplayMode(0, &current_display_mode);
+    if (display_mode_error < 0)
+        throw_sdl_error("SDL_GetCurrentDisplayMode", display_mode_error);
+
     SDL_Window *window = SDL_CreateWindow(
         "Minesweeper",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
-        1280,
-        720,
-        SDL_WINDOW_SHOWN | SDL_WINDOW_MAXIMIZED | SDL_WINDOW_RESIZABLE
+        current_display_mode.w,
+        current_display_mode.h,
+        SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN
     );
 
     if (window == nullptr)
@@ -55,11 +60,6 @@ EngineParameters start_sdl() {
     const int ttf_ready = TTF_Init();
     if (ttf_ready == -1)
         throw_sdl_error("TTF_Init");
-
-    SDL_DisplayMode current_display_mode;
-    const int display_mode_error = SDL_GetCurrentDisplayMode(0, &current_display_mode);
-    if (display_mode_error < 0)
-        throw_sdl_error("SDL_GetCurrentDisplayMode", display_mode_error);
 
     return {window, renderer, current_display_mode.refresh_rate};
 }
