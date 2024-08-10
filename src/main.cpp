@@ -40,7 +40,7 @@ EngineParameters start_sdl() {
         SDL_WINDOWPOS_CENTERED,
         current_display_mode.w,
         current_display_mode.h,
-        SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN
+        SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN_DESKTOP
     );
 
     if (window == nullptr)
