@@ -43,7 +43,6 @@ public:
 
     struct Measurements {
         int cell_size = 0;
-        int cell_offset = 0;
         int grid_line_length = 0;
         int grid_line_width = 0;
         int grid_x_offset = 0;
@@ -391,27 +390,22 @@ private:
     }
 
     [[nodiscard]] Measurements calculate_measurements(const int window_width, const int window_height) const {
-        const double max_width = window_width * 0.915;
-
         const double grid_ratio = static_cast<double>(m_columns) / m_rows;
-        const double window_ratio = max_width / window_height;
+        const double window_ratio = static_cast<double>(window_width) / window_height;
 
         const int limitant_grid_side = grid_ratio > window_ratio ? m_columns : m_rows;
-        const double limitant_window_side = grid_ratio > window_ratio ? max_width : window_height;
-        const double cell_size = limitant_window_side * 0.975 / limitant_grid_side;
+        const double limitant_window_side = grid_ratio > window_ratio ? window_width : window_height;
+        const double cell_size = limitant_window_side * 0.915 / limitant_grid_side;
 
         const int grid_line_length = cell_size * 0.65;
         const double grid_line_width = cell_size * 0.03;
-        const double grid_width = cell_size * m_columns + grid_line_width;
+        const double grid_width = cell_size * m_columns;
         const int grid_x_offset = (window_width - grid_width) / 2;
-        const double grid_height = cell_size * m_rows + grid_line_width;
+        const double grid_height = cell_size * m_rows;
         const int grid_y_offset = (window_height - grid_height) / 2;
-
-        const int cell_offset = grid_line_width / 2;
 
         return {
             static_cast<int>(cell_size),
-            cell_offset,
             grid_line_length,
             static_cast<int>(grid_line_width),
             grid_x_offset,

@@ -235,12 +235,11 @@ private:
         const Color::Name image_color = Color::BACKGROUND
     ) {
         const int cell_size = m_measurements.cell_size;
-        const int cell_offset = m_measurements.cell_offset;
         const int grid_line_width = m_measurements.grid_line_width;
         const int image_size = cell_size * image_scale_respect_to_cell;
-        const int image_offset = (grid_line_width + cell_size - image_size) / 2 - cell_offset;
+        const int image_offset = (grid_line_width + cell_size - image_size) / 2;
 
-        const SDL_Rect texture_area = {cell_offset, cell_offset, cell_size, cell_size};
+        const SDL_Rect texture_area = {0, 0, cell_size, cell_size};
 
         std::unique_ptr<Texture> image_texture;
 
@@ -302,7 +301,6 @@ private:
     void init_grid_lines_textures() {
         const auto &[
             cell_size,
-            cell_offset,
             grid_line_length,
             grid_line_width,
             grid_x_offset,
