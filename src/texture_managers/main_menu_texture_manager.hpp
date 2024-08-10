@@ -18,6 +18,7 @@ public:
         LEFT_ARROW,
         RIGHT_ARROW,
         SETTINGS_BUTTON,
+        QUIT_BUTTON,
     };
 
     using MainMenuTexture = std::shared_ptr<Texture>;
@@ -27,6 +28,7 @@ private:
     static constexpr auto GAME_BUTTON_IMAGE_PATH = "assets/textures/button_game.png";
     static constexpr auto LEFT_ARROW_IMAGE_PATH = "assets/textures/arrow_left.png";
     static constexpr auto RIGHT_ARROW_IMAGE_PATH = "assets/textures/arrow_right.png";
+    static constexpr auto QUIT_BUTTON_IMAGE_PATH = "assets/textures/button_quit.png";
     static constexpr auto SETTINGS_BUTTON_IMAGE_PATH = "assets/textures/button_settings.png";
 
     SDL_Renderer *m_renderer;
@@ -43,6 +45,7 @@ private:
     MainMenuTexture m_right_arrow_texture;
     MainMenuTexture m_difficulty_textures[Game::DIFFICULTIES];
 
+    MainMenuTexture m_quit_button_texture;
     MainMenuTexture m_settings_button_texture;
 
     Font m_title_font;
@@ -55,6 +58,8 @@ public:
         m_title_font(Font::RUBIK_LIGHT, m_window_height * 0.04) {
         init_big_mine_texture();
         init_title_texture();
+        init_quit_button();
+        init_bottom_buttons();
 
         const int width = m_big_mine_texture->get_w() * 1.86f;
         const int x = m_big_mine_texture->get_x() + (m_big_mine_texture->get_w() - width) / 2;
@@ -62,8 +67,6 @@ public:
         init_continute_game_button();
         init_difficulty_buttons();
         init_difficulty_textures();
-
-        init_bottom_buttons();
     }
 
     ~MainMenuTextureManager() = default;
@@ -77,6 +80,7 @@ public:
             case LEFT_ARROW: return m_left_arrow_texture;
             case RIGHT_ARROW: return m_right_arrow_texture;
             case SETTINGS_BUTTON: return m_settings_button_texture;
+            case QUIT_BUTTON: return m_quit_button_texture;
         }
         __builtin_unreachable();
     }
@@ -105,6 +109,16 @@ private:
         m_title_texture->set_position(
             (m_window_width - m_title_texture->get_w()) / 2,
             static_cast<int>((m_big_mine_texture->get_y() + m_big_mine_texture->get_h()) * 1.1)
+        );
+    }
+
+    void init_quit_button() {
+        const int size = Font::get_shared(Font::PRIMARY)->get_size();
+        const int x = m_window_width - size - 20;
+        m_quit_button_texture = std::make_shared<Texture>(
+            m_renderer,
+            QUIT_BUTTON_IMAGE_PATH,
+            SDL_Rect{x, 20, size, size}
         );
     }
 
