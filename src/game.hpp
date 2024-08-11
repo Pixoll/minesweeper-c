@@ -396,7 +396,7 @@ private:
 
         const int limitant_grid_side = grid_ratio > window_ratio ? m_columns : m_rows;
         const int limitant_window_side = grid_ratio > window_ratio ? window_width : window_height;
-        const int cell_size = lround(limitant_window_side * 0.915 / limitant_grid_side);
+        const int cell_size = lround(limitant_window_side * 0.875 / limitant_grid_side);
 
         const int grid_line_length = cell_size * 0.65;
         const int grid_line_width = lround(cell_size * 0.03);

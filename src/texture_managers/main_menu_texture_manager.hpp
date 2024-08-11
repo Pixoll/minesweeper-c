@@ -34,6 +34,7 @@ private:
     SDL_Renderer *m_renderer;
     const int m_window_width;
     const int m_window_height;
+    const int m_window_padding;
 
     MainMenuTexture m_big_mine_texture;
     MainMenuTexture m_title_texture;
@@ -55,6 +56,7 @@ public:
         m_renderer(renderer),
         m_window_width(window_width),
         m_window_height(window_height),
+        m_window_padding(window_height * 0.025),
         m_title_font(Font::RUBIK_LIGHT, m_window_height * 0.04) {
         init_big_mine_texture();
         init_title_texture();
@@ -111,11 +113,11 @@ private:
 
     void init_quit_button() {
         const int size = Font::get_shared(Font::PRIMARY)->get_size();
-        const int x = m_window_width - size - 30;
+        const int x = m_window_width - size - m_window_padding;
         m_quit_button_texture = std::make_shared<Texture>(
             m_renderer,
             QUIT_BUTTON_IMAGE_PATH,
-            SDL_Rect{x, 30, size, size}
+            SDL_Rect{x, m_window_padding, size, size}
         );
     }
 
@@ -222,7 +224,7 @@ private:
         m_settings_button_texture->set_height(height);
         m_settings_button_texture->set_position(
             (m_window_width - m_settings_button_texture->get_w()) / 2,
-            m_window_height - height - 30
+            m_window_height - height - m_window_padding
         );
     }
 };
