@@ -120,10 +120,10 @@ private:
 
     static constexpr CellTextureSetParameters CELL_TEXTURE_SET_PARAMETERS[CELL_SUBTYPES] = {
         {Color::THEME, nullptr, 0, Color::BACKGROUND},
-        {Color::FLAGGED_CELL, FLAG_IMAGE_PATH, 0.35, Color::FLAG},
-        {Color::FLAGGED_CELL, MINE_IMAGE_PATH, 0.5, Color::FLAG},
         {Color::THEME, MINE_IMAGE_PATH, 0.5, Color::BACKGROUND},
+        {Color::FLAGGED_CELL, MINE_IMAGE_PATH, 0.5, Color::FLAG},
         {Color::TRIGGERED_CELL, MINE_IMAGE_PATH, 0.5, Color::TRIGGERED_MINE},
+        {Color::FLAGGED_CELL, FLAG_IMAGE_PATH, 0.35, Color::FLAG},
     };
 
     SDL_Renderer *m_renderer;
