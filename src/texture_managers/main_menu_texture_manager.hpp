@@ -49,15 +49,12 @@ private:
     MainMenuTexture m_quit_button_texture;
     MainMenuTexture m_settings_button_texture;
 
-    Font m_title_font;
-
 public:
     MainMenuTextureManager(SDL_Renderer *renderer, const int window_width, const int window_height) :
         m_renderer(renderer),
         m_window_width(window_width),
         m_window_height(window_height),
-        m_window_padding(window_height * 0.025),
-        m_title_font(Font::RUBIK_LIGHT, m_window_height * 0.04) {
+        m_window_padding(window_height * 0.025) {
         init_big_mine_texture();
         init_title_texture();
         init_quit_button();
@@ -104,7 +101,9 @@ private:
     }
 
     void init_title_texture() {
-        m_title_texture = std::make_shared<Texture>(m_renderer, m_title_font.get_font(), "Minesweeper", Color::WHITE);
+        const Font title_font(Font::RUBIK_LIGHT, m_window_height * 0.04);
+
+        m_title_texture = std::make_shared<Texture>(m_renderer, title_font.get_font(), "Minesweeper", Color::WHITE);
         m_title_texture->set_position(
             (m_window_width - m_title_texture->get_w()) / 2,
             static_cast<int>((m_big_mine_texture->get_y() + m_big_mine_texture->get_h()) * 1.1)

@@ -8,8 +8,8 @@
 #include "../game.hpp"
 #include "../texture_managers/game_texture_manager.hpp"
 
-class MainMenuScreen;
 class Engine;
+class MainMenuScreen;
 
 class GameScreen final : virtual public Screen {
     using GameTexture = GameTextureManager::GameTexture;
@@ -69,7 +69,6 @@ public:
                     m_game.save();
 
                 m_engine->set_screen<MainMenuScreen>(m_engine);
-                SDL_SetCursor(m_arrow_cursor);
             }
 
             return;

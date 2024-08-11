@@ -4,6 +4,7 @@
 
 #include "game_screen.hpp"
 #include "screen.hpp"
+#include "settings_screen.hpp"
 #include "../texture_managers/main_menu_texture_manager.hpp"
 
 class Engine;
@@ -35,6 +36,9 @@ public:
 
         const bool cursor_in_quit_button = m_texture_manager.get(TextureName::QUIT_BUTTON)->contains(cursor_pos);
 
+        const bool cursor_in_settings_button = m_texture_manager.get(TextureName::SETTINGS_BUTTON)
+                                                               ->contains(cursor_pos);
+
         const bool cursor_in_new_game_button = m_texture_manager.get(TextureName::NEW_GAME_BUTTON)
                                                                ->contains(cursor_pos);
 
@@ -48,7 +52,11 @@ public:
                 && m_texture_manager.get(TextureName::RIGHT_ARROW)->contains(cursor_pos);
 
         SDL_SetCursor(
-            cursor_in_quit_button || cursor_in_new_game_button || cursor_in_continue_button || cursor_in_left_arrow
+            cursor_in_quit_button
+            || cursor_in_settings_button
+            || cursor_in_new_game_button
+            || cursor_in_continue_button
+            || cursor_in_left_arrow
             || cursor_in_right_arrow
             ? m_hand_cursor
             : m_arrow_cursor
@@ -63,15 +71,18 @@ public:
             return;
         }
 
+        if (cursor_in_settings_button) {
+            m_engine->set_screen<SettingsScreen>(m_engine);
+            return;
+        }
+
         if (cursor_in_new_game_button) {
             m_engine->set_screen<GameScreen>(m_engine, selected_difficulty);
-            SDL_SetCursor(m_arrow_cursor);
             return;
         }
 
         if (cursor_in_continue_button) {
             m_engine->set_screen<GameScreen>(m_engine, Game::load(selected_difficulty));
-            SDL_SetCursor(m_arrow_cursor);
             return;
         }
 

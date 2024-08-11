@@ -23,6 +23,8 @@ class Engine {
     int m_window_width = 0;
     int m_window_height = 0;
 
+    SDL_Cursor *const m_arrow_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
+
 public:
     explicit Engine(const EngineParameters &parameters)
         : m_render_interval_microsecs(100000 / parameters.screen_refresh_rate),
@@ -42,6 +44,7 @@ public:
     template <class ScreenT, typename... Args>
     void set_screen(Args... args) {
         m_screen = std::make_unique<ScreenT>(args...);
+        SDL_SetCursor(m_arrow_cursor);
     }
 
     [[nodiscard]] SDL_Window *get_window() const {

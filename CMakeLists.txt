@@ -29,9 +29,11 @@ add_executable(
         src/graphics/texture.hpp
         src/texture_managers/game_texture_manager.hpp
         src/texture_managers/main_menu_texture_manager.hpp
+        src/texture_managers/settings_texture_manager.hpp
         src/screens/screen.hpp
         src/screens/main_menu_screen.hpp
         src/screens/game_screen.hpp
+        src/screens/settings_screen.hpp
         app.rc
 )
 

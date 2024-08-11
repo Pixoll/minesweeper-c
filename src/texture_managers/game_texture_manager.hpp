@@ -151,8 +151,6 @@ private:
 
     GameTexture m_click_to_start_texture;
 
-    Font m_cell_number_font;
-
 public:
     GameTextureManager(
         SDL_Renderer *renderer,
@@ -163,8 +161,7 @@ public:
         m_measurements(measurements),
         m_window_width(window_width),
         m_window_height(window_height),
-        m_window_padding(window_height * 0.025),
-        m_cell_number_font(Font::RUBIK_REGULAR, m_measurements.cell_size * 0.5) {
+        m_window_padding(window_height * 0.025) {
         init_grid_lines_textures();
         init_cell_numbers_textures();
         init_back_button_texture();
@@ -279,13 +276,15 @@ private:
         const int cell_size = m_measurements.cell_size;
         const int grid_line_width = m_measurements.grid_line_width;
 
+        const Font cell_number_font(Font::RUBIK_REGULAR, m_measurements.cell_size * 0.5);
+
         for (int cell = 0; cell < 8; cell++) {
             char cell_text[2];
             snprintf(cell_text, 2, "%c", '0' + cell + 1);
 
             const auto cell_number_texture = std::make_shared<Texture>(
                 m_renderer,
-                m_cell_number_font.get_font(),
+                cell_number_font.get_font(),
                 cell_text,
                 static_cast<Color::Name>(Color::GRID_1 + cell)
             );
