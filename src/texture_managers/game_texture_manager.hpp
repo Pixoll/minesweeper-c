@@ -377,14 +377,15 @@ private:
     }
 
     void init_mouse_controls_textures() {
-        const int icon_height = Font::get_shared(Font::PRIMARY)->get_size() * 2;
+        const int icon_height = Font::get_shared(Font::PRIMARY)->get_size() * 1.25;
 
         m_mouse_left_icon_texture = std::make_shared<Texture>(m_renderer, MOUSE_LEFT_ICON_PATH);
-        m_mouse_left_icon_texture->set_position(
-            m_window_padding,
-            m_window_height - icon_height * 2 - m_window_padding * 1.5
-        );
         m_mouse_left_icon_texture->set_height(icon_height);
+
+        const int icon_x = m_window_width - m_mouse_left_icon_texture->get_w() - m_window_padding;
+        const int text_x_offset = icon_x - m_window_padding / 2;
+
+        m_mouse_left_icon_texture->set_position(icon_x, m_window_padding);
 
         m_mouse_left_text_texture = std::make_shared<Texture>(
             m_renderer,
@@ -393,16 +394,13 @@ private:
             Color::WHITE
         );
         m_mouse_left_text_texture->set_position(
-            m_mouse_left_icon_texture->get_x() + m_mouse_left_icon_texture->get_w() + m_window_padding / 2,
+            text_x_offset - m_mouse_left_text_texture->get_w(),
             m_mouse_left_icon_texture->get_y() + (icon_height - m_mouse_left_text_texture->get_h()) / 2
         );
 
         m_mouse_right_icon_texture = std::make_shared<Texture>(m_renderer, MOUSE_RIGHT_ICON_PATH);
-        m_mouse_right_icon_texture->set_position(
-            m_window_padding,
-            m_window_height - icon_height - m_window_padding
-        );
         m_mouse_right_icon_texture->set_height(icon_height);
+        m_mouse_right_icon_texture->set_position(icon_x, icon_height + m_window_padding * 1.5);
 
         m_mouse_right_text_texture = std::make_shared<Texture>(
             m_renderer,
@@ -411,7 +409,7 @@ private:
             Color::WHITE
         );
         m_mouse_right_text_texture->set_position(
-            m_mouse_right_icon_texture->get_x() + m_mouse_right_icon_texture->get_w() + m_window_padding / 2,
+            text_x_offset - m_mouse_right_text_texture->get_w(),
             m_mouse_right_icon_texture->get_y() + (icon_height - m_mouse_right_text_texture->get_h()) / 2
         );
     }
