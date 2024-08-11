@@ -98,6 +98,13 @@ public:
     using GameTexture = std::shared_ptr<Texture>;
 
 private:
+    struct CellTextureSetParameters {
+        const Color::Name cell_color;
+        const char *image_path;
+        const float image_scale_respect_to_cell;
+        const Color::Name image_color;
+    };
+
     static constexpr int CELL_TYPES = CELL_TRC + 1;
     static constexpr int CELL_SUBTYPES = CELL_FLAG + 1;
     static constexpr int CELL_TEXTURE_SIZE = 512;
@@ -110,6 +117,14 @@ private:
     static constexpr auto MOUSE_LEFT_ICON_PATH = "assets/textures/mouse_left.png";
     static constexpr auto MOUSE_RIGHT_ICON_PATH = "assets/textures/mouse_right.png";
     static constexpr auto BACK_BUTTON_IMAGE_PATH = "assets/textures/button_back.png";
+
+    static constexpr CellTextureSetParameters CELL_TEXTURE_SET_PARAMETERS[CELL_SUBTYPES] = {
+        {Color::THEME, nullptr, 0, Color::BACKGROUND},
+        {Color::FLAGGED_CELL, FLAG_IMAGE_PATH, 0.35, Color::FLAG},
+        {Color::FLAGGED_CELL, MINE_IMAGE_PATH, 0.5, Color::FLAG},
+        {Color::THEME, MINE_IMAGE_PATH, 0.5, Color::BACKGROUND},
+        {Color::TRIGGERED_CELL, MINE_IMAGE_PATH, 0.5, Color::TRIGGERED_MINE},
+    };
 
     SDL_Renderer *m_renderer;
     const Game::Measurements &m_measurements;
@@ -160,39 +175,23 @@ public:
 
         const auto cell_map_texture = std::make_shared<Texture>(m_renderer, CELL_MAP_IMAGE_PATH);
 
-        init_cell_textures_set(CELL_COVERED, cell_map_texture, Color::THEME);
-        init_cell_textures_set(
-            CELL_FLAG,
-            cell_map_texture,
-            Color::FLAGGED_CELL,
-            FLAG_IMAGE_PATH,
-            0.35,
-            Color::FLAG
-        );
-        init_cell_textures_set(
-            CELL_FLAGGED_MINE,
-            cell_map_texture,
-            Color::FLAGGED_CELL,
-            MINE_IMAGE_PATH,
-            0.5,
-            Color::FLAG
-        );
-        init_cell_textures_set(
-            CELL_COVERED_MINE,
-            cell_map_texture,
-            Color::THEME,
-            MINE_IMAGE_PATH,
-            0.5,
-            Color::BACKGROUND
-        );
-        init_cell_textures_set(
-            CELL_TRIGGERED_MINE,
-            cell_map_texture,
-            Color::TRIGGERED_CELL,
-            MINE_IMAGE_PATH,
-            0.5,
-            Color::TRIGGERED_MINE
-        );
+        for (int cell_subtype = 0; cell_subtype < CELL_SUBTYPES; cell_subtype++) {
+            const auto &[
+                cell_color,
+                image_path,
+                image_scale_respect_to_cell,
+                image_color
+            ] = CELL_TEXTURE_SET_PARAMETERS[cell_subtype];
+
+            init_cell_textures_set(
+                static_cast<CellSubtype>(cell_subtype),
+                cell_map_texture,
+                cell_color,
+                image_path,
+                image_scale_respect_to_cell,
+                image_color
+            );
+        }
     }
 
     ~GameTextureManager() = default;
@@ -232,9 +231,9 @@ private:
         const CellSubtype cell_subtype,
         const GameTexture &cell_map_texture,
         const Color::Name cell_color,
-        const char *image_path = nullptr,
-        const float image_scale_respect_to_cell = 0,
-        const Color::Name image_color = Color::BACKGROUND
+        const char *image_path,
+        const float image_scale_respect_to_cell,
+        const Color::Name image_color
     ) {
         const int cell_size = m_measurements.cell_size;
         const int grid_line_width = m_measurements.grid_line_width;
