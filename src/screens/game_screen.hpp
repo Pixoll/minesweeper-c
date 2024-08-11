@@ -16,7 +16,6 @@ class GameScreen final : virtual public Screen {
     using TextureName = GameTextureManager::TextureName;
 
     Engine *m_engine;
-    SDL_Renderer *m_renderer;
     int m_window_width;
     int m_window_height;
     Game m_game;
@@ -31,20 +30,18 @@ class GameScreen final : virtual public Screen {
 public:
     explicit GameScreen(Engine *engine, const Game::Difficulty difficulty) :
         m_engine(engine),
-        m_renderer(engine->get_renderer()),
         m_window_width(engine->get_window_width()),
         m_window_height(engine->get_window_height()),
         m_game(difficulty, engine->get_window_width(), engine->get_window_height()),
-        m_texture_manager(m_renderer, m_game.get_measurements(), m_window_width, m_window_height),
+        m_texture_manager(engine->get_renderer(), m_game.get_measurements(), m_window_width, m_window_height),
         m_started_game(false) {}
 
     explicit GameScreen(Engine *engine, const Game &game) :
         m_engine(engine),
-        m_renderer(engine->get_renderer()),
         m_window_width(engine->get_window_width()),
         m_window_height(engine->get_window_height()),
         m_game(game),
-        m_texture_manager(m_renderer, m_game.get_measurements(), m_window_width, m_window_height),
+        m_texture_manager(engine->get_renderer(), m_game.get_measurements(), m_window_width, m_window_height),
         m_started_game(true) {}
 
     ~GameScreen() override = default;

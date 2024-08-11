@@ -12,7 +12,6 @@ class MainMenuScreen final : virtual public Screen {
     using TextureName = MainMenuTextureManager::TextureName;
 
     Engine *m_engine;
-    SDL_Renderer *m_renderer;
     int m_window_width;
     int m_window_height;
     MainMenuTextureManager m_texture_manager;
@@ -24,10 +23,9 @@ class MainMenuScreen final : virtual public Screen {
 public:
     explicit MainMenuScreen(Engine *engine) :
         m_engine(engine),
-        m_renderer(engine->get_renderer()),
         m_window_width(engine->get_window_width()),
         m_window_height(engine->get_window_height()),
-        m_texture_manager(m_renderer, m_window_width, m_window_height) {}
+        m_texture_manager(engine->get_renderer(), m_window_width, m_window_height) {}
 
     ~MainMenuScreen() override = default;
 
