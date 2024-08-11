@@ -214,23 +214,22 @@ private:
 
         std::string time_string;
 
-        if (min == 0)
-            time_string += to_string(sec) + "S";
-        else
-            time_string += to_string(min) + "M " + to_string(sec) + "S";
+        if (min != 0)
+            time_string += to_string(min) + "M ";
+
+        time_string += to_string(sec) + "S";
 
         return time_string;
     }
 
     void draw_game_time() {
         const GameTexture game_time_text_texture = m_texture_manager.get(TextureName::GAME_TIME_TEXT);
-        const time_t start_time = m_game.get_start_time();
         const time_t now = time(nullptr);
 
         if (m_last_game_time_drawn == 0 || (!m_game.is_over() && m_last_game_time_drawn < now)) {
             m_last_game_time_drawn = now;
 
-            const std::string time_string = get_time_string(now - start_time);
+            const std::string time_string = get_time_string(now - m_game.get_start_time());
             game_time_text_texture->update_text(time_string.c_str());
             game_time_text_texture->set_x((m_window_width - game_time_text_texture->get_w()) / 2);
         }

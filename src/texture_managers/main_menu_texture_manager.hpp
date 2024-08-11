@@ -60,10 +60,7 @@ public:
         init_title_texture();
         init_quit_button();
         init_bottom_buttons();
-
-        const int width = m_big_mine_texture->get_w() * 1.86f;
-        const int x = m_big_mine_texture->get_x() + (m_big_mine_texture->get_w() - width) / 2;
-        init_new_game_button(width, x);
+        init_new_game_button();
         init_continute_game_button();
         init_difficulty_buttons();
         init_difficulty_textures();
@@ -122,7 +119,10 @@ private:
         );
     }
 
-    void init_new_game_button(const int width, const int x) {
+    void init_new_game_button() {
+        const int width = m_big_mine_texture->get_w() * 1.86f;
+        const int x = m_big_mine_texture->get_x() + (m_big_mine_texture->get_w() - width) / 2;
+
         Texture button_texture(m_renderer, GAME_BUTTON_IMAGE_PATH);
         button_texture.set_color_mod(Color::LIGHTER_GREY);
         button_texture.set_width(width);
