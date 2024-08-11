@@ -93,8 +93,6 @@ public:
     }
 
     void render() override {
-        SDL_RenderClear(m_renderer);
-
         m_texture_manager.get(TextureName::BIG_MINE)->render();
         m_texture_manager.get(TextureName::TITLE)->render();
         m_texture_manager.get(TextureName::QUIT_BUTTON)->render();
@@ -112,8 +110,6 @@ public:
         m_texture_manager.get(selected_difficulty)->render();
 
         m_texture_manager.get(MainMenuTextureManager::SETTINGS_BUTTON)->render();
-
-        SDL_RenderPresent(m_renderer);
     }
 };
 

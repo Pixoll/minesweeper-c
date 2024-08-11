@@ -63,8 +63,6 @@ public:
     void run() {
         SDL_Event event;
 
-        m_screen->render();
-
         while (true) {
             while (SDL_PollEvent(&event) != 0) {
                 m_screen->run_logic(event);
@@ -73,7 +71,9 @@ public:
                     goto exit_game_loop;
             }
 
+            SDL_RenderClear(m_renderer);
             m_screen->render();
+            SDL_RenderPresent(m_renderer);
 
             std::this_thread::sleep_for(m_render_interval_microsecs);
         }

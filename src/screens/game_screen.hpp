@@ -106,8 +106,6 @@ public:
     }
 
     void render() override {
-        SDL_RenderClear(m_renderer);
-
         draw_grid();
         draw_remaining_mines();
         if (m_game.has_started())
@@ -122,8 +120,6 @@ public:
 
         if (!m_started_game)
             m_texture_manager.get(TextureName::CLICK_TO_START)->render();
-
-        SDL_RenderPresent(m_renderer);
     }
 
 private:
