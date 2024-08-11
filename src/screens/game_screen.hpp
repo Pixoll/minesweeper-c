@@ -136,8 +136,8 @@ private:
         const int grid_x_offset = measurements.grid_x_offset;
         const int grid_y_offset = measurements.grid_y_offset;
 
-        const GameTexture h_grid_line_texture = m_texture_manager.get(GameTextureManager::H_GRID_LINE);
-        const GameTexture v_grid_line_texture = m_texture_manager.get(GameTextureManager::V_GRID_LINE);
+        const GameTexture h_grid_line_texture = m_texture_manager.get(TextureName::H_GRID_LINE);
+        const GameTexture v_grid_line_texture = m_texture_manager.get(TextureName::V_GRID_LINE);
 
         for (int i = 0; i < columns; i++) {
             const int x = grid_x_offset + cell_size * i;
@@ -182,9 +182,7 @@ private:
     }
 
     void draw_remaining_mines() {
-        const GameTexture remaining_mines_text_texture = m_texture_manager.get(
-            GameTextureManager::REMAINING_MINES_TEXT
-        );
+        const GameTexture remaining_mines_text_texture = m_texture_manager.get(TextureName::REMAINING_MINES_TEXT);
         const int current_remaining = m_game.get_remaining_mines();
 
         if (m_remaining_mines != current_remaining) {
@@ -194,9 +192,17 @@ private:
             itoa(current_remaining, remaining_mines_string, 10);
 
             remaining_mines_text_texture->update_text(remaining_mines_string);
+
+            const GameTexture remaining_mines_icon_texture = m_texture_manager.get(TextureName::REMAINING_MINES_ICON);
+            const int text_x_offset = remaining_mines_icon_texture->get_w() + 10;
+
+            remaining_mines_icon_texture->set_x(
+                (m_window_width - text_x_offset - remaining_mines_text_texture->get_w()) / 2
+            );
+            remaining_mines_text_texture->set_x(remaining_mines_icon_texture->get_x() + text_x_offset);
         }
 
-        m_texture_manager.get(GameTextureManager::REMAINING_MINES_ICON)->render();
+        m_texture_manager.get(TextureName::REMAINING_MINES_ICON)->render();
         remaining_mines_text_texture->render();
     }
 
@@ -217,7 +223,7 @@ private:
     }
 
     void draw_game_time() {
-        const GameTexture game_time_text_texture = m_texture_manager.get(GameTextureManager::GAME_TIME_TEXT);
+        const GameTexture game_time_text_texture = m_texture_manager.get(TextureName::GAME_TIME_TEXT);
         const time_t start_time = m_game.get_start_time();
         const time_t now = time(nullptr);
 

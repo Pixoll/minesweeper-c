@@ -347,7 +347,7 @@ private:
             Color::WHITE
         );
 
-        const int text_x_offset = m_remaining_mines_icon_texture->get_w() + 10;
+        const int text_x_offset = icon_size + 10;
 
         m_remaining_mines_icon_texture->set_position(
             (m_window_width - text_x_offset - m_remaining_mines_text_texture->get_w()) / 2,
