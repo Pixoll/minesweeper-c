@@ -310,7 +310,7 @@ private:
         ] = m_measurements;
 
         const int grid_line_offset = (grid_line_width + cell_size - grid_line_length) / 2;
-        const SDL_Color light_grey = Color::get(Color::LIGHT_GREY).get_rgb();
+        const SDL_Color light_grey = Color::get(Color::GREY).get_rgb();
 
         m_h_grid_line_texture = std::make_shared<Texture>(
             m_renderer,

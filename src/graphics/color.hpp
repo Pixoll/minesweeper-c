@@ -89,8 +89,8 @@ public:
 
         colors[BLACK] = {surface, "#000000"};
         colors[DARK_GREY] = {surface, "#1e1f1c"};
-        colors[GREY] = {surface, "#333333"};
-        colors[LIGHT_GREY] = {surface, "#606060"};
+        colors[GREY] = {surface, "#606060"};
+        colors[LIGHT_GREY] = {surface, "#747474"};
         colors[LIGHTER_GREY] = {surface, "#cfcfcf"};
         colors[WHITE] = {surface, "#ffffff"};
     }
