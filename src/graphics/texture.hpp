@@ -84,6 +84,10 @@ public:
         }
 
         ~ScopedRender() {
+            release();
+        }
+
+        void release() const {
             SDL_SetRenderTarget(m_renderer, nullptr);
         }
     };
