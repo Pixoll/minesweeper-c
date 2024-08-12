@@ -53,12 +53,7 @@ public:
         m_font_color(Color::get(color).get_rgb()) {
         SDL_Surface *surface = TTF_RenderText_Blended_Wrapped(m_font, text, m_font_color, 0);
         m_texture = SDL_CreateTextureFromSurface(m_renderer, surface);
-        m_area = {
-            position.x != 0 ? position.x : m_area.x,
-            position.y != 0 ? position.y : m_area.y,
-            surface->w,
-            surface->h,
-        };
+        m_area = {position.x, position.y, surface->w, surface->h};
 
         SDL_FreeSurface(surface);
     }

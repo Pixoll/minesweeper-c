@@ -156,23 +156,22 @@ private:
     ) const {
         const Font::Shared primary_font = Font::get_shared(Font::PRIMARY);
 
-        texture_bundle->add(
-            {
-                m_renderer,
-                primary_font->get_font(),
-                name,
-                Color::WHITE
-            }
+        const auto name_texture = std::make_shared<Texture>(
+            m_renderer,
+            primary_font->get_font(),
+            name,
+            Color::WHITE
         );
 
-        texture_bundle->add(
-            {
-                m_renderer,
-                Font::get_shared(Font::SECONDARY)->get_font(),
-                description,
-                Color::LIGHTER_GREY,
-                {0, texture_bundle->operator[](0)->get_h() + primary_font->get_size()}
-            }
+        const auto description_texture = std::make_shared<Texture>(
+            m_renderer,
+            Font::get_shared(Font::SECONDARY)->get_font(),
+            description,
+            Color::LIGHTER_GREY,
+            SDL_Point{0, name_texture->get_h() + primary_font->get_size()}
         );
+
+        texture_bundle->add(name_texture);
+        texture_bundle->add(description_texture);
     }
 };
