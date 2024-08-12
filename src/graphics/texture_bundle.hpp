@@ -17,15 +17,10 @@ public:
         m_textures.push_back(texture);
     }
 
-    void add(const Texture &texture) {
-        m_textures.push_back(std::make_shared<Texture>(texture));
-    }
-
     void remove(const int index) {
         m_textures.erase(m_textures.begin() + index);
     }
 
-    // TODO for some reason it doesn't render???
     void render() const {
         for (const auto &texture : m_textures)
             texture->render();
