@@ -62,7 +62,7 @@ public:
         return m_size;
     }
 
-    void static init_shared(const int window_height) {
+    void static make_shared(const int window_height) {
         shared_fonts[PRIMARY] = std::make_shared<Font>(RUBIK_REGULAR, window_height * 0.025);
         shared_fonts[SECONDARY] = std::make_shared<Font>(RUBIK_REGULAR, window_height * 0.02);
     }

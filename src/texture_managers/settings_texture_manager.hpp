@@ -30,7 +30,7 @@ public:
         m_window_width(window_width),
         m_window_height(window_height),
         m_window_padding(window_height * 0.025) {
-        init_back_button_texture();
+        make_back_button_texture();
     }
 
     ~SettingsTextureManager() = default;
@@ -43,7 +43,7 @@ public:
     }
 
 private:
-    void init_back_button_texture() {
+    void make_back_button_texture() {
         const int height = Font::get_shared(Font::PRIMARY)->get_size();
         m_back_button_texture = std::make_shared<Texture>(m_renderer, BACK_BUTTON_IMAGE_PATH);
         m_back_button_texture->set_position(m_window_padding, m_window_padding);

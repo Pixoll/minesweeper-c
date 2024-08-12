@@ -67,7 +67,7 @@ public:
         return colors[name];
     }
 
-    static void init(SDL_Window *window) {
+    static void make(SDL_Window *window) {
         const SDL_Surface *surface = SDL_GetWindowSurface(window);
 
         colors[THEME] = {surface, "#d77f37"};

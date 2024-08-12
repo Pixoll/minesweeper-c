@@ -162,13 +162,13 @@ public:
         m_window_width(window_width),
         m_window_height(window_height),
         m_window_padding(window_height * 0.025) {
-        init_grid_lines_textures();
-        init_cell_numbers_textures();
-        init_back_button_texture();
-        init_remaining_mines_textures();
-        init_game_time_texture();
-        init_mouse_controls_textures();
-        init_click_to_start_texture();
+        make_grid_lines_textures();
+        make_cell_numbers_textures();
+        make_back_button_texture();
+        make_remaining_mines_textures();
+        make_game_time_texture();
+        make_mouse_controls_textures();
+        make_click_to_start_texture();
 
         const auto cell_map_texture = std::make_shared<Texture>(m_renderer, CELL_MAP_IMAGE_PATH);
 
@@ -180,7 +180,7 @@ public:
                 image_color
             ] = CELL_TEXTURE_SET_PARAMETERS[cell_subtype];
 
-            init_cell_textures_set(
+            make_cell_textures_set(
                 static_cast<CellSubtype>(cell_subtype),
                 cell_map_texture,
                 cell_color,
@@ -224,7 +224,7 @@ public:
     }
 
 private:
-    void init_cell_textures_set(
+    void make_cell_textures_set(
         const CellSubtype cell_subtype,
         const GameTexture &cell_map_texture,
         const Color::Name cell_color,
@@ -272,7 +272,7 @@ private:
         cell_map_texture->set_color_mod(Color::WHITE);
     }
 
-    void init_cell_numbers_textures() {
+    void make_cell_numbers_textures() {
         const int cell_size = m_measurements.cell_size;
         const int grid_line_width = m_measurements.grid_line_width;
 
@@ -298,7 +298,7 @@ private:
         }
     }
 
-    void init_grid_lines_textures() {
+    void make_grid_lines_textures() {
         const auto &[
             cell_size,
             grid_line_length,
@@ -327,14 +327,14 @@ private:
         m_v_grid_line_texture->set_color_mod(light_grey);
     }
 
-    void init_back_button_texture() {
+    void make_back_button_texture() {
         const int height = Font::get_shared(Font::PRIMARY)->get_size();
         m_back_button_texture = std::make_shared<Texture>(m_renderer, BACK_BUTTON_IMAGE_PATH);
         m_back_button_texture->set_position(m_window_padding, m_window_padding);
         m_back_button_texture->set_height(height);
     }
 
-    void init_remaining_mines_textures() {
+    void make_remaining_mines_textures() {
         const int icon_size = Font::get_shared(Font::PRIMARY)->get_size();
 
         m_remaining_mines_icon_texture = std::make_shared<Texture>(m_renderer, MINE_IMAGE_PATH);
@@ -360,7 +360,7 @@ private:
         );
     }
 
-    void init_game_time_texture() {
+    void make_game_time_texture() {
         m_game_time_text_texture = std::make_shared<Texture>(
             m_renderer,
             Font::get_shared(Font::SECONDARY)->get_font(),
@@ -374,7 +374,7 @@ private:
         );
     }
 
-    void init_mouse_controls_textures() {
+    void make_mouse_controls_textures() {
         const int icon_height = Font::get_shared(Font::PRIMARY)->get_size() * 1.25;
 
         m_mouse_left_icon_texture = std::make_shared<Texture>(m_renderer, MOUSE_LEFT_ICON_PATH);
@@ -412,7 +412,7 @@ private:
         );
     }
 
-    void init_click_to_start_texture() {
+    void make_click_to_start_texture() {
         m_click_to_start_texture = std::make_shared<Texture>(
             m_renderer,
             Font::get_shared(Font::PRIMARY)->get_font(),

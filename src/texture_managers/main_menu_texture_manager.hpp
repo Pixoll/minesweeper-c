@@ -55,14 +55,14 @@ public:
         m_window_width(window_width),
         m_window_height(window_height),
         m_window_padding(window_height * 0.025) {
-        init_big_mine_texture();
-        init_title_texture();
-        init_quit_button();
-        init_bottom_buttons();
-        init_new_game_button();
-        init_continute_game_button();
-        init_difficulty_buttons();
-        init_difficulty_textures();
+        make_big_mine_texture();
+        make_title_texture();
+        make_quit_button();
+        make_bottom_buttons();
+        make_new_game_button();
+        make_continute_game_button();
+        make_difficulty_buttons();
+        make_difficulty_textures();
     }
 
     ~MainMenuTextureManager() = default;
@@ -86,7 +86,7 @@ public:
     }
 
 private:
-    void init_big_mine_texture() {
+    void make_big_mine_texture() {
         const int y = m_window_height * 0.1;
         const int size = m_window_height * 0.25;
         const int x = (m_window_width - size) / 2;
@@ -100,7 +100,7 @@ private:
         m_big_mine_texture->set_color_mod(Color::THEME);
     }
 
-    void init_title_texture() {
+    void make_title_texture() {
         const Font title_font(Font::RUBIK_LIGHT, m_window_height * 0.04);
 
         m_title_texture = std::make_shared<Texture>(m_renderer, title_font.get_font(), "Minesweeper", Color::WHITE);
@@ -110,7 +110,7 @@ private:
         );
     }
 
-    void init_quit_button() {
+    void make_quit_button() {
         const int size = Font::get_shared(Font::PRIMARY)->get_size();
         const int x = m_window_width - size - m_window_padding;
         m_quit_button_texture = std::make_shared<Texture>(
@@ -120,7 +120,7 @@ private:
         );
     }
 
-    void init_new_game_button() {
+    void make_new_game_button() {
         const int width = m_big_mine_texture->get_w() * 1.86f;
         const int x = m_big_mine_texture->get_x() + (m_big_mine_texture->get_w() - width) / 2;
 
@@ -150,7 +150,7 @@ private:
         text_texture.render();
     }
 
-    void init_continute_game_button() {
+    void make_continute_game_button() {
         const int width = m_new_game_button_texture->get_w();
 
         Texture button_texture(m_renderer, GAME_BUTTON_IMAGE_PATH);
@@ -179,7 +179,7 @@ private:
         text_texture.render();
     }
 
-    void init_difficulty_buttons() {
+    void make_difficulty_buttons() {
         const Font::Shared font = Font::get_shared(Font::PRIMARY);
         const int button_width = m_new_game_button_texture->get_w();
         const int arrow_offset = button_width * 0.09;
@@ -198,7 +198,7 @@ private:
         m_right_arrow_texture->set_height(h);
     }
 
-    void init_difficulty_textures() {
+    void make_difficulty_textures() {
         const Font::Shared font = Font::get_shared(Font::PRIMARY);
         const int button_width = m_new_game_button_texture->get_w();
         const int x_offset = m_new_game_button_texture->get_x();
@@ -216,7 +216,7 @@ private:
         }
     }
 
-    void init_bottom_buttons() {
+    void make_bottom_buttons() {
         const int height = Font::get_shared(Font::PRIMARY)->get_size() * 1.5;
 
         m_settings_button_texture = std::make_shared<Texture>(m_renderer, SETTINGS_BUTTON_IMAGE_PATH);
