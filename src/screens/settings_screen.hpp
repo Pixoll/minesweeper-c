@@ -10,6 +10,7 @@ class MainMenuScreen;
 
 class SettingsScreen final : virtual public Screen {
     using TextureName = SettingsTextureManager::TextureName;
+    using TextureBundleName = SettingsTextureManager::TextureBundleName;
 
     Engine *m_engine;
     int m_window_width;
@@ -47,5 +48,7 @@ public:
 
     void render() override {
         m_texture_manager.get(TextureName::BACK_BUTTON)->render();
+
+        m_texture_manager.get(TextureBundleName::SETTING_EASY_DIG)->render();
     }
 };
