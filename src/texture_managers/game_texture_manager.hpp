@@ -388,7 +388,7 @@ private:
         m_mouse_left_text_texture = std::make_shared<Texture>(
             m_renderer,
             Font::get_shared(Font::PRIMARY)->get_font(),
-            "uncover",
+            "dig",
             Color::WHITE
         );
         m_mouse_left_text_texture->set_position(
