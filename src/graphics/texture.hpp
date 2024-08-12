@@ -51,7 +51,7 @@ public:
     ) : m_renderer(renderer),
         m_font(font),
         m_font_color(Color::get(color).get_rgb()) {
-        SDL_Surface *surface = TTF_RenderText_Blended(m_font, text, m_font_color);
+        SDL_Surface *surface = TTF_RenderText_Blended_Wrapped(m_font, text, m_font_color, 0);
         m_texture = SDL_CreateTextureFromSurface(m_renderer, surface);
         m_area = {
             position.x != 0 ? position.x : m_area.x,
@@ -166,7 +166,7 @@ public:
 
     void update_text(const char *text) {
         destroy();
-        SDL_Surface *surface = TTF_RenderText_Blended(m_font, text, m_font_color);
+        SDL_Surface *surface = TTF_RenderText_Blended_Wrapped(m_font, text, m_font_color, 0);
         m_texture = SDL_CreateTextureFromSurface(m_renderer, surface);
         m_area.h = surface->h;
         m_area.w = surface->w;
