@@ -5,7 +5,7 @@
 #include <string>
 
 #include "screen.hpp"
-#include "../game.hpp"
+#include "../core/game.hpp"
 #include "../texture_managers/game_texture_manager.hpp"
 
 class Engine;

@@ -3,7 +3,7 @@
 #include <memory>
 #include <SDL.h>
 
-#include "../game.hpp"
+#include "../core/game.hpp"
 #include "../graphics/color.hpp"
 #include "../graphics/font.hpp"
 #include "../graphics/texture.hpp"
