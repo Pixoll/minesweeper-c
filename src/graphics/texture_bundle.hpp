@@ -26,7 +26,7 @@ public:
             texture->render();
     }
 
-    std::shared_ptr<Texture> operator[](const int index) const {
+    std::shared_ptr<Texture> &operator[](const int index) {
         return m_textures[index];
     }
 };
