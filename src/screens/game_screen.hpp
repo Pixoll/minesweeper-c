@@ -180,7 +180,7 @@ private:
         if (m_remaining_mines != current_remaining) {
             m_remaining_mines = current_remaining;
 
-            remaining_mines_text_texture->update_text(std::to_string(current_remaining).c_str());
+            remaining_mines_text_texture->update_text(std::to_string(current_remaining));
 
             const GameTexture remaining_mines_icon_texture = m_texture_manager.get(TextureName::REMAINING_MINES_ICON);
             const int text_x_offset = remaining_mines_icon_texture->get_w() + 10;
@@ -219,7 +219,7 @@ private:
             m_last_game_time_drawn = now;
 
             const std::string time_string = get_time_string(now - m_game.get_start_time());
-            game_time_text_texture->update_text(time_string.c_str());
+            game_time_text_texture->update_text(time_string);
             game_time_text_texture->set_x((m_window_width - game_time_text_texture->get_w()) / 2);
         }
 

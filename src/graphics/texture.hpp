@@ -15,6 +15,33 @@ class Texture {
     const SDL_Color m_font_color{0, 0, 0, 0};
 
 public:
+    /**
+     * Automatically releases the render target upon scope exit
+     */
+    class ScopedRender {
+        SDL_Renderer *m_renderer;
+
+    public:
+        ScopedRender(
+            SDL_Renderer *renderer,
+            SDL_Texture *texture,
+            const SDL_BlendMode blend_mode
+        ) : m_renderer(renderer) {
+            SDL_SetRenderTarget(m_renderer, texture);
+            SDL_SetTextureBlendMode(texture, blend_mode);
+        }
+
+        ~ScopedRender() {
+            release();
+        }
+
+        void release() const {
+            // TODO performance hit, check if improves quality or not, otherwise get rid of
+            SDL_RenderPresent(m_renderer);
+            SDL_SetRenderTarget(m_renderer, nullptr);
+        }
+    };
+
     Texture() = default;
 
     Texture(
@@ -45,13 +72,13 @@ public:
     Texture(
         SDL_Renderer *renderer,
         TTF_Font *font,
-        const char *text,
+        const std::string &text,
         const Color::Name color,
         const SDL_Point position = {0, 0}
     ) : m_renderer(renderer),
         m_font(font),
         m_font_color(Color::get(color).get_rgb()) {
-        SDL_Surface *surface = TTF_RenderText_Blended_Wrapped(m_font, text, m_font_color, 0);
+        SDL_Surface *surface = TTF_RenderText_Blended_Wrapped(m_font, text.c_str(), m_font_color, 0);
         m_texture = SDL_CreateTextureFromSurface(m_renderer, surface);
         m_area = {position.x, position.y, surface->w, surface->h};
 
@@ -61,31 +88,6 @@ public:
     ~Texture() {
         destroy();
     }
-
-    /**
-     * Automatically releases the render target upon scope exit
-     */
-    class ScopedRender {
-        SDL_Renderer *m_renderer;
-
-    public:
-        ScopedRender(
-            SDL_Renderer *renderer,
-            SDL_Texture *texture,
-            const SDL_BlendMode blend_mode
-        ) : m_renderer(renderer) {
-            SDL_SetRenderTarget(m_renderer, texture);
-            SDL_SetTextureBlendMode(texture, blend_mode);
-        }
-
-        ~ScopedRender() {
-            release();
-        }
-
-        void release() const {
-            SDL_SetRenderTarget(m_renderer, nullptr);
-        }
-    };
 
     [[nodiscard]] int get_x() const {
         return m_area.x;
@@ -159,9 +161,9 @@ public:
         return {m_renderer, m_texture, blend_mode};
     }
 
-    void update_text(const char *text) {
+    void update_text(const std::string &text) {
         destroy();
-        SDL_Surface *surface = TTF_RenderText_Blended_Wrapped(m_font, text, m_font_color, 0);
+        SDL_Surface *surface = TTF_RenderText_Blended_Wrapped(m_font, text.c_str(), m_font_color, 0);
         m_texture = SDL_CreateTextureFromSurface(m_renderer, surface);
         m_area.h = surface->h;
         m_area.w = surface->w;
