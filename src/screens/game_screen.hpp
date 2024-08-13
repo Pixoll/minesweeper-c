@@ -180,10 +180,7 @@ private:
         if (m_remaining_mines != current_remaining) {
             m_remaining_mines = current_remaining;
 
-            char remaining_mines_string[int_length(current_remaining) + 1];
-            itoa(current_remaining, remaining_mines_string, 10);
-
-            remaining_mines_text_texture->update_text(remaining_mines_string);
+            remaining_mines_text_texture->update_text(std::to_string(current_remaining).c_str());
 
             const GameTexture remaining_mines_icon_texture = m_texture_manager.get(TextureName::REMAINING_MINES_ICON);
             const int text_x_offset = remaining_mines_icon_texture->get_w() + 10;

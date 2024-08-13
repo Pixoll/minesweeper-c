@@ -279,8 +279,7 @@ private:
         const Font cell_number_font(Font::RUBIK_REGULAR, m_measurements.cell_size * 0.5);
 
         for (int cell = 0; cell < 8; cell++) {
-            char cell_text[2];
-            snprintf(cell_text, 2, "%c", '0' + cell + 1);
+            const char cell_text[2] = {static_cast<char>('0' + cell + 1), 0};
 
             const auto cell_number_texture = std::make_shared<Texture>(
                 m_renderer,
