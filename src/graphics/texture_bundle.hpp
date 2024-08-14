@@ -1,12 +1,14 @@
 #pragma once
 
 #include <memory>
+#include <SDL.h>
 #include <vector>
 
 #include "texture.hpp"
 
 class TextureBundle {
     std::vector<std::shared_ptr<Texture>> m_textures{};
+    SDL_Point m_position{0, 0};
 
 public:
     TextureBundle() = default;
@@ -24,7 +26,7 @@ public:
 
     void render() const {
         for (const auto &texture : m_textures)
-            texture->render();
+            texture->render(texture->get_x() + m_position.x, texture->get_y() + m_position.y);
     }
 
     std::shared_ptr<Texture> &operator[](const int index) {
@@ -33,5 +35,13 @@ public:
 
     [[nodiscard]] std::shared_ptr<Texture> last() const {
         return m_textures.back();
+    }
+
+    void set_x(const int x) {
+        m_position.x = x;
+    }
+
+    void set_y(const int y) {
+        m_position.y = y;
     }
 };

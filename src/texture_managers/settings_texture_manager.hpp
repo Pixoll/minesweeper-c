@@ -58,43 +58,7 @@ public:
         m_window_padding(window_height * 0.025) {
         make_back_button_texture();
         make_toggles_textures();
-
-        m_show_cell_borders_text_texture_bundle = std::make_shared<TextureBundle>(
-            make_setting_text_texture_bundle(
-                "Show cell borders",
-                "Choose whether to display cell borders or not."
-            )
-        );
-
-        m_show_controls_text_texture_bundle = std::make_shared<TextureBundle>(
-            make_setting_text_texture_bundle(
-                "Show controls",
-                "Choose whether to display the controls in the corner of the game or not."
-            )
-        );
-
-        m_swap_controls_text_texture_bundle = std::make_shared<TextureBundle>(
-            make_setting_text_texture_bundle(
-                "Swap controls",
-                "Choose whether to swap the game controls or not."
-            )
-        );
-
-        m_easy_dig_text_texture_bundle = std::make_shared<TextureBundle>(
-            make_setting_text_texture_bundle(
-                "Easy digging",
-                "Clicking a number will dig all of its surrounding unflagged cells with one click.\n"
-                "It will work if the amount of surrounding flagged cells matches the clicked digit."
-            )
-        );
-
-        m_easy_flag_text_texture_bundle = std::make_shared<TextureBundle>(
-            make_setting_text_texture_bundle(
-                "Easy flagging",
-                "Clicking a number will flag all of its surrounding covered cells with one click.\n"
-                "It will work if the amount of surrounding closed covered matches the clicked digit."
-            )
-        );
+        make_setting_text_texture_bundles();
     }
 
     ~SettingsTextureManager() = default;
@@ -154,6 +118,45 @@ private:
         const Texture text_on_texture(m_renderer, font.get_font(), "ON", Color::BACKGROUND);
         text_on_texture.render();
         texture_on_scoped_render.release();
+    }
+
+    void make_setting_text_texture_bundles() {
+        m_show_cell_borders_text_texture_bundle = std::make_shared<TextureBundle>(
+            make_setting_text_texture_bundle(
+                "Show cell borders",
+                "Choose whether to display cell borders or not."
+            )
+        );
+
+        m_show_controls_text_texture_bundle = std::make_shared<TextureBundle>(
+            make_setting_text_texture_bundle(
+                "Show controls",
+                "Choose whether to display the controls in the corner of the game or not."
+            )
+        );
+
+        m_swap_controls_text_texture_bundle = std::make_shared<TextureBundle>(
+            make_setting_text_texture_bundle(
+                "Swap controls",
+                "Choose whether to swap the game controls or not."
+            )
+        );
+
+        m_easy_dig_text_texture_bundle = std::make_shared<TextureBundle>(
+            make_setting_text_texture_bundle(
+                "Easy digging",
+                "Clicking a number will dig all of its surrounding unflagged cells with one click.\n"
+                "It will work if the amount of surrounding flagged cells matches the clicked digit."
+            )
+        );
+
+        m_easy_flag_text_texture_bundle = std::make_shared<TextureBundle>(
+            make_setting_text_texture_bundle(
+                "Easy flagging",
+                "Clicking a number will flag all of its surrounding covered cells with one click.\n"
+                "It will work if the amount of surrounding closed covered matches the clicked digit."
+            )
+        );
     }
 
     TextureBundle make_setting_text_texture_bundle(const char *name, const std::string &description) const {
@@ -223,6 +226,8 @@ private:
             line_texture->set_x((description_width - line_texture->get_w()) / 2);
             texture_bundle.add(line_texture);
         }
+
+        texture_bundle.set_x((m_window_width - description_width) / 2);
 
         return texture_bundle;
     }
