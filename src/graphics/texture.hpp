@@ -2,6 +2,7 @@
 
 #include <SDL.h>
 #include <SDL_image.h>
+#include <string>
 
 #include "color.hpp"
 
@@ -37,7 +38,7 @@ public:
 
         void release() const {
             // TODO performance hit, check if improves quality or not, otherwise get rid of
-            SDL_RenderPresent(m_renderer);
+            // SDL_RenderPresent(m_renderer);
             SDL_SetRenderTarget(m_renderer, nullptr);
         }
     };
@@ -78,7 +79,7 @@ public:
     ) : m_renderer(renderer),
         m_font(font),
         m_font_color(Color::get(color).get_rgb()) {
-        SDL_Surface *surface = TTF_RenderText_Blended_Wrapped(m_font, text.c_str(), m_font_color, 0);
+        SDL_Surface *surface = TTF_RenderText_Blended(m_font, text.c_str(), m_font_color);
         m_texture = SDL_CreateTextureFromSurface(m_renderer, surface);
         m_area = {position.x, position.y, surface->w, surface->h};
 
@@ -163,7 +164,7 @@ public:
 
     void update_text(const std::string &text) {
         destroy();
-        SDL_Surface *surface = TTF_RenderText_Blended_Wrapped(m_font, text.c_str(), m_font_color, 0);
+        SDL_Surface *surface = TTF_RenderText_Blended(m_font, text.c_str(), m_font_color);
         m_texture = SDL_CreateTextureFromSurface(m_renderer, surface);
         m_area.h = surface->h;
         m_area.w = surface->w;
