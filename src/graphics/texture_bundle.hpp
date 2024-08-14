@@ -10,6 +10,7 @@ class TextureBundle {
 
 public:
     TextureBundle() = default;
+    TextureBundle(const TextureBundle &bundle) = default;
 
     ~TextureBundle() = default;
 
@@ -28,5 +29,9 @@ public:
 
     std::shared_ptr<Texture> &operator[](const int index) {
         return m_textures[index];
+    }
+
+    [[nodiscard]] std::shared_ptr<Texture> last() const {
+        return m_textures.back();
     }
 };

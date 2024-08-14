@@ -2,6 +2,8 @@
 
 #include <memory>
 #include <SDL.h>
+#include <string>
+#include <vector>
 
 #include "../graphics/color.hpp"
 #include "../graphics/font.hpp"
@@ -42,11 +44,11 @@ private:
     SettingsTexture m_toggle_off_texture;
     SettingsTexture m_toggle_on_texture;
 
-    SettingsTextureBundle m_show_cell_borders_text_texture_bundle = std::make_shared<TextureBundle>();
-    SettingsTextureBundle m_show_controls_text_texture_bundle = std::make_shared<TextureBundle>();
-    SettingsTextureBundle m_swap_controls_text_texture_bundle = std::make_shared<TextureBundle>();
-    SettingsTextureBundle m_easy_dig_text_texture_bundle = std::make_shared<TextureBundle>();
-    SettingsTextureBundle m_easy_flag_text_texture_bundle = std::make_shared<TextureBundle>();
+    SettingsTextureBundle m_show_cell_borders_text_texture_bundle;
+    SettingsTextureBundle m_show_controls_text_texture_bundle;
+    SettingsTextureBundle m_swap_controls_text_texture_bundle;
+    SettingsTextureBundle m_easy_dig_text_texture_bundle;
+    SettingsTextureBundle m_easy_flag_text_texture_bundle;
 
 public:
     SettingsTextureManager(SDL_Renderer *renderer, const int window_width, const int window_height) :
@@ -57,36 +59,41 @@ public:
         make_back_button_texture();
         make_toggles_textures();
 
-        make_setting_text_texture_bundle(
-            m_show_cell_borders_text_texture_bundle,
-            "Show cell borders",
-            "Choose whether to display cell borders or not."
+        m_show_cell_borders_text_texture_bundle = std::make_shared<TextureBundle>(
+            make_setting_text_texture_bundle(
+                "Show cell borders",
+                "Choose whether to display cell borders or not."
+            )
         );
 
-        make_setting_text_texture_bundle(
-            m_show_controls_text_texture_bundle,
-            "Show controls",
-            "Choose whether to display the controls in the corner of the game or not."
+        m_show_controls_text_texture_bundle = std::make_shared<TextureBundle>(
+            make_setting_text_texture_bundle(
+                "Show controls",
+                "Choose whether to display the controls in the corner of the game or not."
+            )
         );
 
-        make_setting_text_texture_bundle(
-            m_swap_controls_text_texture_bundle,
-            "Swap controls",
-            "Choose whether to swap the game controls or not."
+        m_swap_controls_text_texture_bundle = std::make_shared<TextureBundle>(
+            make_setting_text_texture_bundle(
+                "Swap controls",
+                "Choose whether to swap the game controls or not."
+            )
         );
 
-        make_setting_text_texture_bundle(
-            m_easy_dig_text_texture_bundle,
-            "Easy digging",
-            "Clicking a number will dig all of its surrounding unflagged cells with one click.\n"
-            "It will work if the amount of surrounding flagged cells matches the clicked digit."
+        m_easy_dig_text_texture_bundle = std::make_shared<TextureBundle>(
+            make_setting_text_texture_bundle(
+                "Easy digging",
+                "Clicking a number will dig all of its surrounding unflagged cells with one click.\n"
+                "It will work if the amount of surrounding flagged cells matches the clicked digit."
+            )
         );
 
-        make_setting_text_texture_bundle(
-            m_easy_flag_text_texture_bundle,
-            "Easy flagging",
-            "Clicking a number will flag all of its surrounding covered cells with one click.\n"
-            "It will work if the amount of surrounding closed covered matches the clicked digit."
+        m_easy_flag_text_texture_bundle = std::make_shared<TextureBundle>(
+            make_setting_text_texture_bundle(
+                "Easy flagging",
+                "Clicking a number will flag all of its surrounding covered cells with one click.\n"
+                "It will work if the amount of surrounding closed covered matches the clicked digit."
+            )
         );
     }
 
@@ -149,11 +156,11 @@ private:
         texture_on_scoped_render.release();
     }
 
-    void make_setting_text_texture_bundle(
-        const SettingsTextureBundle &texture_bundle,
-        const char *name,
-        const char *description
-    ) const {
+    TextureBundle make_setting_text_texture_bundle(const char *name, const std::string &description) const {
+        using std::string;
+
+        TextureBundle texture_bundle;
+
         const Font::Shared primary_font = Font::get_shared(Font::PRIMARY);
 
         const auto name_texture = std::make_shared<Texture>(
@@ -163,15 +170,60 @@ private:
             Color::WHITE
         );
 
+        texture_bundle.add(name_texture);
+
+        TTF_Font *const description_font = Font::get_shared(Font::SECONDARY)->get_font();
+
+        std::vector<string> description_lines{""};
+        int description_width = 0;
+        int description_height;
+
+        for (const char c : description) {
+            if (c != '\n') {
+                string &line = description_lines[description_lines.size() - 1];
+                line += c;
+
+                int line_width;
+                TTF_SizeText(description_font, line.c_str(), &line_width, &description_height);
+
+                if (line_width > description_width)
+                    description_width = line_width;
+
+                continue;
+            }
+
+            description_lines.emplace_back("");
+        }
+
+        name_texture->set_x((description_width - name_texture->get_w()) / 2);
+
         const auto description_texture = std::make_shared<Texture>(
             m_renderer,
-            Font::get_shared(Font::SECONDARY)->get_font(),
-            description,
+            description_font,
+            description_lines[0],
             Color::LIGHTER_GREY,
             SDL_Point{0, name_texture->get_h() + primary_font->get_size()}
         );
 
-        texture_bundle->add(name_texture);
-        texture_bundle->add(description_texture);
+        description_texture->set_x((description_width - description_texture->get_w()) / 2);
+        texture_bundle.add(description_texture);
+        description_lines.erase(description_lines.begin());
+
+        for (const auto &line : description_lines) {
+            const int last_y = texture_bundle.last()->get_y();
+
+            const auto line_texture = std::make_shared<Texture>(
+                m_renderer,
+                description_font,
+                line,
+                Color::LIGHTER_GREY,
+                SDL_Point{0, last_y + description_height}
+            );
+
+            line_texture->set_x((description_width - line_texture->get_w()) / 2);
+            texture_bundle.add(line_texture);
+        }
+
+        return texture_bundle;
     }
 };
