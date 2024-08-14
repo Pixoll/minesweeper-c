@@ -9,6 +9,8 @@ class Engine;
 class MainMenuScreen;
 
 class SettingsScreen final : virtual public Screen {
+    using SettingsTexture = SettingsTextureManager::SettingsTexture;
+    using SettingsTextureBundle = SettingsTextureManager::SettingsTextureBundle;
     using TextureName = SettingsTextureManager::TextureName;
     using TextureBundleName = SettingsTextureManager::TextureBundleName;
 
@@ -48,12 +50,34 @@ public:
 
     void render() override {
         m_texture_manager.get(TextureName::BACK_BUTTON)->render();
-        m_texture_manager.get(TextureName::TOGGLE_OFF)->render();
 
-        m_texture_manager.get(TextureBundleName::SETTING_SHOW_CELL_BORDERS)->render();
-        m_texture_manager.get(TextureBundleName::SETTING_SHOW_CONTROLS)->render();
-        m_texture_manager.get(TextureBundleName::SETTING_SWAP_CONTROLS)->render();
-        m_texture_manager.get(TextureBundleName::SETTING_EASY_DIG)->render();
-        m_texture_manager.get(TextureBundleName::SETTING_EASY_FLAG)->render();
+        render_setting(TextureBundleName::SETTING_SHOW_CELL_BORDERS, Settings::SHOW_CELL_BORDERS);
+        render_setting(TextureBundleName::SETTING_SHOW_CONTROLS, Settings::SHOW_CONTROLS);
+        render_setting(TextureBundleName::SETTING_SWAP_CONTROLS, Settings::SWAP_CONTROLS);
+        render_setting(TextureBundleName::SETTING_EASY_DIG, Settings::EASY_DIG);
+        render_setting(TextureBundleName::SETTING_EASY_FLAG, Settings::EASY_FLAG);
+    }
+
+    void render_setting(const TextureBundleName bundle_name, const Settings::Name setting_name) const {
+        const SettingsTextureBundle texture_bundle = m_texture_manager.get(bundle_name);
+
+        if (texture_bundle->get_y() > m_window_height)
+            return;
+
+        texture_bundle->render();
+
+        const SettingsTexture toggle_on_texture = m_texture_manager.get(TextureName::TOGGLE_ON);
+        const SettingsTexture toggle_off_texture = m_texture_manager.get(TextureName::TOGGLE_OFF);
+        const int toggle_y = Font::get_shared(Font::SECONDARY)->get_size()
+                + texture_bundle->get_y()
+                + texture_bundle->get_h();
+
+        if (toggle_y > m_window_height)
+            return;
+
+        if (Settings::is_on(setting_name))
+            toggle_on_texture->render_to(toggle_on_texture->get_x(), toggle_y);
+        else
+            toggle_off_texture->render_to(toggle_off_texture->get_x(), toggle_y);
     }
 };

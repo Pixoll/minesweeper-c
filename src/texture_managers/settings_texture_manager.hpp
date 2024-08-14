@@ -136,45 +136,69 @@ private:
     }
 
     void make_setting_text_texture_bundles() {
+        const int bundles_padding = Font::get_shared(Font::SECONDARY)->get_size()
+                + m_toggle_on_texture->get_h() * 1.5;
+
         m_show_cell_borders_text_texture_bundle = std::make_shared<TextureBundle>(
-            make_setting_text_texture_bundle(
+            make_setting_texture_bundle(
                 "Show cell borders",
                 "Choose whether to display cell borders or not."
             )
         );
+        m_show_cell_borders_text_texture_bundle->set_y(m_window_height * 0.15);
 
         m_show_controls_text_texture_bundle = std::make_shared<TextureBundle>(
-            make_setting_text_texture_bundle(
+            make_setting_texture_bundle(
                 "Show controls",
                 "Choose whether to display the controls in the corner of the game or not."
             )
         );
+        m_show_controls_text_texture_bundle->set_y(
+            m_show_cell_borders_text_texture_bundle->get_y()
+            + m_show_cell_borders_text_texture_bundle->get_h()
+            + bundles_padding
+        );
 
         m_swap_controls_text_texture_bundle = std::make_shared<TextureBundle>(
-            make_setting_text_texture_bundle(
+            make_setting_texture_bundle(
                 "Swap controls",
                 "Choose whether to swap the game controls or not."
             )
         );
+        m_swap_controls_text_texture_bundle->set_y(
+            m_show_controls_text_texture_bundle->get_y()
+            + m_show_controls_text_texture_bundle->get_h()
+            + bundles_padding
+        );
 
         m_easy_dig_text_texture_bundle = std::make_shared<TextureBundle>(
-            make_setting_text_texture_bundle(
+            make_setting_texture_bundle(
                 "Easy digging",
                 "Clicking a number will dig all of its surrounding unflagged cells with one click.\n"
                 "It will work if the amount of surrounding flagged cells matches the clicked digit."
             )
         );
+        m_easy_dig_text_texture_bundle->set_y(
+            m_swap_controls_text_texture_bundle->get_y()
+            + m_swap_controls_text_texture_bundle->get_h()
+            + bundles_padding
+        );
 
         m_easy_flag_text_texture_bundle = std::make_shared<TextureBundle>(
-            make_setting_text_texture_bundle(
+            make_setting_texture_bundle(
                 "Easy flagging",
                 "Clicking a number will flag all of its surrounding covered cells with one click.\n"
                 "It will work if the amount of surrounding closed covered matches the clicked digit."
             )
         );
+        m_easy_flag_text_texture_bundle->set_y(
+            m_easy_dig_text_texture_bundle->get_y()
+            + m_easy_dig_text_texture_bundle->get_h()
+            + bundles_padding
+        );
     }
 
-    TextureBundle make_setting_text_texture_bundle(const char *name, const std::string &description) const {
+    TextureBundle make_setting_texture_bundle(const char *name, const std::string &description) const {
         using std::string;
 
         TextureBundle texture_bundle;
@@ -220,7 +244,7 @@ private:
             description_font,
             description_lines[0],
             Color::LIGHTER_GREY,
-            SDL_Point{0, name_texture->get_h() + primary_font->get_size()}
+            SDL_Point{0, name_texture->get_h() + primary_font->get_size() / 2}
         );
 
         description_texture->set_x((description_width - description_texture->get_w()) / 2);

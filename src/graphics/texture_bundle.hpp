@@ -37,6 +37,23 @@ public:
         return m_textures.back();
     }
 
+    [[nodiscard]] int get_y() const {
+        return m_position.y;
+    }
+
+    [[nodiscard]] int get_h() const {
+        int height = 0;
+
+        for (const auto &texture : m_textures) {
+            const int temp_height = texture->get_y() + texture->get_h();
+
+            if (temp_height > height)
+                height = temp_height;
+        }
+
+        return height;
+    }
+
     void set_x(const int x) {
         m_position.x = x;
     }
