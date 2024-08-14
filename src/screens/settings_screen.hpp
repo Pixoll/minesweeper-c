@@ -48,6 +48,7 @@ public:
 
     void render() override {
         m_texture_manager.get(TextureName::BACK_BUTTON)->render();
+        m_texture_manager.get(TextureName::TOGGLE_OFF)->render();
 
         m_texture_manager.get(TextureBundleName::SETTING_SHOW_CELL_BORDERS)->render();
         m_texture_manager.get(TextureBundleName::SETTING_SHOW_CONTROLS)->render();

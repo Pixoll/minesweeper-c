@@ -92,32 +92,47 @@ private:
     }
 
     void make_toggles_textures() {
-        const int toggle_size = m_window_height * 0.17;
-        const Font font(Font::RUBIK_LIGHT, m_window_height * 0.03);
+        const int toggle_size = m_window_height * 0.1;
+        const int x = (m_window_width - toggle_size) / 2;
+        const Font font(Font::RUBIK_LIGHT, m_window_height * 0.025);
 
-        m_toggle_off_texture = std::make_shared<Texture>(
+        m_toggle_off_texture = std::make_shared<Texture>(m_renderer, SDL_Rect{x, 0, toggle_size, toggle_size});
+        const Texture::ScopedRender off_texture_scoped_render = m_toggle_off_texture->set_as_render_target();
+
+        const Texture off_texture(
             m_renderer,
             TOGGLE_OFF_IMAGE_PATH,
             SDL_Rect{0, 0, toggle_size, toggle_size}
         );
-        m_toggle_off_texture->set_color_mod(Color::LIGHT_GREY);
+        off_texture.set_color_mod(Color::LIGHT_GREY);
+        off_texture.render();
 
-        const Texture::ScopedRender texture_off_scoped_render = m_toggle_off_texture->set_as_render_target();
-        const Texture text_off_texture(m_renderer, font.get_font(), "OFF", Color::WHITE);
+        Texture text_off_texture(m_renderer, font.get_font(), "OFF", Color::WHITE);
+        text_off_texture.set_position(
+            (toggle_size - text_off_texture.get_w()) / 2,
+            (toggle_size - text_off_texture.get_h()) / 2
+        );
         text_off_texture.render();
-        texture_off_scoped_render.release();
+        off_texture_scoped_render.release();
 
-        m_toggle_on_texture = std::make_shared<Texture>(
+        m_toggle_on_texture = std::make_shared<Texture>(m_renderer, SDL_Rect{x, 0, toggle_size, toggle_size});
+        const Texture::ScopedRender on_texture_scoped_render = m_toggle_on_texture->set_as_render_target();
+
+        const Texture on_texture(
             m_renderer,
             TOGGLE_ON_IMAGE_PATH,
             SDL_Rect{0, 0, toggle_size, toggle_size}
         );
-        m_toggle_on_texture->set_color_mod(Color::THEME);
+        on_texture.set_color_mod(Color::THEME);
+        on_texture.render();
 
-        const Texture::ScopedRender texture_on_scoped_render = m_toggle_off_texture->set_as_render_target();
-        const Texture text_on_texture(m_renderer, font.get_font(), "ON", Color::BACKGROUND);
+        Texture text_on_texture(m_renderer, font.get_font(), "ON", Color::BACKGROUND);
+        text_on_texture.set_position(
+            (toggle_size - text_on_texture.get_w()) / 2,
+            (toggle_size - text_on_texture.get_h()) / 2
+        );
         text_on_texture.render();
-        texture_on_scoped_render.release();
+        on_texture_scoped_render.release();
     }
 
     void make_setting_text_texture_bundles() {
