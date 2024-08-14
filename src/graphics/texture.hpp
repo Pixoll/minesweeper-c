@@ -170,32 +170,23 @@ public:
         SDL_FreeSurface(surface);
     }
 
-    void render(const SDL_Rect source = NULL_RECT, const SDL_Point destination = {0, 0}) const {
-        const bool is_source_null = is_null_rect(source);
-
-        if (destination.x == 0 && destination.y == 0) {
-            SDL_RenderCopy(
-                m_renderer,
-                m_texture,
-                is_source_null ? nullptr : &source,
-                is_source_null ? &m_area : nullptr
-            );
-
-            return;
-        }
-
-        const SDL_Rect dest = {destination.x, destination.y, m_area.w, m_area.h};
-
-        SDL_RenderCopy(
-            m_renderer,
-            m_texture,
-            is_source_null ? nullptr : &source,
-            &dest
-        );
+    void render() const {
+        SDL_RenderCopy(m_renderer, m_texture, nullptr, &m_area);
     }
 
-    void render(const int x, const int y) const {
-        render(NULL_RECT, {x, y});
+    void render_from(const int x, const int y, const int w, const int h) const {
+        const SDL_Rect source = {x, y, w, h};
+        SDL_RenderCopy(m_renderer, m_texture, &source, nullptr);
+    }
+
+    void render_to(const int x, const int y) const {
+        const SDL_Rect dest = {x, y, m_area.w, m_area.h};
+        SDL_RenderCopy(m_renderer, m_texture, nullptr, &dest);
+    }
+
+    void render_moved(const int x, const int y) const {
+        const SDL_Rect dest = {m_area.x + x, m_area.y + y, m_area.w, m_area.h};
+        SDL_RenderCopy(m_renderer, m_texture, nullptr, &dest);
     }
 
     void destroy() {

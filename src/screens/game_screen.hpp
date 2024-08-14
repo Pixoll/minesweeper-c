@@ -143,23 +143,15 @@ private:
                     const GameTextureManager::CellType cell_type = get_cell_type(i, j, cell.flagged, cell.revealed);
                     const GameTexture cell_texture = get_grid_cell_texture(cell, cell_type);
 
-                    cell_texture->render(cell_texture->get_x() + x, cell_texture->get_y() + y);
+                    cell_texture->render_moved(x, y);
                 }
 
                 // Draw grid
-                if (j != rows - 1 && (cell.revealed || m_game.get_grid_cell(i, j + 1).revealed)) {
-                    h_grid_line_texture->render(
-                        x + h_grid_line_texture->get_x(),
-                        y + cell_size + h_grid_line_texture->get_y()
-                    );
-                }
+                if (j != rows - 1 && (cell.revealed || m_game.get_grid_cell(i, j + 1).revealed))
+                    h_grid_line_texture->render_moved(x, y + cell_size);
 
-                if (i != columns - 1 && (cell.revealed || m_game.get_grid_cell(i + 1, j).revealed)) {
-                    v_grid_line_texture->render(
-                        x + cell_size + v_grid_line_texture->get_x(),
-                        y + v_grid_line_texture->get_y()
-                    );
-                }
+                if (i != columns - 1 && (cell.revealed || m_game.get_grid_cell(i + 1, j).revealed))
+                    v_grid_line_texture->render_moved(x + cell_size, y);
             }
         }
     }

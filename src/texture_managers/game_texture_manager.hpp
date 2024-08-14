@@ -261,7 +261,7 @@ private:
             const int map_x = map_index % cell_map_texture->get_w();
             const int map_y = map_index / cell_map_texture->get_h() * CELL_TEXTURE_SIZE;
 
-            cell_map_texture->render({map_x, map_y, CELL_TEXTURE_SIZE, CELL_TEXTURE_SIZE});
+            cell_map_texture->render_from(map_x, map_y, CELL_TEXTURE_SIZE, CELL_TEXTURE_SIZE);
 
             if (image_path != nullptr)
                 image_texture->render();

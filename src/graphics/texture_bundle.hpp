@@ -26,7 +26,7 @@ public:
 
     void render() const {
         for (const auto &texture : m_textures)
-            texture->render(texture->get_x() + m_position.x, texture->get_y() + m_position.y);
+            texture->render_moved(m_position.x, m_position.y);
     }
 
     std::shared_ptr<Texture> &operator[](const int index) {
