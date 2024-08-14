@@ -37,8 +37,6 @@ public:
         }
 
         void release() const {
-            // TODO performance hit, check if improves quality or not, otherwise get rid of
-            // SDL_RenderPresent(m_renderer);
             SDL_SetRenderTarget(m_renderer, nullptr);
         }
     };
