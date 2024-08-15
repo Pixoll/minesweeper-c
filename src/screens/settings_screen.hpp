@@ -78,6 +78,7 @@ public:
             return;
 
         if (cursor_in_back_button) {
+            Settings::save();
             m_engine->set_screen<MainMenuScreen>(m_engine);
             return;
         }
