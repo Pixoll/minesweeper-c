@@ -21,7 +21,7 @@ class GameScreen final : virtual public Screen {
     Game m_game;
     GameTextureManager m_texture_manager;
     bool m_started_game;
-    time_t m_last_game_time_drawn = 0;
+    time_t m_last_game_time_rendered = 0;
     int m_remaining_mines = 0;
 
     SDL_Cursor *const m_arrow_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
@@ -102,10 +102,10 @@ public:
     }
 
     void render() override {
-        draw_grid();
-        draw_remaining_mines();
+        render_grid();
+        render_remaining_mines();
         if (m_game.has_started())
-            draw_game_time();
+            render_game_time();
 
         if (Settings::is_on(Settings::SHOW_CONTROLS)) {
             m_texture_manager.get(TextureName::MOUSE_LEFT_ICON)->render();
@@ -121,7 +121,7 @@ public:
     }
 
 private:
-    void draw_grid() const {
+    void render_grid() const {
         const int rows = m_game.get_rows();
         const int columns = m_game.get_columns();
 
@@ -140,7 +140,7 @@ private:
                 const int y = grid_y_offset + cell_size * j;
                 const Game::GridCell cell = m_game.get_grid_cell(i, j);
 
-                // Draw cells
+                // Render cells
                 if (cell.type != Game::CELL_0 || !cell.revealed) {
                     const GameTextureManager::CellType cell_type = get_cell_type(i, j, cell.flagged, cell.revealed);
                     const GameTexture cell_texture = get_grid_cell_texture(cell, cell_type);
@@ -148,7 +148,7 @@ private:
                     cell_texture->render_moved(x, y);
                 }
 
-                // Draw grid
+                // Render grid
                 if (j != rows - 1 && (cell.revealed || m_game.get_grid_cell(i, j + 1).revealed))
                     h_grid_line_texture->render_moved(x, y + cell_size);
 
@@ -167,7 +167,7 @@ private:
         return length;
     }
 
-    void draw_remaining_mines() {
+    void render_remaining_mines() {
         const GameTexture remaining_mines_text_texture = m_texture_manager.get(TextureName::REMAINING_MINES_TEXT);
         const int current_remaining = m_game.get_remaining_mines();
 
@@ -205,12 +205,12 @@ private:
         return time_string;
     }
 
-    void draw_game_time() {
+    void render_game_time() {
         const GameTexture game_time_text_texture = m_texture_manager.get(TextureName::GAME_TIME_TEXT);
         const time_t now = time(nullptr);
 
-        if (m_last_game_time_drawn == 0 || (!m_game.is_over() && m_last_game_time_drawn < now)) {
-            m_last_game_time_drawn = now;
+        if (m_last_game_time_rendered == 0 || (!m_game.is_over() && m_last_game_time_rendered < now)) {
+            m_last_game_time_rendered = now;
 
             const std::string time_string = get_time_string(now - m_game.get_start_time());
             game_time_text_texture->update_text(time_string);
