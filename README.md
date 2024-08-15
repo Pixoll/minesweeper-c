@@ -20,6 +20,8 @@ Notes:
 
 ## Compiling
 
+Replace `CMAKE_CURRENT_BINARY_DIR` with its value.
+
 ```
 cmake --build CMAKE_CURRENT_BINARY_DIR --target minesweeper -j 10
 ```
