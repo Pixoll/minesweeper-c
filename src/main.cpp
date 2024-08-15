@@ -22,6 +22,8 @@ int main(int argc, char *argv[]) {
     engine.set_screen<MainMenuScreen>(&engine);
     engine.run();
 
+    Settings::save();
+
     quit_sdl(parameters.renderer, parameters.window);
 
     return 0;
