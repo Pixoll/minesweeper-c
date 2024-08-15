@@ -8,6 +8,8 @@
 #include <random>
 #include <vector>
 
+#include "settings.hpp"
+
 class Game {
 public:
     enum CellType {
@@ -239,7 +241,7 @@ public:
             return;
         }
 
-        if (type < CELL_1 || type > CELL_8)
+        if (!Settings::is_on(Settings::EASY_FLAG) || type < CELL_1 || type > CELL_8)
             return;
 
         GridCoords unrevealed[9];
@@ -276,7 +278,7 @@ public:
         GridCoords revealed_cells[9] = {{x, y}};
         int revealed_cells_count = 1;
 
-        if (revealed) {
+        if (revealed && Settings::is_on(Settings::EASY_DIG)) {
             if (type < CELL_1 || type > CELL_8)
                 return;
 
