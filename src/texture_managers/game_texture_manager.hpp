@@ -5,6 +5,7 @@
 #include <SDL.h>
 
 #include "../core/game.hpp"
+#include "../core/settings.hpp"
 #include "../graphics/color.hpp"
 #include "../graphics/font.hpp"
 #include "../graphics/texture.hpp"
@@ -376,6 +377,7 @@ private:
     }
 
     void make_mouse_controls_textures() {
+        const bool swapped_controls = Settings::is_on(Settings::SWAP_CONTROLS);
         const int icon_height = Font::get_shared(Font::PRIMARY)->get_size() * 1.25;
 
         m_mouse_left_icon_texture = std::make_shared<Texture>(m_renderer, MOUSE_LEFT_ICON_PATH);
@@ -389,7 +391,7 @@ private:
         m_mouse_left_text_texture = std::make_shared<Texture>(
             m_renderer,
             Font::get_shared(Font::PRIMARY)->get_font(),
-            "dig",
+            !swapped_controls ? "dig" : "flag",
             Color::WHITE
         );
         m_mouse_left_text_texture->set_position(
@@ -404,7 +406,7 @@ private:
         m_mouse_right_text_texture = std::make_shared<Texture>(
             m_renderer,
             Font::get_shared(Font::PRIMARY)->get_font(),
-            "flag",
+            !swapped_controls ? "flag" : "dig",
             Color::WHITE
         );
         m_mouse_right_text_texture->set_position(

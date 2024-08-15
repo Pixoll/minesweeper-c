@@ -47,6 +47,8 @@ public:
     ~GameScreen() override = default;
 
     void run_logic(const SDL_Event &event) override {
+        const bool swapped_controls = Settings::is_on(Settings::SWAP_CONTROLS);
+
         SDL_Point cursor_pos;
         SDL_GetMouseState(&cursor_pos.x, &cursor_pos.y);
 
@@ -79,6 +81,10 @@ public:
 
         switch (event.button.button) {
             case SDL_BUTTON_LEFT: {
+                if (swapped_controls)
+                    goto right_click;
+
+            left_click:
                 if (!m_started_game) {
                     m_game.place_grid_mines(x, y);
                     m_started_game = true;
@@ -89,6 +95,10 @@ public:
             }
 
             case SDL_BUTTON_RIGHT: {
+                if (swapped_controls)
+                    goto left_click;
+
+            right_click:
                 if (!m_started_game)
                     break;
 
