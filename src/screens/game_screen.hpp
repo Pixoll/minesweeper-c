@@ -159,11 +159,19 @@ private:
                 }
 
                 // Render grid
-                if (j != rows - 1 && (cell.revealed || m_game.get_grid_cell(i, j + 1).revealed))
-                    h_grid_line_texture->render_moved(x, y + cell_size);
+                if (j != rows - 1) {
+                    const Game::GridCell bottom_cell = m_game.get_grid_cell(i, j + 1);
 
-                if (i != columns - 1 && (cell.revealed || m_game.get_grid_cell(i + 1, j).revealed))
-                    v_grid_line_texture->render_moved(x + cell_size, y);
+                    if (cell.revealed || bottom_cell.revealed || cell.flagged ^ bottom_cell.flagged)
+                        h_grid_line_texture->render_moved(x, y + cell_size);
+                }
+
+                if (i != columns - 1) {
+                    const Game::GridCell right_cell = m_game.get_grid_cell(i + 1, j);
+
+                    if (cell.revealed || right_cell.revealed || cell.flagged ^ right_cell.flagged)
+                        v_grid_line_texture->render_moved(x + cell_size, y);
+                }
             }
         }
     }
