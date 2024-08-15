@@ -167,8 +167,10 @@ public:
         make_back_button_texture();
         make_remaining_mines_textures();
         make_game_time_texture();
-        make_mouse_controls_textures();
         make_click_to_start_texture();
+
+        if (Settings::is_on(Settings::SHOW_CONTROLS))
+            make_mouse_controls_textures();
 
         const auto cell_map_texture = std::make_shared<Texture>(m_renderer, CELL_MAP_IMAGE_PATH);
 

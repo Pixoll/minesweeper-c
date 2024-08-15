@@ -107,10 +107,12 @@ public:
         if (m_game.has_started())
             draw_game_time();
 
-        m_texture_manager.get(TextureName::MOUSE_LEFT_ICON)->render();
-        m_texture_manager.get(TextureName::MOUSE_LEFT_TEXT)->render();
-        m_texture_manager.get(TextureName::MOUSE_RIGHT_ICON)->render();
-        m_texture_manager.get(TextureName::MOUSE_RIGHT_TEXT)->render();
+        if (Settings::is_on(Settings::SHOW_CONTROLS)) {
+            m_texture_manager.get(TextureName::MOUSE_LEFT_ICON)->render();
+            m_texture_manager.get(TextureName::MOUSE_LEFT_TEXT)->render();
+            m_texture_manager.get(TextureName::MOUSE_RIGHT_ICON)->render();
+            m_texture_manager.get(TextureName::MOUSE_RIGHT_TEXT)->render();
+        }
 
         m_texture_manager.get(TextureName::BACK_BUTTON)->render();
 
