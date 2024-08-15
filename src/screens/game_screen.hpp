@@ -132,6 +132,8 @@ public:
 
 private:
     void render_grid() const {
+        const bool show_cell_borders = Settings::is_on(Settings::SHOW_CELL_BORDERS);
+
         const int rows = m_game.get_rows();
         const int columns = m_game.get_columns();
 
@@ -143,6 +145,7 @@ private:
         const GameTexture h_grid_line_texture = m_texture_manager.get(TextureName::H_GRID_LINE);
         const GameTexture v_grid_line_texture = m_texture_manager.get(TextureName::V_GRID_LINE);
 
+        // Render cells
         for (int i = 0; i < columns; i++) {
             const int x = grid_x_offset + cell_size * i;
 
@@ -150,26 +153,39 @@ private:
                 const int y = grid_y_offset + cell_size * j;
                 const Game::GridCell cell = m_game.get_grid_cell(i, j);
 
-                // Render cells
-                if (cell.type != Game::CELL_0 || !cell.revealed) {
-                    const GameTextureManager::CellType cell_type = get_cell_type(i, j, cell.flagged, cell.revealed);
-                    const GameTexture cell_texture = get_grid_cell_texture(cell, cell_type);
+                if (cell.type == Game::CELL_0 && cell.revealed)
+                    continue;
 
-                    cell_texture->render_moved(x, y);
-                }
+                const GameTextureManager::CellType cell_type = get_cell_type(i, j, cell.flagged, cell.revealed);
+                const GameTexture cell_texture = get_grid_cell_texture(cell, cell_type);
 
-                // Render grid
+                cell_texture->render_moved(x, y);
+            }
+        }
+
+        if (!m_started_game)
+            return;
+
+        // Render grid
+        for (int i = 0; i < columns; i++) {
+            const int x = grid_x_offset + cell_size * i;
+
+            for (int j = 0; j < rows; j++) {
+                const int y = grid_y_offset + cell_size * j;
+                const Game::GridCell cell = m_game.get_grid_cell(i, j);
+
                 if (j != rows - 1) {
                     const Game::GridCell bottom_cell = m_game.get_grid_cell(i, j + 1);
 
-                    if (cell.revealed || bottom_cell.revealed || cell.flagged ^ bottom_cell.flagged)
+                    if (show_cell_borders || cell.revealed || bottom_cell.revealed
+                        || cell.flagged ^ bottom_cell.flagged)
                         h_grid_line_texture->render_moved(x, y + cell_size);
                 }
 
                 if (i != columns - 1) {
                     const Game::GridCell right_cell = m_game.get_grid_cell(i + 1, j);
 
-                    if (cell.revealed || right_cell.revealed || cell.flagged ^ right_cell.flagged)
+                    if (show_cell_borders || cell.revealed || right_cell.revealed || cell.flagged ^ right_cell.flagged)
                         v_grid_line_texture->render_moved(x + cell_size, y);
                 }
             }
