@@ -18,6 +18,9 @@ class SettingsScreen final : virtual public Screen {
     int m_window_width;
     int m_window_height;
     SettingsTextureManager m_texture_manager;
+    int m_scroll_step;
+    int m_max_scroll;
+    int m_settings_delta_y = 0;
 
     SDL_Cursor *const m_arrow_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
     SDL_Cursor *const m_hand_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND);
@@ -27,7 +30,9 @@ public:
         m_engine(engine),
         m_window_width(engine->get_window_width()),
         m_window_height(engine->get_window_height()),
-        m_texture_manager(engine->get_renderer(), m_window_width, m_window_height) {}
+        m_texture_manager(engine->get_renderer(), m_window_width, m_window_height),
+        m_scroll_step(m_window_width * 0.03),
+        m_max_scroll(m_texture_manager.get_settings_total_height() - m_window_height / 2) {}
 
     ~SettingsScreen() override = default;
 
@@ -38,6 +43,17 @@ public:
         const bool cursor_in_back_button = m_texture_manager.get(TextureName::BACK_BUTTON)->contains(cursor_pos);
 
         SDL_SetCursor(cursor_in_back_button ? m_hand_cursor : m_arrow_cursor);
+
+        if (event.type == SDL_MOUSEWHEEL) {
+            const int dy = event.wheel.y;
+
+            if (dy > 0 && m_settings_delta_y >= 0 || dy < 0 && m_settings_delta_y <= -m_max_scroll)
+                return;
+
+            m_settings_delta_y += event.wheel.y * m_scroll_step;
+
+            return;
+        }
 
         if (event.type != SDL_MOUSEBUTTONDOWN || event.button.button != SDL_BUTTON_LEFT)
             return;
@@ -60,17 +76,17 @@ public:
 
     void render_setting(const TextureBundleName bundle_name, const Settings::Name setting_name) const {
         const SettingsTextureBundle texture_bundle = m_texture_manager.get(bundle_name);
-
-        if (texture_bundle->get_y() > m_window_height)
-            return;
-
-        texture_bundle->render();
-
         const SettingsTexture toggle_on_texture = m_texture_manager.get(TextureName::TOGGLE_ON);
         const SettingsTexture toggle_off_texture = m_texture_manager.get(TextureName::TOGGLE_OFF);
         const int toggle_y = Font::get_shared(Font::SECONDARY)->get_size()
                 + texture_bundle->get_y()
-                + texture_bundle->get_h();
+                + texture_bundle->get_h()
+                + m_settings_delta_y;
+
+        if (texture_bundle->get_y() + m_settings_delta_y > m_window_height || toggle_y + toggle_on_texture->get_h() < 0)
+            return;
+
+        texture_bundle->render_moved(0, m_settings_delta_y);
 
         if (toggle_y > m_window_height)
             return;

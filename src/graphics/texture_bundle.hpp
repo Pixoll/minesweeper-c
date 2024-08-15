@@ -29,12 +29,21 @@ public:
             texture->render_moved(m_position.x, m_position.y);
     }
 
+    void render_moved(const int x, const int y) const {
+        for (const auto &texture : m_textures)
+            texture->render_moved(m_position.x + x, m_position.y + y);
+    }
+
     std::shared_ptr<Texture> &operator[](const int index) {
         return m_textures[index];
     }
 
     [[nodiscard]] std::shared_ptr<Texture> last() const {
         return m_textures.back();
+    }
+
+    [[nodiscard]] int get_x() const {
+        return m_position.x;
     }
 
     [[nodiscard]] int get_y() const {

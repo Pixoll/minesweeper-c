@@ -38,6 +38,7 @@ private:
     const int m_window_width;
     const int m_window_height;
     const int m_window_padding;
+    int m_settings_total_height = 0;
 
     SettingsTexture m_back_button_texture;
 
@@ -81,6 +82,10 @@ public:
             case SETTING_EASY_FLAG: return m_easy_flag_text_texture_bundle;
         }
         __builtin_unreachable();
+    }
+
+    [[nodiscard]] int get_settings_total_height() const {
+        return m_settings_total_height;
     }
 
 private:
@@ -196,6 +201,10 @@ private:
             + m_easy_dig_text_texture_bundle->get_h()
             + bundles_padding
         );
+
+        m_settings_total_height = m_easy_flag_text_texture_bundle->get_y()
+                + m_easy_flag_text_texture_bundle->get_h()
+                - m_show_cell_borders_text_texture_bundle->get_y();
     }
 
     TextureBundle make_setting_texture_bundle(const char *name, const std::string &description) const {
