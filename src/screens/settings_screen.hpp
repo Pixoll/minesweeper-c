@@ -64,12 +64,12 @@ public:
         SDL_SetCursor(cursor_in_back_button || cursor_in_setting_toggle ? m_hand_cursor : m_arrow_cursor);
 
         if (event.type == SDL_MOUSEWHEEL) {
-            const int dy = event.wheel.y;
+            const float dy = event.wheel.preciseY;
 
             if (dy > 0 && m_settings_delta_y >= 0 || dy < 0 && m_settings_delta_y <= -m_max_scroll)
                 return;
 
-            m_settings_delta_y += event.wheel.y * m_scroll_step;
+            m_settings_delta_y += dy * m_scroll_step;
 
             return;
         }
