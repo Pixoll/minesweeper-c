@@ -33,7 +33,7 @@ public:
     };
 
     static constexpr int DIFFICULTIES = DIFFIC_HIGHEST + 1;
-    static constexpr const char *DIFFICULTY_NAMES[DIFFICULTIES]{
+    static constexpr const char *DIFFICULTY_NAMES[DIFFICULTIES] = {
         "Beginner",
         "Easy",
         "Medium",
