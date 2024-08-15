@@ -14,6 +14,22 @@ class SettingsScreen final : virtual public Screen {
     using TextureName = SettingsTextureManager::TextureName;
     using TextureBundleName = SettingsTextureManager::TextureBundleName;
 
+    static constexpr int SETTINGS_AMOUNT = Settings::EASY_FLAG + 1;
+    static constexpr TextureBundleName SETTING_TEXTURE_BUNDLE_NAMES[SETTINGS_AMOUNT] = {
+        TextureBundleName::SETTING_SHOW_CELL_BORDERS,
+        TextureBundleName::SETTING_SHOW_CONTROLS,
+        TextureBundleName::SETTING_SWAP_CONTROLS,
+        TextureBundleName::SETTING_EASY_DIG,
+        TextureBundleName::SETTING_EASY_FLAG,
+    };
+    static constexpr Settings::Name SETTING_TEXTURE_TO_NAME[SETTINGS_AMOUNT] = {
+        Settings::SHOW_CELL_BORDERS,
+        Settings::SHOW_CONTROLS,
+        Settings::SWAP_CONTROLS,
+        Settings::EASY_DIG,
+        Settings::EASY_FLAG,
+    };
+
     Engine *m_engine;
     int m_window_width;
     int m_window_height;
@@ -40,9 +56,12 @@ public:
         SDL_Point cursor_pos;
         SDL_GetMouseState(&cursor_pos.x, &cursor_pos.y);
 
-        const bool cursor_in_back_button = m_texture_manager.get(TextureName::BACK_BUTTON)->contains(cursor_pos);
+        Settings::Name selected_setting;
 
-        SDL_SetCursor(cursor_in_back_button ? m_hand_cursor : m_arrow_cursor);
+        const bool cursor_in_back_button = m_texture_manager.get(TextureName::BACK_BUTTON)->contains(cursor_pos);
+        const bool cursor_in_setting_toggle = mouse_on_setting_toggle(cursor_pos, &selected_setting);
+
+        SDL_SetCursor(cursor_in_back_button || cursor_in_setting_toggle ? m_hand_cursor : m_arrow_cursor);
 
         if (event.type == SDL_MOUSEWHEEL) {
             const int dy = event.wheel.y;
@@ -62,19 +81,25 @@ public:
             m_engine->set_screen<MainMenuScreen>(m_engine);
             return;
         }
+
+        if (cursor_in_setting_toggle) {
+            Settings::toggle(selected_setting);
+            return;
+        }
     }
 
     void render() override {
         m_texture_manager.get(TextureName::BACK_BUTTON)->render();
 
-        render_setting(TextureBundleName::SETTING_SHOW_CELL_BORDERS, Settings::SHOW_CELL_BORDERS);
-        render_setting(TextureBundleName::SETTING_SHOW_CONTROLS, Settings::SHOW_CONTROLS);
-        render_setting(TextureBundleName::SETTING_SWAP_CONTROLS, Settings::SWAP_CONTROLS);
-        render_setting(TextureBundleName::SETTING_EASY_DIG, Settings::EASY_DIG);
-        render_setting(TextureBundleName::SETTING_EASY_FLAG, Settings::EASY_FLAG);
+        render_setting(TextureBundleName::SETTING_SHOW_CELL_BORDERS);
+        render_setting(TextureBundleName::SETTING_SHOW_CONTROLS);
+        render_setting(TextureBundleName::SETTING_SWAP_CONTROLS);
+        render_setting(TextureBundleName::SETTING_EASY_DIG);
+        render_setting(TextureBundleName::SETTING_EASY_FLAG);
     }
 
-    void render_setting(const TextureBundleName bundle_name, const Settings::Name setting_name) const {
+private:
+    void render_setting(const TextureBundleName bundle_name) const {
         const SettingsTextureBundle texture_bundle = m_texture_manager.get(bundle_name);
         const SettingsTexture toggle_on_texture = m_texture_manager.get(TextureName::TOGGLE_ON);
         const SettingsTexture toggle_off_texture = m_texture_manager.get(TextureName::TOGGLE_OFF);
@@ -91,9 +116,28 @@ public:
         if (toggle_y > m_window_height)
             return;
 
-        if (Settings::is_on(setting_name))
+        if (Settings::is_on(SETTING_TEXTURE_TO_NAME[bundle_name]))
             toggle_on_texture->render_to(toggle_on_texture->get_x(), toggle_y);
         else
             toggle_off_texture->render_to(toggle_off_texture->get_x(), toggle_y);
+    }
+
+    [[nodiscard]] bool mouse_on_setting_toggle(const SDL_Point &cursor_pos, Settings::Name *hovered_setting) const {
+        // TODO is std::any_of better? (clang suggestion)
+        for (const auto &bundle_name : SETTING_TEXTURE_BUNDLE_NAMES) {
+            const SettingsTextureBundle texture_bundle = m_texture_manager.get(bundle_name);
+            const SettingsTexture toggle_texture = m_texture_manager.get(TextureName::TOGGLE_ON);
+            const int toggle_y = Font::get_shared(Font::SECONDARY)->get_size()
+                    + texture_bundle->get_y()
+                    + texture_bundle->get_h()
+                    + m_settings_delta_y;
+
+            if (toggle_texture->contains_moved(0, toggle_y, cursor_pos)) {
+                *hovered_setting = SETTING_TEXTURE_TO_NAME[bundle_name];
+                return true;
+            }
+        }
+
+        return false;
     }
 };

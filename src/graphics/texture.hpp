@@ -114,6 +114,12 @@ public:
         return x >= ax && x <= ax + w && y >= ay && y <= ay + h;
     }
 
+    [[nodiscard]] bool contains_moved(const int texture_dx, const int texture_dy, const SDL_Point point) const {
+        const auto [px, py] = point;
+        const auto [x, y, w, h] = m_area;
+        return px >= x + texture_dx && px <= x + texture_dx + w && py >= y + texture_dy && py <= y + texture_dy + h;
+    }
+
     void set_size(const int size) {
         m_area.h = size;
         m_area.w = size;
