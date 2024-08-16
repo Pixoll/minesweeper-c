@@ -30,9 +30,40 @@ public:
     using SettingsTextureBundle = std::shared_ptr<TextureBundle>;
 
 private:
+    struct SettingNameAndDescription {
+        const char *name;
+        const char *description;
+    };
+
     static constexpr auto BACK_BUTTON_IMAGE_PATH = "assets/textures/button_back.png";
     static constexpr auto TOGGLE_OFF_IMAGE_PATH = "assets/textures/toggle_off.png";
     static constexpr auto TOGGLE_ON_IMAGE_PATH = "assets/textures/toggle_on.png";
+
+    static constexpr int SETTINGS_AMOUNT = SETTING_EASY_FLAG + 1;
+    static constexpr SettingNameAndDescription SETTINGS_NAMES_AND_DESCRIPTIONS[SETTINGS_AMOUNT] = {
+        {
+            "Show cell borders",
+            "Choose whether to display cell borders or not.",
+        },
+        {
+            "Show controls",
+            "Choose whether to display the controls in the corner of the game or not.",
+        },
+        {
+            "Swap controls",
+            "Choose whether to swap the game controls or not.",
+        },
+        {
+            "Easy digging",
+            "Clicking a number will dig all of its surrounding unflagged cells with one click.\n"
+            "It will work if the amount of surrounding flagged cells matches the clicked digit."
+        },
+        {
+            "Easy flagging",
+            "Clicking a number will flag all of its surrounding covered cells with one click.\n"
+            "It will work if the amount of surrounding closed covered matches the clicked digit.",
+        },
+    };
 
     SDL_Renderer *m_renderer;
     const int m_window_width;
@@ -45,11 +76,7 @@ private:
     SettingsTexture m_toggle_off_texture;
     SettingsTexture m_toggle_on_texture;
 
-    SettingsTextureBundle m_show_cell_borders_text_texture_bundle;
-    SettingsTextureBundle m_show_controls_text_texture_bundle;
-    SettingsTextureBundle m_swap_controls_text_texture_bundle;
-    SettingsTextureBundle m_easy_dig_text_texture_bundle;
-    SettingsTextureBundle m_easy_flag_text_texture_bundle;
+    SettingsTextureBundle m_text_textures_bundles[SETTINGS_AMOUNT];
 
 public:
     SettingsTextureManager(SDL_Renderer *renderer, const int window_width, const int window_height) :
@@ -74,14 +101,7 @@ public:
     }
 
     [[nodiscard]] SettingsTextureBundle get(const TextureBundleName bundle_name) const {
-        switch (bundle_name) {
-            case SETTING_SHOW_CELL_BORDERS: return m_show_cell_borders_text_texture_bundle;
-            case SETTING_SHOW_CONTROLS: return m_show_controls_text_texture_bundle;
-            case SETTING_SWAP_CONTROLS: return m_swap_controls_text_texture_bundle;
-            case SETTING_EASY_DIG: return m_easy_dig_text_texture_bundle;
-            case SETTING_EASY_FLAG: return m_easy_flag_text_texture_bundle;
-        }
-        __builtin_unreachable();
+        return m_text_textures_bundles[bundle_name];
     }
 
     [[nodiscard]] int get_settings_total_height() const {
@@ -143,68 +163,34 @@ private:
     void make_setting_text_texture_bundles() {
         const int bundles_padding = Font::get_shared(Font::SECONDARY)->get_size()
                 + m_toggle_on_texture->get_h() * 1.5;
+        const int y_first = m_window_height * 0.15;
 
-        m_show_cell_borders_text_texture_bundle = std::make_shared<TextureBundle>(
-            make_setting_texture_bundle(
-                "Show cell borders",
-                "Choose whether to display cell borders or not."
-            )
-        );
-        m_show_cell_borders_text_texture_bundle->set_y(m_window_height * 0.15);
+        for (int bundle_name = 0; bundle_name < SETTINGS_AMOUNT; ++bundle_name) {
+            const auto &[name, description] = SETTINGS_NAMES_AND_DESCRIPTIONS[bundle_name];
 
-        m_show_controls_text_texture_bundle = std::make_shared<TextureBundle>(
-            make_setting_texture_bundle(
-                "Show controls",
-                "Choose whether to display the controls in the corner of the game or not."
-            )
-        );
-        m_show_controls_text_texture_bundle->set_y(
-            m_show_cell_borders_text_texture_bundle->get_y()
-            + m_show_cell_borders_text_texture_bundle->get_h()
-            + bundles_padding
-        );
+            m_text_textures_bundles[bundle_name] = std::make_shared<TextureBundle>(
+                make_setting_texture_bundle(name, description)
+            );
 
-        m_swap_controls_text_texture_bundle = std::make_shared<TextureBundle>(
-            make_setting_texture_bundle(
-                "Swap controls",
-                "Choose whether to swap the game controls or not."
-            )
-        );
-        m_swap_controls_text_texture_bundle->set_y(
-            m_show_controls_text_texture_bundle->get_y()
-            + m_show_controls_text_texture_bundle->get_h()
-            + bundles_padding
-        );
+            if (bundle_name == 0) {
+                m_text_textures_bundles[bundle_name]->set_y(y_first);
+                continue;
+            }
 
-        m_easy_dig_text_texture_bundle = std::make_shared<TextureBundle>(
-            make_setting_texture_bundle(
-                "Easy digging",
-                "Clicking a number will dig all of its surrounding unflagged cells with one click.\n"
-                "It will work if the amount of surrounding flagged cells matches the clicked digit."
-            )
-        );
-        m_easy_dig_text_texture_bundle->set_y(
-            m_swap_controls_text_texture_bundle->get_y()
-            + m_swap_controls_text_texture_bundle->get_h()
-            + bundles_padding
-        );
+            const SettingsTextureBundle previous_texture_bundle = get(static_cast<TextureBundleName>(bundle_name - 1));
 
-        m_easy_flag_text_texture_bundle = std::make_shared<TextureBundle>(
-            make_setting_texture_bundle(
-                "Easy flagging",
-                "Clicking a number will flag all of its surrounding covered cells with one click.\n"
-                "It will work if the amount of surrounding closed covered matches the clicked digit."
-            )
-        );
-        m_easy_flag_text_texture_bundle->set_y(
-            m_easy_dig_text_texture_bundle->get_y()
-            + m_easy_dig_text_texture_bundle->get_h()
-            + bundles_padding
-        );
+            m_text_textures_bundles[bundle_name]->set_y(
+                previous_texture_bundle->get_y()
+                + previous_texture_bundle->get_h()
+                + bundles_padding
+            );
+        }
 
-        m_settings_total_height = m_easy_flag_text_texture_bundle->get_y()
-                + m_easy_flag_text_texture_bundle->get_h()
-                - m_show_cell_borders_text_texture_bundle->get_y();
+        const SettingsTextureBundle last_texture_bundle = m_text_textures_bundles[SETTINGS_AMOUNT - 1];
+
+        m_settings_total_height = last_texture_bundle->get_y()
+                + last_texture_bundle->get_h()
+                - y_first;
     }
 
     TextureBundle make_setting_texture_bundle(const char *name, const std::string &description) const {
