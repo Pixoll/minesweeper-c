@@ -22,6 +22,7 @@ public:
         SETTING_SHOW_CELL_BORDERS,
         SETTING_SHOW_CONTROLS,
         SETTING_SWAP_CONTROLS,
+        SETTING_SINGLE_CLICK_CONTROLS,
         SETTING_EASY_DIG,
         SETTING_EASY_FLAG,
     };
@@ -52,6 +53,11 @@ private:
         {
             "Swap controls",
             "Choose whether to swap the game controls or not.",
+        },
+        {
+            "Single click controls",
+            "Play the game with only one button. An action toggle will be shown at the border of the screen,\n"
+            "allowing you to switch between dig and flag modes.",
         },
         {
             "Easy digging",

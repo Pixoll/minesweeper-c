@@ -9,6 +9,7 @@ public:
         SHOW_CELL_BORDERS,
         SHOW_CONTROLS,
         SWAP_CONTROLS,
+        SINGLE_CLICK_CONTROLS,
         EASY_DIG,
         EASY_FLAG,
     };
@@ -23,6 +24,7 @@ private:
     static constexpr bool DEFAULTS[SETTINGS_AMOUNT] = {
         false,
         true,
+        false,
         false,
         true,
         true,
