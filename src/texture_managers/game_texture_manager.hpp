@@ -94,6 +94,11 @@ public:
         MOUSE_RIGHT_TEXT,
         BACK_BUTTON,
         CLICK_TO_START,
+        ACTION_TOGGLE,
+        ACTION_TOGGLE_MINE,
+        ACTION_TOGGLE_MINE_SELECTED,
+        ACTION_TOGGLE_FLAG,
+        ACTION_TOGGLE_FLAG_SELECTED,
     };
 
     using GameTexture = std::shared_ptr<Texture>;
@@ -118,6 +123,8 @@ private:
     static constexpr auto MOUSE_LEFT_ICON_PATH = "assets/textures/mouse_left.png";
     static constexpr auto MOUSE_RIGHT_ICON_PATH = "assets/textures/mouse_right.png";
     static constexpr auto BACK_BUTTON_IMAGE_PATH = "assets/textures/button_back.png";
+    static constexpr auto ACTION_TOGGLE_IMAGE_PATH = "assets/textures/action_toggle.png";
+    static constexpr auto TOGGLE_SELECTED_IMAGE_PATH = "assets/textures/toggle_on.png";
 
     static constexpr CellTextureSetParameters CELL_TEXTURE_SET_PARAMETERS[CELL_SUBTYPES] = {
         {Color::THEME, nullptr, 0, Color::BACKGROUND},
@@ -143,13 +150,18 @@ private:
     GameTexture m_remaining_mines_text_texture;
     GameTexture m_remaining_mines_icon_texture;
 
+    GameTexture m_action_toggle_texture;
+    GameTexture m_action_toggle_mine_texture;
+    GameTexture m_action_toggle_mine_selected_texture;
+    GameTexture m_action_toggle_flag_texture;
+    GameTexture m_action_toggle_flag_selected_texture;
+
     GameTexture m_mouse_left_icon_texture;
     GameTexture m_mouse_left_text_texture;
     GameTexture m_mouse_right_icon_texture;
     GameTexture m_mouse_right_text_texture;
 
     GameTexture m_back_button_texture;
-
     GameTexture m_click_to_start_texture;
 
 public:
@@ -172,6 +184,9 @@ public:
 
         if (Settings::is_on(Settings::SHOW_CONTROLS))
             make_mouse_controls_textures();
+
+        if (Settings::is_on(Settings::SINGLE_CLICK_CONTROLS))
+            make_action_toggle_textures();
 
         const auto cell_map_texture = std::make_shared<Texture>(m_renderer, CELL_MAP_IMAGE_PATH);
 
@@ -222,6 +237,11 @@ public:
             case MOUSE_RIGHT_TEXT: return m_mouse_right_text_texture;
             case BACK_BUTTON: return m_back_button_texture;
             case CLICK_TO_START: return m_click_to_start_texture;
+            case ACTION_TOGGLE: return m_action_toggle_texture;
+            case ACTION_TOGGLE_MINE: return m_action_toggle_mine_texture;
+            case ACTION_TOGGLE_MINE_SELECTED: return m_action_toggle_mine_selected_texture;
+            case ACTION_TOGGLE_FLAG: return m_action_toggle_flag_texture;
+            case ACTION_TOGGLE_FLAG_SELECTED: return m_action_toggle_flag_selected_texture;
         }
         __builtin_unreachable();
     }
@@ -413,6 +433,76 @@ private:
             text_x_offset - m_mouse_right_text_texture->get_w(),
             m_mouse_right_icon_texture->get_y() + (icon_height - m_mouse_right_text_texture->get_h()) / 2
         );
+    }
+
+    void make_action_toggle_textures() {
+        const int action_toggle_width = m_window_width * 0.04;
+        const int action_toggle_height = action_toggle_width * 2;
+        const int action_toggle_x = m_window_width - action_toggle_width - m_window_padding;
+        const int action_toggle_y = m_window_height - action_toggle_height - m_window_padding;
+
+        m_action_toggle_texture = std::make_shared<Texture>(
+            m_renderer,
+            ACTION_TOGGLE_IMAGE_PATH,
+            SDL_Rect{action_toggle_x, action_toggle_y, action_toggle_width, action_toggle_height}
+        );
+        m_action_toggle_texture->set_color_mod(Color::LIGHT_GREY);
+
+        const int toggle_size = action_toggle_width * 0.78;
+        const int toggle_padding = (action_toggle_width - toggle_size) / 2;
+        const int toggle_x = action_toggle_x + toggle_padding;
+
+        make_action_toggle_button_textures(
+            m_action_toggle_flag_texture,
+            m_action_toggle_flag_selected_texture,
+            FLAG_IMAGE_PATH,
+            0.45,
+            toggle_size,
+            toggle_x,
+            action_toggle_y + toggle_padding
+        );
+
+        make_action_toggle_button_textures(
+            m_action_toggle_mine_texture,
+            m_action_toggle_mine_selected_texture,
+            MINE_IMAGE_PATH,
+            0.6,
+            toggle_size,
+            toggle_x,
+            action_toggle_y + action_toggle_height - toggle_size - toggle_padding
+        );
+    }
+
+    void make_action_toggle_button_textures(
+        GameTexture &toggle_texture,
+        GameTexture &toggle_selected_texture,
+        const char *image_path,
+        const float image_scale_respect_to_toggle,
+        const int size,
+        const int x,
+        const int y
+    ) {
+        Texture image_texture(m_renderer, image_path);
+        image_texture.set_height(size * image_scale_respect_to_toggle);
+        image_texture.set_position((size - image_texture.get_w()) / 2, (size - image_texture.get_h()) / 2);
+
+        const Texture toggle_selected_image_texture(m_renderer, TOGGLE_SELECTED_IMAGE_PATH, SDL_Rect{0, 0, size, size});
+        toggle_selected_image_texture.set_color_mod(Color::THEME);
+
+        toggle_texture = std::make_shared<Texture>(m_renderer, SDL_Rect{x, y, size, size});
+        const Texture::ScopedRender toggle_scoped_render = toggle_texture->set_as_render_target();
+
+        image_texture.set_color_mod(Color::WHITE);
+        image_texture.render();
+        toggle_scoped_render.release();
+
+        toggle_selected_texture = std::make_shared<Texture>(m_renderer, SDL_Rect{x, y, size, size});
+        const Texture::ScopedRender toggle_selected_scoped_render = toggle_selected_texture->set_as_render_target();
+
+        toggle_selected_image_texture.render();
+        image_texture.set_color_mod(Color::BACKGROUND);
+        image_texture.render();
+        toggle_selected_scoped_render.release();
     }
 
     void make_click_to_start_texture() {

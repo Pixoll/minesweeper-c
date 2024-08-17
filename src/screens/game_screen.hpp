@@ -24,6 +24,8 @@ class GameScreen final : virtual public Screen {
     time_t m_last_game_time_rendered = 0;
     int m_remaining_mines = 0;
 
+    static bool selected_flag_action;
+
     SDL_Cursor *const m_arrow_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
     SDL_Cursor *const m_hand_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND);
 
@@ -53,7 +55,18 @@ public:
         SDL_GetMouseState(&cursor_pos.x, &cursor_pos.y);
 
         const bool cursor_in_back_button = m_texture_manager.get(TextureName::BACK_BUTTON)->contains(cursor_pos);
-        SDL_SetCursor(cursor_in_back_button ? m_hand_cursor : m_arrow_cursor);
+
+        const bool curor_in_flag_action_toggle = Settings::is_on(Settings::SINGLE_CLICK_CONTROLS)
+                && m_texture_manager.get(TextureName::ACTION_TOGGLE_FLAG)->contains(cursor_pos);
+
+        const bool curor_in_mine_action_toggle = Settings::is_on(Settings::SINGLE_CLICK_CONTROLS)
+                && m_texture_manager.get(TextureName::ACTION_TOGGLE_MINE)->contains(cursor_pos);
+
+        SDL_SetCursor(
+            cursor_in_back_button || curor_in_flag_action_toggle || curor_in_mine_action_toggle
+            ? m_hand_cursor
+            : m_arrow_cursor
+        );
 
         if (event.type == SDL_QUIT && m_game.has_started() && !m_game.is_over()) {
             m_game.save();
@@ -63,20 +76,36 @@ public:
         if (event.type != SDL_MOUSEBUTTONDOWN)
             return;
 
-        const auto [x, y, inside_cell] = m_game.calculate_grid_cell(cursor_pos.x, cursor_pos.y);
+        if (cursor_in_back_button) {
+            if (event.button.button != SDL_BUTTON_LEFT)
+                return;
 
-        if (!inside_cell) {
-            if (cursor_in_back_button && event.button.button == SDL_BUTTON_LEFT) {
-                if (m_game.has_started() && !m_game.is_over())
-                    m_game.save();
+            if (m_game.has_started() && !m_game.is_over())
+                m_game.save();
 
-                m_engine->set_screen<MainMenuScreen>(m_engine);
-            }
-
+            m_engine->set_screen<MainMenuScreen>(m_engine);
             return;
         }
 
-        if (m_game.is_over())
+        if (curor_in_flag_action_toggle) {
+            if (event.button.button != SDL_BUTTON_LEFT)
+                return;
+
+            selected_flag_action = true;
+            return;
+        }
+
+        if (curor_in_mine_action_toggle) {
+            if (event.button.button != SDL_BUTTON_LEFT)
+                return;
+
+            selected_flag_action = false;
+            return;
+        }
+
+        const auto [x, y, inside_cell] = m_game.calculate_grid_cell(cursor_pos.x, cursor_pos.y);
+
+        if (!inside_cell || m_game.is_over())
             return;
 
         switch (event.button.button) {
@@ -122,6 +151,18 @@ public:
             m_texture_manager.get(TextureName::MOUSE_LEFT_TEXT)->render();
             m_texture_manager.get(TextureName::MOUSE_RIGHT_ICON)->render();
             m_texture_manager.get(TextureName::MOUSE_RIGHT_TEXT)->render();
+        }
+
+        if (Settings::is_on(Settings::SINGLE_CLICK_CONTROLS)) {
+            m_texture_manager.get(TextureName::ACTION_TOGGLE)->render();
+
+            if (selected_flag_action) {
+                m_texture_manager.get(TextureName::ACTION_TOGGLE_FLAG_SELECTED)->render();
+                m_texture_manager.get(TextureName::ACTION_TOGGLE_MINE)->render();
+            } else {
+                m_texture_manager.get(TextureName::ACTION_TOGGLE_MINE_SELECTED)->render();
+                m_texture_manager.get(TextureName::ACTION_TOGGLE_FLAG)->render();
+            }
         }
 
         m_texture_manager.get(TextureName::BACK_BUTTON)->render();
@@ -405,3 +446,5 @@ private:
         return GameTextureManager::CELL_NO_SIDES;
     }
 };
+
+bool GameScreen::selected_flag_action = true;

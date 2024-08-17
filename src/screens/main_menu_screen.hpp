@@ -16,6 +16,7 @@ class MainMenuScreen final : virtual public Screen {
     int m_window_width;
     int m_window_height;
     MainMenuTextureManager m_texture_manager;
+
     static Game::Difficulty selected_difficulty;
 
     SDL_Cursor *const m_arrow_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
