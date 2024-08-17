@@ -154,12 +154,12 @@ public:
         m_area.x = x;
     }
 
-    void set_color_mod(const SDL_Color color) const {
+    void set_color(const SDL_Color color) const {
         SDL_SetTextureColorMod(m_texture, color.r, color.g, color.b);
     }
 
-    void set_color_mod(const Color::Name color) const {
-        set_color_mod(Color::get(color).get_rgb());
+    void set_color(const Color::Name color) const {
+        set_color(Color::get(color).get_rgb());
     }
 
     [[nodiscard]] ScopedRender set_as_render_target(const SDL_BlendMode blend_mode = SDL_BLENDMODE_BLEND) const {

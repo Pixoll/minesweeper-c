@@ -97,7 +97,7 @@ private:
             SDL_Rect{x, y, size, size}
         );
 
-        m_big_mine_texture->set_color_mod(Color::THEME);
+        m_big_mine_texture->set_color(Color::THEME);
     }
 
     void make_title_texture() {
@@ -125,7 +125,7 @@ private:
         const int x = m_big_mine_texture->get_x() + (m_big_mine_texture->get_w() - width) / 2;
 
         Texture button_texture(m_renderer, GAME_BUTTON_IMAGE_PATH);
-        button_texture.set_color_mod(Color::LIGHTER_GREY);
+        button_texture.set_color(Color::LIGHTER_GREY);
         button_texture.set_width(width);
 
         Texture text_texture(m_renderer, Font::get_shared(Font::PRIMARY)->get_font(), "New game", Color::WHITE);
@@ -154,7 +154,7 @@ private:
         const int width = m_new_game_button_texture->get_w();
 
         Texture button_texture(m_renderer, GAME_BUTTON_IMAGE_PATH);
-        button_texture.set_color_mod(Color::LIGHTER_GREY);
+        button_texture.set_color(Color::LIGHTER_GREY);
         button_texture.set_width(width);
 
         Texture text_texture(m_renderer, Font::get_shared(Font::PRIMARY)->get_font(), "Continue", Color::WHITE);

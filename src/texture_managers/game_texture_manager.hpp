@@ -271,10 +271,10 @@ private:
                 SDL_Rect{image_offset, image_offset, image_size, image_size}
             );
 
-            image_texture->set_color_mod(image_color);
+            image_texture->set_color(image_color);
         }
 
-        cell_map_texture->set_color_mod(cell_color);
+        cell_map_texture->set_color(cell_color);
 
         for (int type = 0; type < CELL_TYPES; type++) {
             const auto cell_texture = std::make_shared<Texture>(m_renderer, texture_area);
@@ -292,7 +292,7 @@ private:
             m_cell_textures[cell_subtype][type] = cell_texture;
         }
 
-        cell_map_texture->set_color_mod(Color::WHITE);
+        cell_map_texture->set_color(Color::WHITE);
     }
 
     void make_cell_numbers_textures() {
@@ -339,14 +339,14 @@ private:
             H_GRID_LINE_IMAGE_PATH,
             SDL_Rect{grid_line_offset, 0, grid_line_length, grid_line_width}
         );
-        m_h_grid_line_texture->set_color_mod(light_grey);
+        m_h_grid_line_texture->set_color(light_grey);
 
         m_v_grid_line_texture = std::make_shared<Texture>(
             m_renderer,
             V_GRID_LINE_IMAGE_PATH,
             SDL_Rect{0, grid_line_offset, grid_line_width, grid_line_length}
         );
-        m_v_grid_line_texture->set_color_mod(light_grey);
+        m_v_grid_line_texture->set_color(light_grey);
     }
 
     void make_back_button_texture() {
@@ -446,7 +446,7 @@ private:
             ACTION_TOGGLE_IMAGE_PATH,
             SDL_Rect{action_toggle_x, action_toggle_y, action_toggle_width, action_toggle_height}
         );
-        m_action_toggle_texture->set_color_mod(Color::LIGHT_GREY);
+        m_action_toggle_texture->set_color(Color::LIGHT_GREY);
 
         const int toggle_size = action_toggle_width * 0.78;
         const int toggle_padding = (action_toggle_width - toggle_size) / 2;
@@ -487,12 +487,12 @@ private:
         image_texture.set_position((size - image_texture.get_w()) / 2, (size - image_texture.get_h()) / 2);
 
         const Texture toggle_selected_image_texture(m_renderer, TOGGLE_SELECTED_IMAGE_PATH, SDL_Rect{0, 0, size, size});
-        toggle_selected_image_texture.set_color_mod(Color::THEME);
+        toggle_selected_image_texture.set_color(Color::THEME);
 
         toggle_texture = std::make_shared<Texture>(m_renderer, SDL_Rect{x, y, size, size});
         const Texture::ScopedRender toggle_scoped_render = toggle_texture->set_as_render_target();
 
-        image_texture.set_color_mod(Color::WHITE);
+        image_texture.set_color(Color::WHITE);
         image_texture.render();
         toggle_scoped_render.release();
 
@@ -500,7 +500,7 @@ private:
         const Texture::ScopedRender toggle_selected_scoped_render = toggle_selected_texture->set_as_render_target();
 
         toggle_selected_image_texture.render();
-        image_texture.set_color_mod(Color::BACKGROUND);
+        image_texture.set_color(Color::BACKGROUND);
         image_texture.render();
         toggle_selected_scoped_render.release();
     }

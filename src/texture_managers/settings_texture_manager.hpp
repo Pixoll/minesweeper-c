@@ -135,7 +135,7 @@ private:
             TOGGLE_OFF_IMAGE_PATH,
             SDL_Rect{0, 0, toggle_size, toggle_size}
         );
-        off_texture.set_color_mod(Color::LIGHT_GREY);
+        off_texture.set_color(Color::LIGHT_GREY);
         off_texture.render();
 
         Texture text_off_texture(m_renderer, font.get_font(), "OFF", Color::WHITE);
@@ -154,7 +154,7 @@ private:
             TOGGLE_ON_IMAGE_PATH,
             SDL_Rect{0, 0, toggle_size, toggle_size}
         );
-        on_texture.set_color_mod(Color::THEME);
+        on_texture.set_color(Color::THEME);
         on_texture.render();
 
         Texture text_on_texture(m_renderer, font.get_font(), "ON", Color::BACKGROUND);
