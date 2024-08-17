@@ -22,6 +22,7 @@ class SettingsScreen final : virtual public Screen {
     SettingsTextureManager m_texture_manager;
     int m_scroll_step;
     int m_max_scroll;
+    int m_scrollbar_max_y;
     int m_scrollbar_step;
     int m_settings_delta_y = 0;
     int m_scrollbar_y = 0;
@@ -36,10 +37,9 @@ public:
         m_window_height(engine->get_window_height()),
         m_texture_manager(engine->get_renderer(), m_window_width, m_window_height),
         m_scroll_step(m_window_width * 0.03),
-        m_max_scroll(m_texture_manager.get_settings_total_height() - m_window_height / 2),
-        m_scrollbar_step(
-            (m_window_height - m_texture_manager.get(TextureName::SCROLLBAR)->get_h()) / (m_max_scroll / m_scroll_step)
-        ) {}
+        m_max_scroll(m_window_height / 2 - m_texture_manager.get_settings_total_height()),
+        m_scrollbar_max_y(m_window_height - m_texture_manager.get(TextureName::SCROLLBAR)->get_h()),
+        m_scrollbar_step(m_scrollbar_max_y / (-m_max_scroll / m_scroll_step)) {}
 
     ~SettingsScreen() override = default;
 
@@ -62,11 +62,20 @@ public:
         if (event.type == SDL_MOUSEWHEEL) {
             const float dy = event.wheel.preciseY;
 
-            if (dy > 0 && m_settings_delta_y >= 0 || dy < 0 && m_settings_delta_y <= -m_max_scroll)
-                return;
-
             m_settings_delta_y += dy * m_scroll_step;
             m_scrollbar_y -= dy * m_scrollbar_step;
+
+            if (m_settings_delta_y > 0)
+                m_settings_delta_y = 0;
+
+            if (m_settings_delta_y < m_max_scroll)
+                m_settings_delta_y = m_max_scroll;
+
+            if (m_scrollbar_y < 0)
+                m_scrollbar_y = 0;
+
+            if (m_scrollbar_y > m_scrollbar_max_y)
+                m_scrollbar_y = m_scrollbar_max_y;
 
             return;
         }
