@@ -49,7 +49,7 @@ public:
         const int access = SDL_TEXTUREACCESS_TARGET
     ) : m_renderer(renderer),
         m_area(area) {
-        const Uint32 pixel_format = SDL_GetWindowSurface(SDL_RenderGetWindow(m_renderer))->format->format;
+        const Uint32 pixel_format = SDL_GetWindowPixelFormat(SDL_RenderGetWindow(m_renderer));
         m_texture = SDL_CreateTexture(m_renderer, pixel_format, access, m_area.w, m_area.h);
     }
 
