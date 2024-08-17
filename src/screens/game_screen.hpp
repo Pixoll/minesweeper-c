@@ -24,7 +24,7 @@ class GameScreen final : virtual public Screen {
     time_t m_last_game_time_rendered = 0;
     int m_remaining_mines = 0;
 
-    static bool selected_flag_action;
+    static bool selected_dig_action;
 
     SDL_Cursor *const m_arrow_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
     SDL_Cursor *const m_hand_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND);
@@ -50,16 +50,17 @@ public:
 
     void run_logic(const SDL_Event &event) override {
         const bool swapped_controls = Settings::is_on(Settings::SWAP_CONTROLS);
+        const bool single_click_controls = Settings::is_on(Settings::SINGLE_CLICK_CONTROLS);
 
         SDL_Point cursor_pos;
         SDL_GetMouseState(&cursor_pos.x, &cursor_pos.y);
 
         const bool cursor_in_back_button = m_texture_manager.get(TextureName::BACK_BUTTON)->contains(cursor_pos);
 
-        const bool curor_in_flag_action_toggle = Settings::is_on(Settings::SINGLE_CLICK_CONTROLS)
+        const bool curor_in_flag_action_toggle = single_click_controls
                 && m_texture_manager.get(TextureName::ACTION_TOGGLE_FLAG)->contains(cursor_pos);
 
-        const bool curor_in_mine_action_toggle = Settings::is_on(Settings::SINGLE_CLICK_CONTROLS)
+        const bool curor_in_mine_action_toggle = single_click_controls
                 && m_texture_manager.get(TextureName::ACTION_TOGGLE_MINE)->contains(cursor_pos);
 
         SDL_SetCursor(
@@ -93,7 +94,7 @@ public:
             if (event.button.button != SDL_BUTTON_LEFT)
                 return;
 
-            selected_flag_action = true;
+            selected_dig_action = false;
             return;
         }
 
@@ -101,7 +102,7 @@ public:
             if (event.button.button != SDL_BUTTON_LEFT)
                 return;
 
-            selected_flag_action = false;
+            selected_dig_action = true;
             return;
         }
 
@@ -110,7 +111,12 @@ public:
         if (!inside_cell || m_game.is_over())
             return;
 
-        if (event.button.button == (swapped_controls ? SDL_BUTTON_RIGHT : SDL_BUTTON_LEFT)) {
+        const bool is_dig_action = event.button.button == (swapped_controls ? SDL_BUTTON_RIGHT : SDL_BUTTON_LEFT);
+
+        if (single_click_controls && !is_dig_action)
+            return;
+
+        if (single_click_controls ? selected_dig_action : is_dig_action) {
             if (!m_started_game) {
                 m_game.place_grid_mines(x, y);
                 m_started_game = true;
@@ -149,12 +155,12 @@ public:
         if (single_click_controls) {
             m_texture_manager.get(TextureName::ACTION_TOGGLE)->render();
 
-            if (selected_flag_action) {
-                m_texture_manager.get(TextureName::ACTION_TOGGLE_FLAG_SELECTED)->render();
-                m_texture_manager.get(TextureName::ACTION_TOGGLE_MINE)->render();
-            } else {
+            if (selected_dig_action) {
                 m_texture_manager.get(TextureName::ACTION_TOGGLE_MINE_SELECTED)->render();
                 m_texture_manager.get(TextureName::ACTION_TOGGLE_FLAG)->render();
+            } else {
+                m_texture_manager.get(TextureName::ACTION_TOGGLE_FLAG_SELECTED)->render();
+                m_texture_manager.get(TextureName::ACTION_TOGGLE_MINE)->render();
             }
         }
 
@@ -440,4 +446,4 @@ private:
     }
 };
 
-bool GameScreen::selected_flag_action = true;
+bool GameScreen::selected_dig_action = false;
