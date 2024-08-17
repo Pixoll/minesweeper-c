@@ -141,19 +141,25 @@ public:
     }
 
     void render() override {
+        const bool single_click_controls = Settings::is_on(Settings::SINGLE_CLICK_CONTROLS);
+
         render_grid();
         render_remaining_mines();
+
         if (m_game.has_started())
             render_game_time();
 
         if (Settings::is_on(Settings::SHOW_CONTROLS)) {
             m_texture_manager.get(TextureName::MOUSE_LEFT_ICON)->render();
             m_texture_manager.get(TextureName::MOUSE_LEFT_TEXT)->render();
-            m_texture_manager.get(TextureName::MOUSE_RIGHT_ICON)->render();
-            m_texture_manager.get(TextureName::MOUSE_RIGHT_TEXT)->render();
+
+            if (!single_click_controls) {
+                m_texture_manager.get(TextureName::MOUSE_RIGHT_ICON)->render();
+                m_texture_manager.get(TextureName::MOUSE_RIGHT_TEXT)->render();
+            }
         }
 
-        if (Settings::is_on(Settings::SINGLE_CLICK_CONTROLS)) {
+        if (single_click_controls) {
             m_texture_manager.get(TextureName::ACTION_TOGGLE)->render();
 
             if (selected_flag_action) {

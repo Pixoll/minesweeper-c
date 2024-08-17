@@ -398,6 +398,7 @@ private:
 
     void make_mouse_controls_textures() {
         const bool swapped_controls = Settings::is_on(Settings::SWAP_CONTROLS);
+        const bool single_click_controls = Settings::is_on(Settings::SINGLE_CLICK_CONTROLS);
         const int icon_height = Font::get_shared(Font::PRIMARY)->get_size() * 1.25;
 
         m_mouse_left_icon_texture = std::make_shared<Texture>(
@@ -414,13 +415,16 @@ private:
         m_mouse_left_text_texture = std::make_shared<Texture>(
             m_renderer,
             Font::get_shared(Font::PRIMARY)->get_font(),
-            "dig",
+            single_click_controls ? "action" : "dig",
             Color::WHITE
         );
         m_mouse_left_text_texture->set_position(
             text_x_offset - m_mouse_left_text_texture->get_w(),
             m_mouse_left_icon_texture->get_y() + (icon_height - m_mouse_left_text_texture->get_h()) / 2
         );
+
+        if (single_click_controls)
+            return;
 
         m_mouse_right_icon_texture = std::make_shared<Texture>(
             m_renderer,
