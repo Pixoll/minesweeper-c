@@ -9,8 +9,7 @@ if (WIN32)
 endif (WIN32)
 
 if (UNIX)
-    # TODO: set Linux path
-    set(SDL2_PATH "")
+    set(SDL2_PATH "/usr")
 endif (UNIX)
 
 find_package(SDL2 REQUIRED)
