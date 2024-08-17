@@ -103,7 +103,7 @@ private:
     void make_title_texture() {
         const Font title_font(Font::RUBIK_LIGHT, m_window_height * 0.04);
 
-        m_title_texture = std::make_shared<Texture>(m_renderer, title_font.get_font(), "Minesweeper", Color::WHITE);
+        m_title_texture = std::make_shared<Texture>(m_renderer, title_font.get_raw(), "Minesweeper", Color::WHITE);
         m_title_texture->set_position(
             (m_window_width - m_title_texture->get_w()) / 2,
             static_cast<int>((m_big_mine_texture->get_y() + m_big_mine_texture->get_h()) * 1.1)
@@ -128,7 +128,7 @@ private:
         button_texture.set_color(Color::LIGHTER_GREY);
         button_texture.set_width(width);
 
-        Texture text_texture(m_renderer, Font::get_shared(Font::PRIMARY)->get_font(), "New game", Color::WHITE);
+        Texture text_texture(m_renderer, Font::get_shared(Font::PRIMARY)->get_raw(), "New game", Color::WHITE);
         text_texture.set_position(
             (button_texture.get_w() - text_texture.get_w()) / 2,
             (button_texture.get_h() - text_texture.get_h()) / 2
@@ -157,7 +157,7 @@ private:
         button_texture.set_color(Color::LIGHTER_GREY);
         button_texture.set_width(width);
 
-        Texture text_texture(m_renderer, Font::get_shared(Font::PRIMARY)->get_font(), "Continue", Color::WHITE);
+        Texture text_texture(m_renderer, Font::get_shared(Font::PRIMARY)->get_raw(), "Continue", Color::WHITE);
         text_texture.set_position(
             (button_texture.get_w() - text_texture.get_w()) / 2,
             (button_texture.get_h() - text_texture.get_h()) / 2
@@ -208,7 +208,7 @@ private:
             MainMenuTexture &difficulty_texture = m_difficulty_textures[i];
             difficulty_texture = std::make_shared<Texture>(
                 m_renderer,
-                font->get_font(),
+                font->get_raw(),
                 Game::DIFFICULTY_NAMES[i],
                 Color::WHITE
             );

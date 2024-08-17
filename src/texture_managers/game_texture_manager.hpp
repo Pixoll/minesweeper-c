@@ -306,7 +306,7 @@ private:
 
             const auto cell_number_texture = std::make_shared<Texture>(
                 m_renderer,
-                cell_number_font.get_font(),
+                cell_number_font.get_raw(),
                 cell_text,
                 static_cast<Color::Name>(Color::GRID_1 + cell)
             );
@@ -364,7 +364,7 @@ private:
 
         m_remaining_mines_text_texture = std::make_shared<Texture>(
             m_renderer,
-            Font::get_shared(Font::PRIMARY)->get_font(),
+            Font::get_shared(Font::PRIMARY)->get_raw(),
             "0",
             Color::WHITE
         );
@@ -385,7 +385,7 @@ private:
     void make_game_time_texture() {
         m_game_time_text_texture = std::make_shared<Texture>(
             m_renderer,
-            Font::get_shared(Font::SECONDARY)->get_font(),
+            Font::get_shared(Font::SECONDARY)->get_raw(),
             "0",
             Color::LIGHTER_GREY
         );
@@ -414,7 +414,7 @@ private:
 
         m_mouse_left_text_texture = std::make_shared<Texture>(
             m_renderer,
-            Font::get_shared(Font::PRIMARY)->get_font(),
+            Font::get_shared(Font::PRIMARY)->get_raw(),
             single_click_controls ? "action" : "dig",
             Color::WHITE
         );
@@ -435,7 +435,7 @@ private:
 
         m_mouse_right_text_texture = std::make_shared<Texture>(
             m_renderer,
-            Font::get_shared(Font::PRIMARY)->get_font(),
+            Font::get_shared(Font::PRIMARY)->get_raw(),
             "flag",
             Color::WHITE
         );
@@ -518,7 +518,7 @@ private:
     void make_click_to_start_texture() {
         m_click_to_start_texture = std::make_shared<Texture>(
             m_renderer,
-            Font::get_shared(Font::PRIMARY)->get_font(),
+            Font::get_shared(Font::PRIMARY)->get_raw(),
             "Click to start",
             Color::BACKGROUND
         );

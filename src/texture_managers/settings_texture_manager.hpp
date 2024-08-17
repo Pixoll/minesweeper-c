@@ -143,7 +143,7 @@ private:
         off_texture.set_color(Color::LIGHT_GREY);
         off_texture.render();
 
-        Texture text_off_texture(m_renderer, font.get_font(), "OFF", Color::WHITE);
+        Texture text_off_texture(m_renderer, font.get_raw(), "OFF", Color::WHITE);
         text_off_texture.set_position(
             (toggle_size - text_off_texture.get_w()) / 2,
             (toggle_size - text_off_texture.get_h()) / 2
@@ -162,7 +162,7 @@ private:
         on_texture.set_color(Color::THEME);
         on_texture.render();
 
-        Texture text_on_texture(m_renderer, font.get_font(), "ON", Color::BACKGROUND);
+        Texture text_on_texture(m_renderer, font.get_raw(), "ON", Color::BACKGROUND);
         text_on_texture.set_position(
             (toggle_size - text_on_texture.get_w()) / 2,
             (toggle_size - text_on_texture.get_h()) / 2
@@ -226,14 +226,14 @@ private:
 
         const auto name_texture = std::make_shared<Texture>(
             m_renderer,
-            primary_font->get_font(),
+            primary_font->get_raw(),
             name,
             Color::WHITE
         );
 
         texture_bundle.add(name_texture);
 
-        TTF_Font *const description_font = Font::get_shared(Font::SECONDARY)->get_font();
+        TTF_Font *const description_font = Font::get_shared(Font::SECONDARY)->get_raw();
 
         std::vector<string> description_lines{""};
         int description_width = 0;

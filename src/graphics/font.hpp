@@ -34,15 +34,15 @@ private:
 
     static Shared shared_fonts[NAMES];
 
-    TTF_Font *m_font = nullptr;
+    TTF_Font *m_raw = nullptr;
     int m_size = 0;
 
 public:
     Font() = default;
 
     Font(const Type type, const int size) : m_size(size) {
-        m_font = TTF_OpenFont(FONT_PATHS[type], m_size);
-        if (m_font == nullptr) {
+        m_raw = TTF_OpenFont(FONT_PATHS[type], m_size);
+        if (m_raw == nullptr) {
             std::cerr << "Error while loading font ID " << type << " at TTF_OpenFont(): " << SDL_GetError()
                     << std::endl;
             exit(1);
@@ -50,12 +50,12 @@ public:
     }
 
     ~Font() {
-        TTF_CloseFont(m_font);
-        m_font = nullptr;
+        TTF_CloseFont(m_raw);
+        m_raw = nullptr;
     }
 
-    [[nodiscard]] TTF_Font *get_font() const {
-        return m_font;
+    [[nodiscard]] TTF_Font *get_raw() const {
+        return m_raw;
     }
 
     [[nodiscard]] int get_size() const {
