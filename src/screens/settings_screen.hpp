@@ -22,7 +22,9 @@ class SettingsScreen final : virtual public Screen {
     SettingsTextureManager m_texture_manager;
     int m_scroll_step;
     int m_max_scroll;
+    int m_scrollbar_step;
     int m_settings_delta_y = 0;
+    int m_scrollbar_y = 0;
 
     SDL_Cursor *const m_arrow_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
     SDL_Cursor *const m_hand_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND);
@@ -34,7 +36,10 @@ public:
         m_window_height(engine->get_window_height()),
         m_texture_manager(engine->get_renderer(), m_window_width, m_window_height),
         m_scroll_step(m_window_width * 0.03),
-        m_max_scroll(m_texture_manager.get_settings_total_height() - m_window_height / 2) {}
+        m_max_scroll(m_texture_manager.get_settings_total_height() - m_window_height / 2),
+        m_scrollbar_step(
+            (m_window_height - m_texture_manager.get(TextureName::SCROLLBAR)->get_h()) / (m_max_scroll / m_scroll_step)
+        ) {}
 
     ~SettingsScreen() override = default;
 
@@ -45,9 +50,14 @@ public:
         Settings::Name selected_setting;
 
         const bool cursor_in_back_button = m_texture_manager.get(TextureName::BACK_BUTTON)->contains(cursor_pos);
+        const bool cursor_in_scrollbar = m_texture_manager.get(TextureName::SCROLLBAR)->contains(cursor_pos);
         const bool cursor_in_setting_toggle = mouse_on_setting_toggle(cursor_pos, &selected_setting);
 
-        SDL_SetCursor(cursor_in_back_button || cursor_in_setting_toggle ? m_hand_cursor : m_arrow_cursor);
+        SDL_SetCursor(
+            cursor_in_back_button || cursor_in_scrollbar || cursor_in_setting_toggle
+            ? m_hand_cursor
+            : m_arrow_cursor
+        );
 
         if (event.type == SDL_MOUSEWHEEL) {
             const float dy = event.wheel.preciseY;
@@ -56,6 +66,7 @@ public:
                 return;
 
             m_settings_delta_y += dy * m_scroll_step;
+            m_scrollbar_y -= dy * m_scrollbar_step;
 
             return;
         }
@@ -77,6 +88,7 @@ public:
 
     void render() override {
         m_texture_manager.get(TextureName::BACK_BUTTON)->render();
+        m_texture_manager.get(TextureName::SCROLLBAR)->render_moved(0, m_scrollbar_y);
 
         for (int bundle_name = 0; bundle_name < SETTINGS_AMOUNT; ++bundle_name)
             render_setting(static_cast<TextureBundleName>(bundle_name));

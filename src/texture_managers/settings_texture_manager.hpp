@@ -16,6 +16,7 @@ public:
         BACK_BUTTON,
         TOGGLE_OFF,
         TOGGLE_ON,
+        SCROLLBAR,
     };
 
     enum TextureBundleName {
@@ -39,6 +40,7 @@ private:
     static constexpr auto BACK_BUTTON_IMAGE_PATH = "assets/textures/button_back.png";
     static constexpr auto TOGGLE_OFF_IMAGE_PATH = "assets/textures/toggle_off.png";
     static constexpr auto TOGGLE_ON_IMAGE_PATH = "assets/textures/toggle_on.png";
+    static constexpr auto SCROLLBAR_IMAGE_PATH = "assets/textures/scrollbar.png";
 
     static constexpr int SETTINGS_AMOUNT = SETTING_EASY_FLAG + 1;
     static constexpr SettingNameAndDescription SETTINGS_NAMES_AND_DESCRIPTIONS[SETTINGS_AMOUNT] = {
@@ -78,6 +80,7 @@ private:
     int m_settings_total_height = 0;
 
     SettingsTexture m_back_button_texture;
+    SettingsTexture m_scrollbar_texture;
 
     SettingsTexture m_toggle_off_texture;
     SettingsTexture m_toggle_on_texture;
@@ -93,6 +96,7 @@ public:
         make_back_button_texture();
         make_toggles_textures();
         make_setting_text_texture_bundles();
+        make_scrollbar_texture();
     }
 
     ~SettingsTextureManager() = default;
@@ -102,6 +106,7 @@ public:
             case BACK_BUTTON: return m_back_button_texture;
             case TOGGLE_OFF: return m_toggle_off_texture;
             case TOGGLE_ON: return m_toggle_on_texture;
+            case SCROLLBAR: return m_scrollbar_texture;
         }
         __builtin_unreachable();
     }
@@ -197,6 +202,19 @@ private:
         m_settings_total_height = last_texture_bundle->get_y()
                 + last_texture_bundle->get_h()
                 - y_first;
+    }
+
+    void make_scrollbar_texture() {
+        const int x = m_window_width * 0.996;
+        const int width = m_window_width - x;
+        const int height = m_window_height * m_window_height / m_settings_total_height;
+
+        m_scrollbar_texture = std::make_shared<Texture>(m_renderer, SDL_Rect{x, 0, width, height});
+        const Texture::ScopedRender scoped_render = m_scrollbar_texture->set_as_render_target();
+
+        const Texture scrollbar_image_texture(m_renderer, SCROLLBAR_IMAGE_PATH, {0, 0, width, height});
+        scrollbar_image_texture.set_color(Color::LIGHTER_GREY);
+        scrollbar_image_texture.render();
     }
 
     TextureBundle make_setting_texture_bundle(const char *name, const std::string &description) const {
