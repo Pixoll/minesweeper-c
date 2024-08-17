@@ -73,7 +73,9 @@ public:
             return;
         }
 
-        if (event.type != SDL_MOUSEBUTTONDOWN)
+        if (event.type != SDL_MOUSEBUTTONDOWN
+            || (event.button.button != SDL_BUTTON_LEFT && event.button.button != SDL_BUTTON_RIGHT)
+        )
             return;
 
         if (cursor_in_back_button) {
@@ -108,36 +110,21 @@ public:
         if (!inside_cell || m_game.is_over())
             return;
 
-        switch (event.button.button) {
-            case SDL_BUTTON_LEFT: {
-                if (swapped_controls)
-                    goto right_click;
-
-            left_click:
-                if (!m_started_game) {
-                    m_game.place_grid_mines(x, y);
-                    m_started_game = true;
-                }
-
-                m_game.reveal_cell(x, y);
-                break;
+        if (event.button.button == (swapped_controls ? SDL_BUTTON_RIGHT : SDL_BUTTON_LEFT)) {
+            if (!m_started_game) {
+                m_game.place_grid_mines(x, y);
+                m_started_game = true;
             }
 
-            case SDL_BUTTON_RIGHT: {
-                if (swapped_controls)
-                    goto left_click;
-
-            right_click:
-                if (!m_started_game)
-                    break;
-
-                m_game.toggle_cell_flag(x, y);
-                break;
-            }
-
-            default:
-                break;
+            m_game.reveal_cell(x, y);
+            return;
         }
+
+        // Right click
+        if (!m_started_game)
+            return;
+
+        m_game.toggle_cell_flag(x, y);
     }
 
     void render() override {
