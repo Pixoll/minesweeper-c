@@ -186,13 +186,13 @@ public:
     }
 
     void render_to(const int x, const int y) const {
-        const SDL_Rect dest = {x, y, m_area.w, m_area.h};
-        SDL_RenderCopy(m_renderer, m_texture, nullptr, &dest);
+        const SDL_Rect destination = {x, y, m_area.w, m_area.h};
+        SDL_RenderCopy(m_renderer, m_texture, nullptr, &destination);
     }
 
     void render_moved(const int x, const int y) const {
-        const SDL_Rect dest = {m_area.x + x, m_area.y + y, m_area.w, m_area.h};
-        SDL_RenderCopy(m_renderer, m_texture, nullptr, &dest);
+        const SDL_Rect destination = {m_area.x + x, m_area.y + y, m_area.w, m_area.h};
+        SDL_RenderCopy(m_renderer, m_texture, nullptr, &destination);
     }
 
     void destroy() {

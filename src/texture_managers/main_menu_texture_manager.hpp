@@ -60,7 +60,7 @@ public:
         make_quit_button();
         make_bottom_buttons();
         make_new_game_button();
-        make_continute_game_button();
+        make_continue_game_button();
         make_difficulty_buttons();
         make_difficulty_textures();
     }
@@ -150,7 +150,7 @@ private:
         text_texture.render();
     }
 
-    void make_continute_game_button() {
+    void make_continue_game_button() {
         const int width = m_new_game_button_texture->get_w();
 
         Texture button_texture(m_renderer, GAME_BUTTON_IMAGE_PATH);
