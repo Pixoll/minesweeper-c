@@ -95,9 +95,11 @@ public:
     }
 
     void on_mouse_motion_event(const SDL_MouseMotionEvent &event) override {
+        // ReSharper disable once CppDFAConstantConditions
         if (!m_holding_scrollbar)
             return;
 
+        // ReSharper disable once CppDFAUnreachableCode
         m_settings_scroll_y -= event.yrel * m_scroll_step / m_scrollbar_step;
         m_scrollbar_y += event.yrel;
 
