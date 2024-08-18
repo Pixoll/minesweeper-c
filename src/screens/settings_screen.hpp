@@ -44,7 +44,24 @@ public:
 
     ~SettingsScreen() override = default;
 
-    void run_logic(const SDL_Event &event) override {
+    void before_event(const SDL_Event &event) override {
+        SDL_Point cursor_pos;
+        SDL_GetMouseState(&cursor_pos.x, &cursor_pos.y);
+
+        const bool cursor_in_back_button = m_texture_manager.get(TextureName::BACK_BUTTON)->contains(cursor_pos);
+        const bool cursor_in_scrollbar = m_texture_manager.get(TextureName::SCROLLBAR)->contains(cursor_pos);
+        const bool cursor_in_setting_toggle = mouse_on_setting_toggle(cursor_pos);
+
+        SDL_SetCursor(
+            cursor_in_back_button || cursor_in_scrollbar || cursor_in_setting_toggle
+            ? m_hand_cursor
+            : m_arrow_cursor
+        );
+    }
+
+    void on_keyboard_event(const SDL_KeyboardEvent &event) override {}
+
+    void on_mouse_button_event(const SDL_MouseButtonEvent &event) override {
         if (event.type == SDL_MOUSEBUTTONUP)
             m_holding_scrollbar = false;
 
@@ -57,58 +74,12 @@ public:
         const bool cursor_in_scrollbar = m_texture_manager.get(TextureName::SCROLLBAR)->contains(cursor_pos);
         const bool cursor_in_setting_toggle = mouse_on_setting_toggle(cursor_pos, &selected_setting);
 
-        SDL_SetCursor(
-            cursor_in_back_button || cursor_in_scrollbar || cursor_in_setting_toggle
-            ? m_hand_cursor
-            : m_arrow_cursor
-        );
-
-        if (event.type == SDL_MOUSEWHEEL) {
-            const float dy = event.wheel.preciseY;
-
-            m_settings_scroll_y += dy * m_scroll_step;
-            m_scrollbar_y -= dy * m_scrollbar_step;
-
-            if (m_settings_scroll_y > 0)
-                m_settings_scroll_y = 0;
-
-            if (m_settings_scroll_y < m_max_scroll)
-                m_settings_scroll_y = m_max_scroll;
-
-            if (m_scrollbar_y < 0)
-                m_scrollbar_y = 0;
-
-            if (m_scrollbar_y > m_scrollbar_max_y)
-                m_scrollbar_y = m_scrollbar_max_y;
-
-            return;
-        }
-
-        if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT && cursor_in_scrollbar) {
+        if (event.type == SDL_MOUSEBUTTONDOWN && event.button == SDL_BUTTON_LEFT && cursor_in_scrollbar) {
             m_holding_scrollbar = true;
             return;
         }
 
-        if (event.type == SDL_MOUSEMOTION && m_holding_scrollbar) {
-            m_settings_scroll_y -= event.motion.yrel * m_scroll_step / m_scrollbar_step;
-            m_scrollbar_y += event.motion.yrel;
-
-            if (m_settings_scroll_y > 0)
-                m_settings_scroll_y = 0;
-
-            if (m_settings_scroll_y < m_max_scroll)
-                m_settings_scroll_y = m_max_scroll;
-
-            if (m_scrollbar_y < 0)
-                m_scrollbar_y = 0;
-
-            if (m_scrollbar_y > m_scrollbar_max_y)
-                m_scrollbar_y = m_scrollbar_max_y;
-
-            return;
-        }
-
-        if (event.type != SDL_MOUSEBUTTONDOWN || event.button.button != SDL_BUTTON_LEFT)
+        if (event.type != SDL_MOUSEBUTTONDOWN || event.button != SDL_BUTTON_LEFT)
             return;
 
         if (cursor_in_back_button) {
@@ -122,6 +93,47 @@ public:
             return;
         }
     }
+
+    void on_mouse_motion_event(const SDL_MouseMotionEvent &event) override {
+        if (!m_holding_scrollbar)
+            return;
+
+        m_settings_scroll_y -= event.yrel * m_scroll_step / m_scrollbar_step;
+        m_scrollbar_y += event.yrel;
+
+        if (m_settings_scroll_y > 0)
+            m_settings_scroll_y = 0;
+
+        if (m_settings_scroll_y < m_max_scroll)
+            m_settings_scroll_y = m_max_scroll;
+
+        if (m_scrollbar_y < 0)
+            m_scrollbar_y = 0;
+
+        if (m_scrollbar_y > m_scrollbar_max_y)
+            m_scrollbar_y = m_scrollbar_max_y;
+    }
+
+    void on_mouse_wheel_event(const SDL_MouseWheelEvent &event) override {
+        const float dy = event.preciseY;
+
+        m_settings_scroll_y += dy * m_scroll_step;
+        m_scrollbar_y -= dy * m_scrollbar_step;
+
+        if (m_settings_scroll_y > 0)
+            m_settings_scroll_y = 0;
+
+        if (m_settings_scroll_y < m_max_scroll)
+            m_settings_scroll_y = m_max_scroll;
+
+        if (m_scrollbar_y < 0)
+            m_scrollbar_y = 0;
+
+        if (m_scrollbar_y > m_scrollbar_max_y)
+            m_scrollbar_y = m_scrollbar_max_y;
+    }
+
+    void on_quit_event(const SDL_QuitEvent &event) override {}
 
     void render() override {
         m_texture_manager.get(TextureName::BACK_BUTTON)->render();
@@ -141,7 +153,8 @@ private:
                 + texture_bundle->get_h()
                 + m_settings_scroll_y;
 
-        if (texture_bundle->get_y() + m_settings_scroll_y > m_window_height || toggle_y + toggle_on_texture->get_h() < 0)
+        if (texture_bundle->get_y() + m_settings_scroll_y > m_window_height || toggle_y + toggle_on_texture->get_h() <
+            0)
             return;
 
         texture_bundle->render_moved(0, m_settings_scroll_y);
@@ -155,7 +168,10 @@ private:
             toggle_off_texture->render_to(toggle_off_texture->get_x(), toggle_y);
     }
 
-    [[nodiscard]] bool mouse_on_setting_toggle(const SDL_Point &cursor_pos, Settings::Name *hovered_setting) const {
+    [[nodiscard]] bool mouse_on_setting_toggle(
+        const SDL_Point &cursor_pos,
+        Settings::Name *hovered_setting = nullptr
+    ) const {
         // TODO is std::any_of better? (clang suggestion)
         for (int bundle_name = 0; bundle_name < SETTINGS_AMOUNT; ++bundle_name) {
             const SettingsTextureBundle texture_bundle = m_texture_manager.get(
@@ -169,7 +185,9 @@ private:
                     + m_settings_scroll_y;
 
             if (toggle_texture->contains_moved(0, toggle_y, cursor_pos)) {
-                *hovered_setting = static_cast<Settings::Name>(bundle_name);
+                if (hovered_setting != nullptr)
+                    *hovered_setting = static_cast<Settings::Name>(bundle_name);
+
                 return true;
             }
         }

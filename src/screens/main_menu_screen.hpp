@@ -31,7 +31,7 @@ public:
 
     ~MainMenuScreen() override = default;
 
-    void run_logic(const SDL_Event &event) override {
+    void before_event(const SDL_Event &event) override {
         SDL_Point cursor_pos;
         SDL_GetMouseState(&cursor_pos.x, &cursor_pos.y);
 
@@ -62,9 +62,33 @@ public:
             ? m_hand_cursor
             : m_arrow_cursor
         );
+    }
 
-        if (event.type != SDL_MOUSEBUTTONDOWN || event.button.button != SDL_BUTTON_LEFT)
+    void on_keyboard_event(const SDL_KeyboardEvent &event) override {}
+
+    void on_mouse_button_event(const SDL_MouseButtonEvent &event) override {
+        if (event.type != SDL_MOUSEBUTTONDOWN || event.button != SDL_BUTTON_LEFT)
             return;
+
+        SDL_Point cursor_pos;
+        SDL_GetMouseState(&cursor_pos.x, &cursor_pos.y);
+
+        const bool cursor_in_quit_button = m_texture_manager.get(TextureName::QUIT_BUTTON)->contains(cursor_pos);
+
+        const bool cursor_in_settings_button = m_texture_manager.get(TextureName::SETTINGS_BUTTON)
+                                                               ->contains(cursor_pos);
+
+        const bool cursor_in_new_game_button = m_texture_manager.get(TextureName::NEW_GAME_BUTTON)
+                                                               ->contains(cursor_pos);
+
+        const bool cursor_in_continue_button = Game::save_exists(selected_difficulty)
+                && m_texture_manager.get(TextureName::CONTINUE_GAME_BUTTON)->contains(cursor_pos);
+
+        const bool cursor_in_left_arrow = selected_difficulty != Game::DIFFIC_LOWEST
+                && m_texture_manager.get(TextureName::LEFT_ARROW)->contains(cursor_pos);
+
+        const bool cursor_in_right_arrow = selected_difficulty != Game::DIFFIC_HIGHEST
+                && m_texture_manager.get(TextureName::RIGHT_ARROW)->contains(cursor_pos);
 
         if (cursor_in_quit_button) {
             SDL_Event quit_event = {.type = SDL_QUIT};
@@ -101,6 +125,12 @@ public:
             return;
         }
     }
+
+    void on_mouse_motion_event(const SDL_MouseMotionEvent &event) override {}
+
+    void on_mouse_wheel_event(const SDL_MouseWheelEvent &event) override {}
+
+    void on_quit_event(const SDL_QuitEvent &event) override {}
 
     void render() override {
         m_texture_manager.get(TextureName::BIG_MINE)->render();

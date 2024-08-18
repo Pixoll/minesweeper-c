@@ -48,8 +48,7 @@ public:
 
     ~GameScreen() override = default;
 
-    void run_logic(const SDL_Event &event) override {
-        const bool swapped_controls = Settings::is_on(Settings::SWAP_CONTROLS);
+    void before_event(const SDL_Event &event) override {
         const bool single_click_controls = Settings::is_on(Settings::SINGLE_CLICK_CONTROLS);
 
         SDL_Point cursor_pos;
@@ -68,19 +67,30 @@ public:
             ? m_hand_cursor
             : m_arrow_cursor
         );
+    }
 
-        if (event.type == SDL_QUIT && m_game.has_started() && !m_game.is_over()) {
-            m_game.save();
-            return;
-        }
+    void on_keyboard_event(const SDL_KeyboardEvent &event) override {}
 
-        if (event.type != SDL_MOUSEBUTTONDOWN
-            || (event.button.button != SDL_BUTTON_LEFT && event.button.button != SDL_BUTTON_RIGHT)
-        )
+    void on_mouse_button_event(const SDL_MouseButtonEvent &event) override {
+        if (event.type != SDL_MOUSEBUTTONDOWN || (event.button != SDL_BUTTON_LEFT && event.button != SDL_BUTTON_RIGHT))
             return;
+
+        const bool swapped_controls = Settings::is_on(Settings::SWAP_CONTROLS);
+        const bool single_click_controls = Settings::is_on(Settings::SINGLE_CLICK_CONTROLS);
+
+        SDL_Point cursor_pos;
+        SDL_GetMouseState(&cursor_pos.x, &cursor_pos.y);
+
+        const bool cursor_in_back_button = m_texture_manager.get(TextureName::BACK_BUTTON)->contains(cursor_pos);
+
+        const bool curor_in_flag_action_toggle = single_click_controls
+                && m_texture_manager.get(TextureName::ACTION_TOGGLE_FLAG)->contains(cursor_pos);
+
+        const bool curor_in_mine_action_toggle = single_click_controls
+                && m_texture_manager.get(TextureName::ACTION_TOGGLE_MINE)->contains(cursor_pos);
 
         if (cursor_in_back_button) {
-            if (event.button.button != SDL_BUTTON_LEFT)
+            if (event.button != SDL_BUTTON_LEFT)
                 return;
 
             if (m_game.has_started() && !m_game.is_over())
@@ -91,7 +101,7 @@ public:
         }
 
         if (curor_in_flag_action_toggle) {
-            if (event.button.button != SDL_BUTTON_LEFT)
+            if (event.button != SDL_BUTTON_LEFT)
                 return;
 
             selected_dig_action = false;
@@ -99,7 +109,7 @@ public:
         }
 
         if (curor_in_mine_action_toggle) {
-            if (event.button.button != SDL_BUTTON_LEFT)
+            if (event.button != SDL_BUTTON_LEFT)
                 return;
 
             selected_dig_action = true;
@@ -111,7 +121,7 @@ public:
         if (!inside_cell || m_game.is_over())
             return;
 
-        const bool is_dig_action = event.button.button == (swapped_controls ? SDL_BUTTON_RIGHT : SDL_BUTTON_LEFT);
+        const bool is_dig_action = event.button == (swapped_controls ? SDL_BUTTON_RIGHT : SDL_BUTTON_LEFT);
 
         if (single_click_controls && !is_dig_action)
             return;
@@ -131,6 +141,15 @@ public:
             return;
 
         m_game.toggle_cell_flag(x, y);
+    }
+
+    void on_mouse_motion_event(const SDL_MouseMotionEvent &event) override {}
+
+    void on_mouse_wheel_event(const SDL_MouseWheelEvent &event) override {}
+
+    void on_quit_event(const SDL_QuitEvent &event) override {
+        if (m_game.has_started() && !m_game.is_over())
+            m_game.save();
     }
 
     void render() override {

@@ -68,10 +68,34 @@ public:
 
         while (true) {
             while (SDL_PollEvent(&event) != 0) {
-                m_screen->run_logic(event);
+                m_screen->before_event(event);
 
-                if (event.type == SDL_QUIT)
-                    goto exit_game_loop;
+                switch (event.type) {
+                    case SDL_QUIT:
+                        m_screen->on_quit_event(event.quit);
+                        goto exit_game_loop;
+
+                    case SDL_KEYDOWN:
+                    case SDL_KEYUP:
+                        m_screen->on_keyboard_event(event.key);
+                        break;
+
+                    case SDL_MOUSEBUTTONDOWN:
+                    case SDL_MOUSEBUTTONUP:
+                        m_screen->on_mouse_button_event(event.button);
+                        break;
+
+                    case SDL_MOUSEMOTION:
+                        m_screen->on_mouse_motion_event(event.motion);
+                        break;
+
+                    case SDL_MOUSEWHEEL:
+                        m_screen->on_mouse_wheel_event(event.wheel);
+                        break;
+
+                    default:
+                        break;
+                }
             }
 
             SDL_RenderClear(m_renderer);
