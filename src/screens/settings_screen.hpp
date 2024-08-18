@@ -108,8 +108,6 @@ public:
             return;
         }
 
-        // TODO add scrollbar dragging
-
         if (event.type != SDL_MOUSEBUTTONDOWN || event.button.button != SDL_BUTTON_LEFT)
             return;
 
