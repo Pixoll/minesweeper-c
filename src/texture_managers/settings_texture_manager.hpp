@@ -213,7 +213,7 @@ private:
         const Texture::ScopedRender scoped_render = m_scrollbar_texture->set_as_render_target();
 
         const Texture scrollbar_image_texture(m_renderer, SCROLLBAR_IMAGE_PATH, {0, 0, width, height});
-        scrollbar_image_texture.set_color(Color::LIGHTER_GREY);
+        scrollbar_image_texture.set_color(Color::LIGHT_GREY);
         scrollbar_image_texture.render();
     }
 
