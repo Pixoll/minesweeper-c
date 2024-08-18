@@ -24,8 +24,9 @@ class SettingsScreen final : virtual public Screen {
     int m_max_scroll;
     int m_scrollbar_max_y;
     int m_scrollbar_step;
-    int m_settings_delta_y = 0;
+    int m_settings_scroll_y = 0;
     int m_scrollbar_y = 0;
+    int m_holding_scrollbar = false;
 
     SDL_Cursor *const m_arrow_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
     SDL_Cursor *const m_hand_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_HAND);
@@ -44,6 +45,9 @@ public:
     ~SettingsScreen() override = default;
 
     void run_logic(const SDL_Event &event) override {
+        if (event.type == SDL_MOUSEBUTTONUP)
+            m_holding_scrollbar = false;
+
         SDL_Point cursor_pos;
         SDL_GetMouseState(&cursor_pos.x, &cursor_pos.y);
 
@@ -62,14 +66,38 @@ public:
         if (event.type == SDL_MOUSEWHEEL) {
             const float dy = event.wheel.preciseY;
 
-            m_settings_delta_y += dy * m_scroll_step;
+            m_settings_scroll_y += dy * m_scroll_step;
             m_scrollbar_y -= dy * m_scrollbar_step;
 
-            if (m_settings_delta_y > 0)
-                m_settings_delta_y = 0;
+            if (m_settings_scroll_y > 0)
+                m_settings_scroll_y = 0;
 
-            if (m_settings_delta_y < m_max_scroll)
-                m_settings_delta_y = m_max_scroll;
+            if (m_settings_scroll_y < m_max_scroll)
+                m_settings_scroll_y = m_max_scroll;
+
+            if (m_scrollbar_y < 0)
+                m_scrollbar_y = 0;
+
+            if (m_scrollbar_y > m_scrollbar_max_y)
+                m_scrollbar_y = m_scrollbar_max_y;
+
+            return;
+        }
+
+        if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT && cursor_in_scrollbar) {
+            m_holding_scrollbar = true;
+            return;
+        }
+
+        if (event.type == SDL_MOUSEMOTION && m_holding_scrollbar) {
+            m_settings_scroll_y -= event.motion.yrel * m_scroll_step / m_scrollbar_step;
+            m_scrollbar_y += event.motion.yrel;
+
+            if (m_settings_scroll_y > 0)
+                m_settings_scroll_y = 0;
+
+            if (m_settings_scroll_y < m_max_scroll)
+                m_settings_scroll_y = m_max_scroll;
 
             if (m_scrollbar_y < 0)
                 m_scrollbar_y = 0;
@@ -113,12 +141,12 @@ private:
         const int toggle_y = Font::get_shared(Font::SECONDARY)->get_size()
                 + texture_bundle->get_y()
                 + texture_bundle->get_h()
-                + m_settings_delta_y;
+                + m_settings_scroll_y;
 
-        if (texture_bundle->get_y() + m_settings_delta_y > m_window_height || toggle_y + toggle_on_texture->get_h() < 0)
+        if (texture_bundle->get_y() + m_settings_scroll_y > m_window_height || toggle_y + toggle_on_texture->get_h() < 0)
             return;
 
-        texture_bundle->render_moved(0, m_settings_delta_y);
+        texture_bundle->render_moved(0, m_settings_scroll_y);
 
         if (toggle_y > m_window_height)
             return;
@@ -140,7 +168,7 @@ private:
             const int toggle_y = Font::get_shared(Font::SECONDARY)->get_size()
                     + texture_bundle->get_y()
                     + texture_bundle->get_h()
-                    + m_settings_delta_y;
+                    + m_settings_scroll_y;
 
             if (toggle_texture->contains_moved(0, toggle_y, cursor_pos)) {
                 *hovered_setting = static_cast<Settings::Name>(bundle_name);
