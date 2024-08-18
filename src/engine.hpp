@@ -12,7 +12,7 @@
 struct EngineParameters {
     SDL_Window *window;
     SDL_Renderer *renderer;
-    long screen_refresh_rate;
+    int screen_refresh_rate;
 };
 
 class Engine {
