@@ -69,7 +69,15 @@ public:
         );
     }
 
-    void on_keyboard_event(const SDL_KeyboardEvent &event) override {}
+    void on_keyboard_event(const SDL_KeyboardEvent &event) override {
+        if (event.type != SDL_KEYDOWN || event.keysym.sym != SDLK_ESCAPE)
+            return;
+
+        if (m_game.has_started() && !m_game.is_over())
+            m_game.save();
+
+        m_engine->set_screen<MainMenuScreen>(m_engine);
+    }
 
     void on_mouse_button_event(const SDL_MouseButtonEvent &event) override {
         if (event.type != SDL_MOUSEBUTTONDOWN || (event.button != SDL_BUTTON_LEFT && event.button != SDL_BUTTON_RIGHT))
