@@ -278,8 +278,8 @@ public:
         GridCoords revealed_cells[9] = {{x, y}};
         int revealed_cells_count = 1;
 
-        if (revealed && Settings::is_on(Settings::EASY_DIG)) {
-            if (type < CELL_1 || type > CELL_8)
+        if (revealed) {
+            if (type < CELL_1 || type > CELL_8 || !Settings::is_on(Settings::EASY_DIG))
                 return;
 
             const int flagged_count = count_surrounding_flagged(x, y);
