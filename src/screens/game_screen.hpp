@@ -129,12 +129,33 @@ public:
         if (!inside_cell || m_game.is_over())
             return;
 
-        const bool is_dig_action = event.button == (swapped_controls ? SDL_BUTTON_RIGHT : SDL_BUTTON_LEFT);
+        const bool left_click = event.button == (swapped_controls ? SDL_BUTTON_RIGHT : SDL_BUTTON_LEFT);
 
-        if (single_click_controls && !is_dig_action)
+        if (single_click_controls) {
+            if (!left_click)
+                return;
+
+            if (!m_started_game) {
+                m_game.place_grid_mines(x, y);
+                m_started_game = true;
+                m_game.reveal_cell(x, y);
+                return;
+            }
+
+            if (selected_dig_action) {
+                m_game.reveal_cell(x, y);
+                return;
+            }
+
+            m_game.toggle_cell_flag(x, y);
+
+            if (m_game.get_grid_cell(x, y).revealed)
+                m_game.reveal_cell(x, y);
+
             return;
+        }
 
-        if (single_click_controls ? selected_dig_action : is_dig_action) {
+        if (left_click) {
             if (!m_started_game) {
                 m_game.place_grid_mines(x, y);
                 m_started_game = true;
@@ -144,7 +165,6 @@ public:
             return;
         }
 
-        // Right click
         if (!m_started_game)
             return;
 
