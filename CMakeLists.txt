@@ -16,10 +16,13 @@ find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 
-include_directories(${SDL2_INCLUDE_DIR} ${SDL2_IMAGE_INCLUDE_DIR} ${SDL2_TTF_INCLUDE_DIR})
+include_directories(${SDL2_INCLUDE_DIR} ${SDL2_IMAGE_INCLUDE_DIR} ${SDL2_TTF_INCLUDE_DIR} include/SDL2_gfx)
+
+file(GLOB SDL2_gfx_source "include/SDL2_gfx/*.c" "include/SDL2_gfx/*.h")
 
 add_executable(
         minesweeper
+        ${SDL2_gfx_source}
         src/main.cpp
         src/engine.hpp
         src/core/game.hpp
