@@ -22,6 +22,7 @@ class Engine {
     SDL_Renderer *m_renderer;
     int m_window_width = 0;
     int m_window_height = 0;
+    SDL_Color m_background_color{};
 
     SDL_Cursor *const m_arrow_cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
 
@@ -35,8 +36,7 @@ public:
         Color::make(m_window);
         Font::make_shared(m_window_height);
 
-        const auto [r, g, b, a] = Color::get(Color::BACKGROUND).get_rgb();
-        SDL_SetRenderDrawColor(m_renderer, r, g, b, a);
+        m_background_color = Color::get(Color::BACKGROUND).get_rgb();
     }
 
     ~Engine() = default;
@@ -97,6 +97,9 @@ public:
                         break;
                 }
             }
+
+            const auto [r, g, b, a] = m_background_color;
+            SDL_SetRenderDrawColor(m_renderer, r, g, b, a);
 
             SDL_RenderClear(m_renderer);
             m_screen->render();
