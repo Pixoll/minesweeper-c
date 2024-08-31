@@ -2,6 +2,7 @@
 
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL2_rotozoom.h>
 #include <string>
 
 #include "color.hpp"
@@ -10,6 +11,7 @@ constexpr SDL_Rect NULL_RECT = {0, 0, 0, 0};
 
 class Texture {
     SDL_Renderer *const m_renderer = nullptr;
+    SDL_Surface *m_surface = nullptr;
     SDL_Texture *m_texture = nullptr;
     SDL_Rect m_area{0, 0, 0, 0};
     TTF_Font *const m_font = nullptr;
@@ -54,18 +56,17 @@ public:
     }
 
     Texture(SDL_Renderer *renderer, const char *image_path) : m_renderer(renderer) {
-        SDL_Surface *surface = IMG_Load(image_path);
-        m_texture = SDL_CreateTextureFromSurface(m_renderer, surface);
-        m_area = {0, 0, surface->w, surface->h};
-
-        SDL_FreeSurface(surface);
+        m_surface = IMG_Load(image_path);
+        m_texture = SDL_CreateTextureFromSurface(m_renderer, m_surface);
+        m_area = {0, 0, m_surface->w, m_surface->h};
     }
 
     Texture(SDL_Renderer *renderer, const char *image_path, const SDL_Rect area) : m_renderer(renderer), m_area(area) {
-        SDL_Surface *surface = IMG_Load(image_path);
-        m_texture = SDL_CreateTextureFromSurface(m_renderer, surface);
-
-        SDL_FreeSurface(surface);
+        m_surface = IMG_Load(image_path);
+        m_texture = SDL_CreateTextureFromSurface(m_renderer, m_surface);
+        m_area.w = m_surface->w;
+        m_area.h = m_surface->h;
+        scale(static_cast<double>(area.w) / m_area.w, static_cast<double>(area.h) / m_area.h);
     }
 
     Texture(
@@ -77,11 +78,9 @@ public:
     ) : m_renderer(renderer),
         m_font(font),
         m_font_color(Color::get(color).get_rgb()) {
-        SDL_Surface *surface = TTF_RenderText_Blended(m_font, text.c_str(), m_font_color);
-        m_texture = SDL_CreateTextureFromSurface(m_renderer, surface);
-        m_area = {position.x, position.y, surface->w, surface->h};
-
-        SDL_FreeSurface(surface);
+        m_surface = TTF_RenderText_Blended(m_font, text.c_str(), m_font_color);
+        m_texture = SDL_CreateTextureFromSurface(m_renderer, m_surface);
+        m_area = {position.x, position.y, m_surface->w, m_surface->h};
     }
 
     ~Texture() {
@@ -120,29 +119,50 @@ public:
         return px >= x + texture_dx && px <= x + texture_dx + w && py >= y + texture_dy && py <= y + texture_dy + h;
     }
 
-    void set_size(const int size) {
-        m_area.h = size;
-        m_area.w = size;
+    void scale(const double zoom_x, const double zoom_y) {
+        if (zoom_x == 1 && zoom_y == 1)
+            return;
+
+        SDL_Surface *new_surface;
+
+        if (zoom_x < 1 && zoom_y < 1) {
+            const double factor_x = 1 / zoom_x;
+            const double factor_y = 1 / zoom_y;
+            const int factor_x_int = factor_x;
+            const int factor_y_int = factor_y;
+
+            if (factor_x != factor_x_int || factor_x_int != factor_y_int) {
+                m_area.w *= zoom_x;
+                m_area.h *= zoom_y;
+                return;
+            }
+
+            new_surface = shrinkSurface(m_surface, factor_x_int, factor_y_int);
+        } else {
+            new_surface = zoomSurface(m_surface, zoom_x, zoom_x, SMOOTHING_ON);
+        }
+
+        destroy();
+        m_surface = new_surface;
+        m_texture = SDL_CreateTextureFromSurface(m_renderer, m_surface);
+        m_area.w = m_surface->w;
+        m_area.h = m_surface->h;
     }
 
     /**
      * Keeps the aspect ratio
      */
-    void set_width(const float width) {
-        const float factor = width / m_area.w;
-
-        m_area.w *= factor;
-        m_area.h *= factor;
+    void set_width(const double width) {
+        const double zoom = width / m_area.w;
+        scale(zoom, zoom);
     }
 
     /**
      * Keeps the aspect ratio
      */
-    void set_height(const float height) {
-        const float factor = height / m_area.h;
-
-        m_area.w *= factor;
-        m_area.h *= factor;
+    void set_height(const double height) {
+        const double zoom = height / m_area.h;
+        scale(zoom, zoom);
     }
 
     void set_position(const int x, const int y) {
@@ -168,12 +188,10 @@ public:
 
     void update_text(const std::string &text) {
         destroy();
-        SDL_Surface *surface = TTF_RenderText_Blended(m_font, text.c_str(), m_font_color);
-        m_texture = SDL_CreateTextureFromSurface(m_renderer, surface);
-        m_area.h = surface->h;
-        m_area.w = surface->w;
-
-        SDL_FreeSurface(surface);
+        m_surface = TTF_RenderText_Blended(m_font, text.c_str(), m_font_color);
+        m_texture = SDL_CreateTextureFromSurface(m_renderer, m_surface);
+        m_area.h = m_surface->h;
+        m_area.w = m_surface->w;
     }
 
     void render() const {
@@ -196,6 +214,9 @@ public:
     }
 
     void destroy() {
+        SDL_FreeSurface(m_surface);
+        m_surface = nullptr;
+
         if (m_texture == nullptr)
             return;
 
