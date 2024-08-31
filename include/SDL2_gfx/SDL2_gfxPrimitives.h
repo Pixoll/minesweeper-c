@@ -25,10 +25,11 @@ distribution.
 
 Andreas Schiffler -- aschiffler at ferzkopp dot net
 
+APPLIED CHANGES SUGGESTED BY IDE
+
 */
 
-#ifndef _SDL2_gfxPrimitives_h
-#define _SDL2_gfxPrimitives_h
+#pragma once
 
 #include <math.h>
 #ifndef M_PI
@@ -633,5 +634,3 @@ SDL2_GFXPRIMITIVES_SCOPE int stringRGBA(
 #ifdef __cplusplus
 }
 #endif
-
-#endif				/* _SDL2_gfxPrimitives_h */

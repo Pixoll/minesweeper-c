@@ -25,6 +25,8 @@ distribution.
 
 Andreas Schiffler -- aschiffler at ferzkopp dot net
 
+APPLIED CHANGES SUGGESTED BY IDE
+
 */
 
 #include "SDL2_framerate.h"

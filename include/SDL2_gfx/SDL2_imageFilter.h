@@ -25,10 +25,11 @@ distribution.
 
 Andreas Schiffler -- aschiffler at ferzkopp dot net
 
+APPLIED CHANGES SUGGESTED BY IDE
+
 */
 
-#ifndef _SDL2_imageFilter_h
-#define _SDL2_imageFilter_h
+#pragma once
 
 /* Set up for C function definitions, even when using C++ */
 #ifdef __cplusplus
@@ -288,5 +289,3 @@ SDL2_IMAGEFILTER_SCOPE int SDL_imageFilterNormalizeLinear(
 #ifdef __cplusplus
 }
 #endif
-
-#endif				/* _SDL_imageFilter_h */
