@@ -337,7 +337,7 @@ private:
 
         m_h_grid_line_texture = std::make_shared<Texture>(
             m_renderer,
-            SDL_Rect{grid_line_offset, 0, grid_line_length, grid_line_width}
+            SDL_Rect{grid_line_offset, -static_cast<int>(thickness_2), grid_line_length, grid_line_width}
         );
 
         const Texture::ScopedRender h_grid_line_renderer = m_h_grid_line_texture->set_as_render_target();
@@ -356,7 +356,7 @@ private:
 
         m_v_grid_line_texture = std::make_shared<Texture>(
             m_renderer,
-            SDL_Rect{0, grid_line_offset, grid_line_width, grid_line_length}
+            SDL_Rect{-static_cast<int>(thickness_2), grid_line_offset, grid_line_width, grid_line_length}
         );
 
         const Texture::ScopedRender v_grid_line_renderer = m_v_grid_line_texture->set_as_render_target();
