@@ -29,6 +29,7 @@ add_executable(
         src/core/settings.hpp
         src/graphics/color.hpp
         src/graphics/font.hpp
+        src/graphics/shape.hpp
         src/graphics/texture.hpp
         src/graphics/texture_bundle.hpp
         src/texture_managers/game_texture_manager.hpp

@@ -7,6 +7,7 @@
 
 #include "../graphics/color.hpp"
 #include "../graphics/font.hpp"
+#include "../graphics/shape.hpp"
 #include "../graphics/texture.hpp"
 #include "../graphics/texture_bundle.hpp"
 
@@ -37,10 +38,8 @@ private:
         const char *description;
     };
 
-    static constexpr auto BACK_BUTTON_IMAGE_PATH = "assets/textures/button_back.png";
-    static constexpr auto TOGGLE_OFF_IMAGE_PATH = "assets/textures/toggle_off.png";
-    static constexpr auto TOGGLE_ON_IMAGE_PATH = "assets/textures/toggle_on.png";
-    static constexpr auto SCROLLBAR_IMAGE_PATH = "assets/textures/scrollbar.png";
+    static constexpr double TOGGLE_THICKNESS_FACTOR = 3.0 / 128;
+    static constexpr double BACK_BUTTON_THICKNESS_FACTOR = 1.0 / 8;
 
     static constexpr int SETTINGS_AMOUNT = SETTING_EASY_FLAG + 1;
     static constexpr SettingNameAndDescription SETTINGS_NAMES_AND_DESCRIPTIONS[SETTINGS_AMOUNT] = {
@@ -121,27 +120,64 @@ public:
 
 private:
     void make_back_button_texture() {
-        const int height = Font::get_shared(Font::PRIMARY)->get_size();
-        m_back_button_texture = std::make_shared<Texture>(m_renderer, BACK_BUTTON_IMAGE_PATH);
-        m_back_button_texture->set_position(m_window_padding, m_window_padding);
-        m_back_button_texture->set_height(height);
+        const int size = Font::get_shared(Font::PRIMARY)->get_size();
+        const double thickness = size * BACK_BUTTON_THICKNESS_FACTOR;
+
+        m_back_button_texture = std::make_shared<Texture>(
+            m_renderer,
+            SDL_Rect{m_window_padding, m_window_padding, size, size}
+        );
+
+        const Texture::ScopedRender scoped_render = m_back_button_texture->set_as_render_target();
+
+        Shape::rounded_line(
+            m_renderer,
+            thickness,
+            (size + thickness) / 2.0,
+            (size - thickness) / 2.0,
+            size - thickness,
+            thickness,
+            Color::WHITE
+        );
+        Shape::rounded_line(
+            m_renderer,
+            thickness,
+            (size - thickness) / 2.0,
+            (size - thickness) / 2.0,
+            thickness,
+            thickness,
+            Color::WHITE
+        );
+        Shape::rounded_line(
+            m_renderer,
+            thickness,
+            size / 2.0,
+            size - thickness,
+            size / 2.0,
+            thickness,
+            Color::WHITE
+        );
     }
 
     void make_toggles_textures() {
-        const int toggle_size = m_window_height * 0.1;
+        const float toggle_size = m_window_height * 0.1;
         const int x = (m_window_width - toggle_size) / 2;
         const Font font(Font::RUBIK_LIGHT, m_window_height * 0.025);
 
-        m_toggle_off_texture = std::make_shared<Texture>(m_renderer, SDL_Rect{x, 0, toggle_size, toggle_size});
+        m_toggle_off_texture = std::make_shared<Texture>(
+            m_renderer,
+            SDL_Rect{x, 0, static_cast<int>(toggle_size), static_cast<int>(toggle_size)}
+        );
         const Texture::ScopedRender off_texture_scoped_render = m_toggle_off_texture->set_as_render_target();
 
-        const Texture off_texture(
+        Shape::circumference(
             m_renderer,
-            TOGGLE_OFF_IMAGE_PATH,
-            SDL_Rect{0, 0, toggle_size, toggle_size}
+            0,
+            0,
+            toggle_size * TOGGLE_THICKNESS_FACTOR,
+            toggle_size / 2.0f,
+            Color::LIGHT_GREY
         );
-        off_texture.set_color(Color::LIGHT_GREY);
-        off_texture.render();
 
         Texture text_off_texture(m_renderer, font.get_raw(), "OFF", Color::WHITE);
         text_off_texture.set_position(
@@ -151,16 +187,13 @@ private:
         text_off_texture.render();
         off_texture_scoped_render.release();
 
-        m_toggle_on_texture = std::make_shared<Texture>(m_renderer, SDL_Rect{x, 0, toggle_size, toggle_size});
+        m_toggle_on_texture = std::make_shared<Texture>(
+            m_renderer,
+            SDL_Rect{x, 0, static_cast<int>(toggle_size), static_cast<int>(toggle_size)}
+        );
         const Texture::ScopedRender on_texture_scoped_render = m_toggle_on_texture->set_as_render_target();
 
-        const Texture on_texture(
-            m_renderer,
-            TOGGLE_ON_IMAGE_PATH,
-            SDL_Rect{0, 0, toggle_size, toggle_size}
-        );
-        on_texture.set_color(Color::THEME);
-        on_texture.render();
+        Shape::circle(m_renderer, 0, 0, toggle_size / 2.0f, Color::THEME);
 
         Texture text_on_texture(m_renderer, font.get_raw(), "ON", Color::BACKGROUND);
         text_on_texture.set_position(
@@ -212,9 +245,7 @@ private:
         m_scrollbar_texture = std::make_shared<Texture>(m_renderer, SDL_Rect{x, 0, width, height});
         const Texture::ScopedRender scoped_render = m_scrollbar_texture->set_as_render_target();
 
-        const Texture scrollbar_image_texture(m_renderer, SCROLLBAR_IMAGE_PATH, {0, 0, width, height});
-        scrollbar_image_texture.set_color(Color::LIGHT_GREY);
-        scrollbar_image_texture.render();
+        Shape::filled_rectangle(m_renderer, {0, 0, width, height}, Color::LIGHT_GREY);
     }
 
     TextureBundle make_setting_texture_bundle(const char *name, const std::string &description) const {

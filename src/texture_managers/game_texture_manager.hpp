@@ -8,6 +8,7 @@
 #include "../core/settings.hpp"
 #include "../graphics/color.hpp"
 #include "../graphics/font.hpp"
+#include "../graphics/shape.hpp"
 #include "../graphics/texture.hpp"
 
 class GameTextureManager {
@@ -118,13 +119,11 @@ private:
     static constexpr auto CELL_MAP_IMAGE_PATH = "assets/textures/cell_map.png";
     static constexpr auto MINE_IMAGE_PATH = "assets/textures/mine.png";
     static constexpr auto FLAG_IMAGE_PATH = "assets/textures/flag.png";
-    static constexpr auto H_GRID_LINE_IMAGE_PATH = "assets/textures/grid_line_horizontal.png";
-    static constexpr auto V_GRID_LINE_IMAGE_PATH = "assets/textures/grid_line_vertical.png";
     static constexpr auto MOUSE_LEFT_ICON_PATH = "assets/textures/mouse_left.png";
     static constexpr auto MOUSE_RIGHT_ICON_PATH = "assets/textures/mouse_right.png";
-    static constexpr auto BACK_BUTTON_IMAGE_PATH = "assets/textures/button_back.png";
-    static constexpr auto ACTION_TOGGLE_IMAGE_PATH = "assets/textures/action_toggle.png";
-    static constexpr auto TOGGLE_SELECTED_IMAGE_PATH = "assets/textures/toggle_on.png";
+
+    static constexpr double ACTION_TOGGLE_THICKNESS_FACTOR = 1.0 / 32;
+    static constexpr double BACK_BUTTON_THICKNESS_FACTOR = 1.0 / 8;
 
     static constexpr CellTextureSetParameters CELL_TEXTURE_SET_PARAMETERS[CELL_SUBTYPES] = {
         {Color::THEME, nullptr, 0, Color::BACKGROUND},
@@ -332,28 +331,83 @@ private:
         ] = m_measurements;
 
         const int grid_line_offset = (grid_line_width + cell_size - grid_line_length) / 2;
-        const SDL_Color light_grey = Color::get(Color::GREY).get_rgb();
+        const float thickness_2 = grid_line_width / 2.0f;
 
         m_h_grid_line_texture = std::make_shared<Texture>(
             m_renderer,
-            H_GRID_LINE_IMAGE_PATH,
             SDL_Rect{grid_line_offset, 0, grid_line_length, grid_line_width}
         );
-        m_h_grid_line_texture->set_color(light_grey);
+
+        const Texture::ScopedRender h_grid_line_renderer = m_h_grid_line_texture->set_as_render_target();
+
+        Shape::rounded_line(
+            m_renderer,
+            grid_line_width,
+            thickness_2,
+            grid_line_length - grid_line_width,
+            thickness_2,
+            grid_line_width,
+            Color::GREY
+        );
+
+        h_grid_line_renderer.release();
 
         m_v_grid_line_texture = std::make_shared<Texture>(
             m_renderer,
-            V_GRID_LINE_IMAGE_PATH,
             SDL_Rect{0, grid_line_offset, grid_line_width, grid_line_length}
         );
-        m_v_grid_line_texture->set_color(light_grey);
+
+        const Texture::ScopedRender v_grid_line_renderer = m_v_grid_line_texture->set_as_render_target();
+
+        Shape::rounded_line(
+            m_renderer,
+            thickness_2,
+            grid_line_width,
+            thickness_2,
+            grid_line_length - grid_line_width,
+            grid_line_width,
+            Color::GREY
+        );
     }
 
     void make_back_button_texture() {
-        const int height = Font::get_shared(Font::PRIMARY)->get_size();
-        m_back_button_texture = std::make_shared<Texture>(m_renderer, BACK_BUTTON_IMAGE_PATH);
-        m_back_button_texture->set_position(m_window_padding, m_window_padding);
-        m_back_button_texture->set_height(height);
+        const int size = Font::get_shared(Font::PRIMARY)->get_size();
+        const double thickness = size * BACK_BUTTON_THICKNESS_FACTOR;
+
+        m_back_button_texture = std::make_shared<Texture>(
+            m_renderer,
+            SDL_Rect{m_window_padding, m_window_padding, size, size}
+        );
+
+        const Texture::ScopedRender scoped_render = m_back_button_texture->set_as_render_target();
+
+        Shape::rounded_line(
+            m_renderer,
+            thickness,
+            (size + thickness) / 2.0,
+            (size - thickness) / 2.0,
+            size - thickness,
+            thickness,
+            Color::WHITE
+        );
+        Shape::rounded_line(
+            m_renderer,
+            thickness,
+            (size - thickness) / 2.0,
+            (size - thickness) / 2.0,
+            thickness,
+            thickness,
+            Color::WHITE
+        );
+        Shape::rounded_line(
+            m_renderer,
+            thickness,
+            size / 2.0,
+            size - thickness,
+            size / 2.0,
+            thickness,
+            Color::WHITE
+        );
     }
 
     void make_remaining_mines_textures() {
@@ -453,10 +507,20 @@ private:
 
         m_action_toggle_texture = std::make_shared<Texture>(
             m_renderer,
-            ACTION_TOGGLE_IMAGE_PATH,
             SDL_Rect{action_toggle_x, action_toggle_y, action_toggle_width, action_toggle_height}
         );
-        m_action_toggle_texture->set_color(Color::LIGHT_GREY);
+
+        const Texture::ScopedRender action_toggle_texture_renderer = m_action_toggle_texture->set_as_render_target();
+
+        Shape::rounded_rectangle(
+            m_renderer,
+            {0, 0, action_toggle_width, action_toggle_height},
+            action_toggle_width * ACTION_TOGGLE_THICKNESS_FACTOR,
+            action_toggle_width / 2.0f,
+            Color::LIGHT_GREY
+        );
+
+        action_toggle_texture_renderer.release();
 
         const int toggle_size = action_toggle_width * 0.78;
         const int toggle_padding = (action_toggle_width - toggle_size) / 2;
@@ -496,9 +560,6 @@ private:
         image_texture.set_height(size * image_scale_respect_to_toggle);
         image_texture.set_position((size - image_texture.get_w()) / 2, (size - image_texture.get_h()) / 2);
 
-        const Texture toggle_selected_image_texture(m_renderer, TOGGLE_SELECTED_IMAGE_PATH, SDL_Rect{0, 0, size, size});
-        toggle_selected_image_texture.set_color(Color::THEME);
-
         toggle_texture = std::make_shared<Texture>(m_renderer, SDL_Rect{x, y, size, size});
         const Texture::ScopedRender toggle_scoped_render = toggle_texture->set_as_render_target();
 
@@ -509,7 +570,8 @@ private:
         toggle_selected_texture = std::make_shared<Texture>(m_renderer, SDL_Rect{x, y, size, size});
         const Texture::ScopedRender toggle_selected_scoped_render = toggle_selected_texture->set_as_render_target();
 
-        toggle_selected_image_texture.render();
+        Shape::circle(m_renderer, 0, 0, size / 2.0, Color::THEME);
+
         image_texture.set_color(Color::BACKGROUND);
         image_texture.render();
         toggle_selected_scoped_render.release();

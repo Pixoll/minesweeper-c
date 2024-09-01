@@ -6,6 +6,7 @@
 #include "../core/game.hpp"
 #include "../graphics/color.hpp"
 #include "../graphics/font.hpp"
+#include "../graphics/shape.hpp"
 #include "../graphics/texture.hpp"
 
 class MainMenuTextureManager {
@@ -25,11 +26,15 @@ public:
 
 private:
     static constexpr auto BIG_MINE_IMAGE_PATH = "assets/textures/mine_big.png";
-    static constexpr auto GAME_BUTTON_IMAGE_PATH = "assets/textures/button_game.png";
-    static constexpr auto LEFT_ARROW_IMAGE_PATH = "assets/textures/arrow_left.png";
-    static constexpr auto RIGHT_ARROW_IMAGE_PATH = "assets/textures/arrow_right.png";
-    static constexpr auto QUIT_BUTTON_IMAGE_PATH = "assets/textures/button_quit.png";
     static constexpr auto SETTINGS_BUTTON_IMAGE_PATH = "assets/textures/button_settings.png";
+
+    // height:width
+    static constexpr double GAME_BUTTON_RATIO = 41.0 / 300;
+    // height:width
+    static constexpr double ARROW_RATIO = 25.0 / 14;
+    static constexpr double GAME_BUTTON_THICKNESS_FACTOR = 3.0 / 91;
+    static constexpr double ARROW_THICKNESS_FACTOR = 1.0 / 4;
+    static constexpr double QUIT_BUTTON_THICKNESS_FACTOR = 1.0 / 7;
 
     SDL_Renderer *m_renderer;
     const int m_window_width;
@@ -113,54 +118,62 @@ private:
     void make_quit_button() {
         const int size = Font::get_shared(Font::PRIMARY)->get_size();
         const int x = m_window_width - size - m_window_padding;
-        m_quit_button_texture = std::make_shared<Texture>(
-            m_renderer,
-            QUIT_BUTTON_IMAGE_PATH,
-            SDL_Rect{x, m_window_padding, size, size}
-        );
+        const int y = m_window_padding;
+        const float thickness = size * QUIT_BUTTON_THICKNESS_FACTOR;
+        const float end = size - thickness;
+
+        m_quit_button_texture = std::make_shared<Texture>(m_renderer, SDL_Rect{x, y, size, size});
+
+        const Texture::ScopedRender scoped_render = m_quit_button_texture->set_as_render_target();
+
+        Shape::rounded_line(m_renderer, thickness, thickness, end, end, thickness, Color::WHITE);
+        Shape::rounded_line(m_renderer, thickness, end, end, thickness, thickness, Color::WHITE);
     }
 
     void make_new_game_button() {
         const int width = m_big_mine_texture->get_w() * 1.86f;
+        const int height = width * GAME_BUTTON_RATIO;
+        const int thickness = height * GAME_BUTTON_THICKNESS_FACTOR;
         const int x = m_big_mine_texture->get_x() + (m_big_mine_texture->get_w() - width) / 2;
-
-        Texture button_texture(m_renderer, GAME_BUTTON_IMAGE_PATH);
-        button_texture.set_color(Color::LIGHTER_GREY);
-        button_texture.set_width(width);
 
         Texture text_texture(m_renderer, Font::get_shared(Font::PRIMARY)->get_raw(), "New game", Color::WHITE);
         text_texture.set_position(
-            (button_texture.get_w() - text_texture.get_w()) / 2,
-            (button_texture.get_h() - text_texture.get_h()) / 2
+            (width - text_texture.get_w()) / 2,
+            (height - text_texture.get_h()) / 2
         );
 
         m_new_game_button_texture = std::make_shared<Texture>(
             m_renderer,
             SDL_Rect{
                 x,
-                m_window_height / 2 + static_cast<int>(button_texture.get_h() * 1.5),
+                m_window_height / 2 + static_cast<int>(height * 1.5),
                 width,
-                button_texture.get_h(),
+                height,
             }
         );
 
         const Texture::ScopedRender scoped_render = m_new_game_button_texture->set_as_render_target();
 
-        button_texture.render();
+        Shape::rounded_rectangle(
+            m_renderer,
+            {0, 0, width, height},
+            thickness,
+            height / 2.0f,
+            Color::LIGHTER_GREY
+        );
+
         text_texture.render();
     }
 
     void make_continue_game_button() {
         const int width = m_new_game_button_texture->get_w();
-
-        Texture button_texture(m_renderer, GAME_BUTTON_IMAGE_PATH);
-        button_texture.set_color(Color::LIGHTER_GREY);
-        button_texture.set_width(width);
+        const int height = width * GAME_BUTTON_RATIO;
+        const int thickness = height * GAME_BUTTON_THICKNESS_FACTOR;
 
         Texture text_texture(m_renderer, Font::get_shared(Font::PRIMARY)->get_raw(), "Continue", Color::WHITE);
         text_texture.set_position(
-            (button_texture.get_w() - text_texture.get_w()) / 2,
-            (button_texture.get_h() - text_texture.get_h()) / 2
+            (width - text_texture.get_w()) / 2,
+            (height - text_texture.get_h()) / 2
         );
 
         m_continue_game_button_texture = std::make_shared<Texture>(
@@ -169,33 +182,95 @@ private:
                 m_new_game_button_texture->get_x(),
                 static_cast<int>(m_new_game_button_texture->get_y() + m_new_game_button_texture->get_h() * 1.5),
                 width,
-                button_texture.get_h(),
+                height,
             }
         );
 
         const Texture::ScopedRender scoped_render = m_continue_game_button_texture->set_as_render_target();
 
-        button_texture.render();
+        Shape::rounded_rectangle(
+            m_renderer,
+            {0, 0, width, height},
+            thickness,
+            height / 2.0f,
+            Color::LIGHTER_GREY
+        );
+
         text_texture.render();
     }
 
     void make_difficulty_buttons() {
         const Font::Shared font = Font::get_shared(Font::PRIMARY);
         const int button_width = m_new_game_button_texture->get_w();
-        const int arrow_offset = button_width * 0.09;
-        const int h = font->get_size();
-        const int y = m_new_game_button_texture->get_y() - m_new_game_button_texture->get_h() - h / 2;
+        const int offset = button_width * 0.09;
+        const int height = font->get_size();
+        const double width = height / ARROW_RATIO;
+        const double thickness = width * ARROW_THICKNESS_FACTOR;
+        const int y = m_new_game_button_texture->get_y() - m_new_game_button_texture->get_h() - height / 2;
 
-        m_left_arrow_texture = std::make_shared<Texture>(m_renderer, LEFT_ARROW_IMAGE_PATH);
-        m_left_arrow_texture->set_position(m_new_game_button_texture->get_x() + arrow_offset, y);
-        m_left_arrow_texture->set_height(h);
-
-        m_right_arrow_texture = std::make_shared<Texture>(m_renderer, RIGHT_ARROW_IMAGE_PATH);
-        m_right_arrow_texture->set_position(
-            m_new_game_button_texture->get_x() + button_width - arrow_offset - m_left_arrow_texture->get_w(),
-            y
+        m_left_arrow_texture = std::make_shared<Texture>(
+            m_renderer,
+            SDL_Rect{
+                m_new_game_button_texture->get_x() + offset,
+                y,
+                static_cast<int>(width),
+                height
+            }
         );
-        m_right_arrow_texture->set_height(h);
+
+        const Texture::ScopedRender left_arrow_renderer = m_left_arrow_texture->set_as_render_target();
+
+        Shape::rounded_line(
+            m_renderer,
+            thickness,
+            (height + thickness) / 2.0,
+            width - thickness,
+            height - thickness,
+            thickness,
+            Color::WHITE
+        );
+        Shape::rounded_line(
+            m_renderer,
+            thickness,
+            (height - thickness) / 2.0,
+            width - thickness,
+            thickness,
+            thickness,
+            Color::WHITE
+        );
+
+        left_arrow_renderer.release();
+
+        m_right_arrow_texture = std::make_shared<Texture>(
+            m_renderer,
+            SDL_Rect{
+                m_new_game_button_texture->get_x() + button_width - offset - m_left_arrow_texture->get_w(),
+                y,
+                static_cast<int>(width),
+                height
+            }
+        );
+
+        const Texture::ScopedRender right_arrow_renderer = m_right_arrow_texture->set_as_render_target();
+
+        Shape::rounded_line(
+            m_renderer,
+            thickness,
+            height - thickness,
+            width - thickness,
+            (height + thickness) / 2.0,
+            thickness,
+            Color::WHITE
+        );
+        Shape::rounded_line(
+            m_renderer,
+            thickness,
+            thickness,
+            width - thickness,
+            (height - thickness) / 2.0,
+            thickness,
+            Color::WHITE
+        );
     }
 
     void make_difficulty_textures() {
