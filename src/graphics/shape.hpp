@@ -40,6 +40,20 @@ public:
         aaArcRGBA(renderer, x + radius, y + radius, real_radius, real_radius, 0, 360, thickness, r, g, b, a);
     }
 
+    static void circle_sector(
+        SDL_Renderer *renderer,
+        const float x,
+        const float y,
+        const float radius,
+        const float from,
+        const float to,
+        const Color::Name color
+    ) {
+        const auto [r, g, b, a] = Color::get(color).get_rgb();
+
+        aaFilledPieRGBA(renderer, x + radius, y + radius, radius, radius, from, to, 0, r, g, b, a);
+    }
+
     static void filled_rectangle(SDL_Renderer *renderer, const SDL_Rect &rectangle, const Color::Name color) {
         const auto [r, g, b, a] = Color::get(color).get_rgb();
 

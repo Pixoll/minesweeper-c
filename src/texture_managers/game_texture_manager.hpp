@@ -119,11 +119,13 @@ private:
     static constexpr auto CELL_MAP_IMAGE_PATH = "assets/textures/cell_map.png";
     static constexpr auto MINE_IMAGE_PATH = "assets/textures/mine.png";
     static constexpr auto FLAG_IMAGE_PATH = "assets/textures/flag.png";
-    static constexpr auto MOUSE_LEFT_ICON_PATH = "assets/textures/mouse_left.png";
-    static constexpr auto MOUSE_RIGHT_ICON_PATH = "assets/textures/mouse_right.png";
 
+    // height:weight
+    static constexpr double MOUSE_ICON_RATIO = 45.0 / 32;
+    static constexpr double MOUSE_ICON_H_LINE_REL_POS = 23.0 / 45;
     static constexpr double ACTION_TOGGLE_THICKNESS_FACTOR = 1.0 / 32;
     static constexpr double BACK_BUTTON_THICKNESS_FACTOR = 1.0 / 8;
+    static constexpr double MOUSE_ICON_THICKNESS_FACTOR = 1.0 / 8;
 
     static constexpr CellTextureSetParameters CELL_TEXTURE_SET_PARAMETERS[CELL_SUBTYPES] = {
         {Color::THEME, nullptr, 0, Color::BACKGROUND},
@@ -454,17 +456,24 @@ private:
         const bool swapped_controls = Settings::is_on(Settings::SWAP_CONTROLS);
         const bool single_click_controls = Settings::is_on(Settings::SINGLE_CLICK_CONTROLS);
         const int icon_height = Font::get_shared(Font::PRIMARY)->get_size() * 1.25;
+        const double icon_width = icon_height / MOUSE_ICON_RATIO;
+        const int icon_x = m_window_width - icon_width - m_window_padding;
+        const int icon_thickness = icon_width * MOUSE_ICON_THICKNESS_FACTOR;
+        const int text_x_offset = icon_x - m_window_padding / 2;
+        const int icon_h_line_y = icon_width * MOUSE_ICON_H_LINE_REL_POS;
 
         m_mouse_left_icon_texture = std::make_shared<Texture>(
             m_renderer,
-            !swapped_controls ? MOUSE_LEFT_ICON_PATH : MOUSE_RIGHT_ICON_PATH
+            SDL_Rect{icon_x, m_window_padding, static_cast<int>(icon_width), icon_height}
         );
-        m_mouse_left_icon_texture->set_height(icon_height);
-
-        const int icon_x = m_window_width - m_mouse_left_icon_texture->get_w() - m_window_padding;
-        const int text_x_offset = icon_x - m_window_padding / 2;
-
-        m_mouse_left_icon_texture->set_position(icon_x, m_window_padding);
+        render_mouse_icon(
+            m_mouse_left_icon_texture,
+            icon_width,
+            icon_height,
+            icon_thickness,
+            icon_h_line_y,
+            !swapped_controls
+        );
 
         m_mouse_left_text_texture = std::make_shared<Texture>(
             m_renderer,
@@ -482,10 +491,21 @@ private:
 
         m_mouse_right_icon_texture = std::make_shared<Texture>(
             m_renderer,
-            !swapped_controls ? MOUSE_RIGHT_ICON_PATH : MOUSE_LEFT_ICON_PATH
+            SDL_Rect{
+                icon_x,
+                static_cast<int>(icon_height + m_window_padding * 1.5),
+                static_cast<int>(icon_width),
+                icon_height
+            }
         );
-        m_mouse_right_icon_texture->set_height(icon_height);
-        m_mouse_right_icon_texture->set_position(icon_x, icon_height + m_window_padding * 1.5);
+        render_mouse_icon(
+            m_mouse_right_icon_texture,
+            icon_width,
+            icon_height,
+            icon_thickness,
+            icon_h_line_y,
+            swapped_controls
+        );
 
         m_mouse_right_text_texture = std::make_shared<Texture>(
             m_renderer,
@@ -587,6 +607,39 @@ private:
         m_click_to_start_texture->set_position(
             (m_window_width - m_click_to_start_texture->get_w()) / 2,
             (m_window_height - m_click_to_start_texture->get_h()) / 2
+        );
+    }
+
+    void render_mouse_icon(
+        const GameTexture &icon_texture,
+        const double width,
+        const int height,
+        const double thickness,
+        const int h_line_y,
+        const bool is_left
+    ) const {
+        const Texture::ScopedRender scoped_render = icon_texture->set_as_render_target();
+
+        Shape::rounded_rectangle(
+            m_renderer,
+            {0, 0, static_cast<int>(width), height},
+            thickness,
+            (width - thickness) / 2,
+            Color::WHITE
+        );
+        Shape::filled_rectangle(
+            m_renderer,
+            {0, h_line_y, static_cast<int>(width), static_cast<int>(thickness)},
+            Color::WHITE
+        );
+        Shape::circle_sector(
+            m_renderer,
+            0,
+            0,
+            width / 2,
+            is_left ? 180 : 270,
+            is_left ? 270 : 0,
+            Color::WHITE
         );
     }
 };
