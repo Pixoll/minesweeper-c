@@ -238,6 +238,16 @@ SDL2_GFXPRIMITIVES_SCOPE int thickLineColor(
     Uint8 width,
     Uint32 color
 );
+SDL2_GFXPRIMITIVES_SCOPE int thickLineColorStyle(
+    SDL_Renderer *renderer,
+    Sint16 x1,
+    Sint16 y1,
+    Sint16 x2,
+    Sint16 y2,
+    Uint8 width,
+    Uint32 color,
+    int style
+);
 SDL2_GFXPRIMITIVES_SCOPE int thickLineRGBA(
     SDL_Renderer *renderer,
     Sint16 x1,
@@ -289,6 +299,60 @@ SDL2_GFXPRIMITIVES_SCOPE int arcRGBA(
     Uint8 a
 );
 
+/* AA Arc */
+
+SDL2_GFXPRIMITIVES_SCOPE int aaArcColor(
+    SDL_Renderer *renderer,
+    float cx,
+    float cy,
+    float rx,
+    float ry,
+    float start,
+    float end,
+    float thick,
+    Uint32 color
+);
+SDL2_GFXPRIMITIVES_SCOPE int aaArcRGBA(
+    SDL_Renderer *renderer,
+    float cx,
+    float cy,
+    float rx,
+    float ry,
+    float start,
+    float end,
+    float thick,
+    Uint8 r,
+    Uint8 g,
+    Uint8 b,
+    Uint8 a
+);
+
+/* Thick Arc */
+
+SDL2_GFXPRIMITIVES_SCOPE int thickArcColor(
+    SDL_Renderer *renderer,
+    Sint16 x,
+    Sint16 y,
+    Sint16 rad,
+    Sint16 start,
+    Sint16 end,
+    Uint32 color,
+    Uint8 thick
+);
+SDL2_GFXPRIMITIVES_SCOPE int thickArcRGBA(
+    SDL_Renderer *renderer,
+    Sint16 xc,
+    Sint16 yc,
+    Sint16 rad,
+    Sint16 start,
+    Sint16 end,
+    Uint8 r,
+    Uint8 g,
+    Uint8 b,
+    Uint8 a,
+    Uint8 thick
+);
+
 /* AA Circle */
 
 SDL2_GFXPRIMITIVES_SCOPE int aacircleColor(SDL_Renderer *renderer, Sint16 x, Sint16 y, Sint16 rad, Uint32 color);
@@ -301,6 +365,28 @@ SDL2_GFXPRIMITIVES_SCOPE int aacircleRGBA(
     Uint8 g,
     Uint8 b,
     Uint8 a
+);
+
+/* Thick Circle */
+
+SDL2_GFXPRIMITIVES_SCOPE int thickCircleColor(
+    SDL_Renderer *renderer,
+    Sint16 x,
+    Sint16 y,
+    Sint16 rad,
+    Uint32 color,
+    Uint8 thick
+);
+SDL2_GFXPRIMITIVES_SCOPE int thickCircleRGBA(
+    SDL_Renderer *renderer,
+    Sint16 x,
+    Sint16 y,
+    Sint16 rad,
+    Uint8 r,
+    Uint8 g,
+    Uint8 b,
+    Uint8 a,
+    Uint8 thick
 );
 
 /* Filled Circle */
@@ -361,6 +447,30 @@ SDL2_GFXPRIMITIVES_SCOPE int aaellipseRGBA(
     Uint8 a
 );
 
+/* Thick Ellipse */
+
+SDL2_GFXPRIMITIVES_SCOPE int thickEllipseColor(
+    SDL_Renderer *renderer,
+    Sint16 x,
+    Sint16 y,
+    Sint16 rx,
+    Sint16 ry,
+    Uint32 color,
+    Uint8 thick
+);
+SDL2_GFXPRIMITIVES_SCOPE int thickEllipseRGBA(
+    SDL_Renderer *renderer,
+    Sint16 xc,
+    Sint16 yc,
+    Sint16 xr,
+    Sint16 yr,
+    Uint8 r,
+    Uint8 g,
+    Uint8 b,
+    Uint8 a,
+    Uint8 thick
+);
+
 /* Filled Ellipse */
 
 SDL2_GFXPRIMITIVES_SCOPE int filledEllipseColor(
@@ -377,6 +487,28 @@ SDL2_GFXPRIMITIVES_SCOPE int filledEllipseRGBA(
     Sint16 y,
     Sint16 rx,
     Sint16 ry,
+    Uint8 r,
+    Uint8 g,
+    Uint8 b,
+    Uint8 a
+);
+
+/* AA Filled Elipse */
+
+SDL2_GFXPRIMITIVES_SCOPE int aaFilledEllipseColor(
+    SDL_Renderer *renderer,
+    float cx,
+    float cy,
+    float rx,
+    float ry,
+    Uint32 color
+);
+SDL2_GFXPRIMITIVES_SCOPE int aaFilledEllipseRGBA(
+    SDL_Renderer *renderer,
+    float cx,
+    float cy,
+    float rx,
+    float ry,
     Uint8 r,
     Uint8 g,
     Uint8 b,
@@ -425,6 +557,34 @@ SDL2_GFXPRIMITIVES_SCOPE int filledPieRGBA(
     Sint16 rad,
     Sint16 start,
     Sint16 end,
+    Uint8 r,
+    Uint8 g,
+    Uint8 b,
+    Uint8 a
+);
+
+/* AA Filled Pie */
+
+SDL2_GFXPRIMITIVES_SCOPE int aaFilledPieColor(
+    SDL_Renderer *renderer,
+    float cx,
+    float cy,
+    float rx,
+    float ry,
+    float start,
+    float end,
+    Uint32 chord,
+    Uint32 color
+);
+SDL2_GFXPRIMITIVES_SCOPE int aaFilledPieRGBA(
+    SDL_Renderer *renderer,
+    float cx,
+    float cy,
+    float rx,
+    float ry,
+    float start,
+    float end,
+    Uint32 chord,
     Uint8 r,
     Uint8 g,
     Uint8 b,
@@ -569,6 +729,25 @@ SDL2_GFXPRIMITIVES_SCOPE int filledPolygonRGBA(
     Uint8 a
 );
 
+/* AA Filled Polygon */
+SDL2_GFXPRIMITIVES_SCOPE int aaFilledPolygonColor(
+    SDL_Renderer *renderer,
+    const double *vx,
+    const double *vy,
+    int n,
+    Uint32 color
+);
+SDL2_GFXPRIMITIVES_SCOPE int aaFilledPolygonRGBA(
+    SDL_Renderer *renderer,
+    const double *vx,
+    const double *vy,
+    int n,
+    Uint8 r,
+    Uint8 g,
+    Uint8 b,
+    Uint8 a
+);
+
 /* Textured Polygon */
 
 SDL2_GFXPRIMITIVES_SCOPE int texturedPolygon(
@@ -603,10 +782,80 @@ SDL2_GFXPRIMITIVES_SCOPE int bezierRGBA(
     Uint8 a
 );
 
+/* AA Bezier */
+
+SDL2_GFXPRIMITIVES_SCOPE int aaBezierColor(
+    SDL_Renderer *renderer,
+    const double *x,
+    const double *y,
+    int n,
+    int s,
+    float thick,
+    Uint32 color
+);
+SDL2_GFXPRIMITIVES_SCOPE int aaBezierRGBA(
+    SDL_Renderer *renderer,
+    const double *x,
+    const double *y,
+    int n,
+    int s,
+    float thick,
+    Uint8 r,
+    Uint8 g,
+    Uint8 b,
+    Uint8 a
+);
+
+/* Filled Poly Bezier */
+
+SDL2_GFXPRIMITIVES_SCOPE int filledPolyBezierColor(
+    SDL_Renderer *renderer,
+    const Sint16 *x,
+    const Sint16 *y,
+    int n,
+    int s,
+    Uint32 color
+);
+SDL2_GFXPRIMITIVES_SCOPE int filledPolyBezierRGBA(
+    SDL_Renderer *renderer,
+    const Sint16 *x,
+    const Sint16 *y,
+    int n,
+    int s,
+    Uint8 r,
+    Uint8 g,
+    Uint8 b,
+    Uint8 a
+);
+
+/* AA Filled Poly Bezier */
+
+SDL2_GFXPRIMITIVES_SCOPE int aaFilledPolyBezierColor(
+    SDL_Renderer *renderer,
+    const double *x,
+    const double *y,
+    int n,
+    int s,
+    Uint32 color
+);
+SDL2_GFXPRIMITIVES_SCOPE int aaFilledPolyBezierRGBA(
+    SDL_Renderer *renderer,
+    const double *x,
+    const double *y,
+    int n,
+    int s,
+    Uint8 r,
+    Uint8 g,
+    Uint8 b,
+    Uint8 a
+);
+
 /* Characters/Strings */
 
 SDL2_GFXPRIMITIVES_SCOPE void gfxPrimitivesSetFont(const void *fontdata, Uint32 cw, Uint32 ch);
+SDL2_GFXPRIMITIVES_SCOPE const unsigned char *gfxPrimitivesGetFont();
 SDL2_GFXPRIMITIVES_SCOPE void gfxPrimitivesSetFontRotation(Uint32 rotation);
+SDL2_GFXPRIMITIVES_SCOPE void gfxPrimitivesSetFontZoom(Uint32 zoomx, Uint32 zoomy);
 SDL2_GFXPRIMITIVES_SCOPE int characterColor(SDL_Renderer *renderer, Sint16 x, Sint16 y, char c, Uint32 color);
 SDL2_GFXPRIMITIVES_SCOPE int characterRGBA(
     SDL_Renderer *renderer,
@@ -617,6 +866,13 @@ SDL2_GFXPRIMITIVES_SCOPE int characterRGBA(
     Uint8 g,
     Uint8 b,
     Uint8 a
+);
+SDL2_GFXPRIMITIVES_SCOPE int redefineChar(
+    SDL_Renderer *renderer,
+    char c,
+    const unsigned char *charpos,
+    Uint32 width,
+    Uint32 height
 );
 SDL2_GFXPRIMITIVES_SCOPE int stringColor(SDL_Renderer *renderer, Sint16 x, Sint16 y, const char *s, Uint32 color);
 SDL2_GFXPRIMITIVES_SCOPE int stringRGBA(
