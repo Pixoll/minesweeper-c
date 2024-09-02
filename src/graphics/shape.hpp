@@ -73,6 +73,7 @@ public:
 
         const int radius_int = radius;
         const int thickness_int = thickness;
+        const double arc_radius = radius - thickness / 2;
 
         const SDL_Rect borders[4] = {
             {x, y + radius_int, thickness_int, h - radius_int * 2}, // left
@@ -82,10 +83,10 @@ public:
         };
 
         const SDL_FPoint corners_centers[4] = {
-            {x + w - radius - thickness / 2.0f, y + h - radius - thickness / 2.0f}, // bottom right
-            {x + radius + thickness / 2.0f, y + h - radius - thickness / 2.0f}, // bottom left
-            {x + radius + thickness / 2.0f, y + radius + thickness / 2.0f}, // top left
-            {x + w - radius - thickness / 2.0f, y + radius + thickness / 2.0f}, // top right
+            {x + w - radius, y + h - radius}, // bottom right
+            {x + radius, y + h - radius}, // bottom left
+            {x + radius, y + radius}, // top left
+            {x + w - radius, y + radius}, // top right
         };
 
         SDL_SetRenderDrawColor(renderer, r, g, b, a);
@@ -93,7 +94,20 @@ public:
 
         for (int i = 0; i < 4; i++) {
             const auto &[x, y] = corners_centers[i];
-            aaArcRGBA(renderer, x, y, radius, radius, 90 * i, 90 * (i + 1), thickness, r, g, b, a);
+            aaArcRGBA(
+                renderer,
+                x,
+                y,
+                arc_radius,
+                arc_radius,
+                90 * i,
+                90 * (i + 1),
+                thickness,
+                r,
+                g,
+                b,
+                a
+            );
         }
     }
 
