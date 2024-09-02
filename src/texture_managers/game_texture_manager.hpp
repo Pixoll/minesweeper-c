@@ -10,6 +10,7 @@
 #include "../graphics/font.hpp"
 #include "../graphics/shape.hpp"
 #include "../graphics/texture.hpp"
+#include "../graphics/texture_bundle.hpp"
 
 class GameTextureManager {
 public:
@@ -102,7 +103,13 @@ public:
         ACTION_TOGGLE_FLAG_SELECTED,
     };
 
+    enum TextureBundleName {
+        GAME_LOST,
+        GAME_WON,
+    };
+
     using GameTexture = std::shared_ptr<Texture>;
+    using GameTextureBundle = std::shared_ptr<TextureBundle>;
 
 private:
     struct CellTextureSetParameters {
@@ -165,6 +172,9 @@ private:
     GameTexture m_back_button_texture;
     GameTexture m_click_to_start_texture;
 
+    GameTextureBundle m_game_lost_texture_bundle;
+    GameTextureBundle m_game_won_texture_bundle;
+
 public:
     GameTextureManager(
         SDL_Renderer *renderer,
@@ -182,6 +192,8 @@ public:
         make_remaining_mines_textures();
         make_game_time_texture();
         make_click_to_start_texture();
+        make_game_lost_texture_bundle();
+        make_game_won_texture_bundle();
 
         if (Settings::is_on(Settings::SHOW_CONTROLS))
             make_mouse_controls_textures();
@@ -243,6 +255,14 @@ public:
             case ACTION_TOGGLE_MINE_SELECTED: return m_action_toggle_mine_selected_texture;
             case ACTION_TOGGLE_FLAG: return m_action_toggle_flag_texture;
             case ACTION_TOGGLE_FLAG_SELECTED: return m_action_toggle_flag_selected_texture;
+        }
+        __builtin_unreachable();
+    }
+
+    [[nodiscard]] GameTextureBundle get(const TextureBundleName name) const {
+        switch (name) {
+            case GAME_LOST: return m_game_lost_texture_bundle;
+            case GAME_WON: return m_game_won_texture_bundle;
         }
         __builtin_unreachable();
     }
@@ -609,6 +629,41 @@ private:
             (m_window_height - m_click_to_start_texture->get_h()) / 2
         );
     }
+
+    void make_game_lost_texture_bundle() {
+        TextureBundle bundle;
+
+        const int box_width = m_window_width * 0.4;
+        const int box_height = box_width * 3 / 4;
+        const int box_x = (m_window_width - box_width) / 2;
+        const int box_y = (m_window_height - box_height) / 2;
+        const float box_thickness = box_width * 0.002;
+        const float box_radius = box_width * 0.05;
+
+        const auto background_texture = std::make_shared<Texture>(
+            m_renderer,
+            SDL_Rect{0, 0, m_window_width, m_window_height}
+        );
+        bundle.add(background_texture);
+
+        const Texture::ScopedRender background_renderer = background_texture->set_as_render_target();
+
+        Shape::filled_rectangle(m_renderer, background_texture->get_area(), {0, 0, 0, 128});
+        Shape::filled_rounded_rectangle(
+            m_renderer,
+            {box_x, box_y, box_width, box_height},
+            box_thickness,
+            box_radius,
+            Color::BACKGROUND,
+            Color::LIGHTER_GREY
+        );
+
+        background_renderer.release();
+
+        m_game_lost_texture_bundle = std::make_shared<TextureBundle>(bundle);
+    }
+
+    void make_game_won_texture_bundle() {}
 
     void render_mouse_icon(
         const GameTexture &icon_texture,

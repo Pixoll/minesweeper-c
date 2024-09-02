@@ -54,11 +54,72 @@ public:
         aaFilledPieRGBA(renderer, x + radius, y + radius, radius, radius, from, to, 0, r, g, b, a);
     }
 
-    static void filled_rectangle(SDL_Renderer *renderer, const SDL_Rect &rectangle, const Color::Name color) {
-        const auto [r, g, b, a] = Color::get(color).get_rgb();
+    static void filled_rectangle(SDL_Renderer *renderer, const SDL_Rect &rectangle, const SDL_Color &color) {
+        const auto [r, g, b, a] = color;
 
         SDL_SetRenderDrawColor(renderer, r, g, b, a);
         SDL_RenderFillRect(renderer, &rectangle);
+    }
+
+    static void filled_rectangle(SDL_Renderer *renderer, const SDL_Rect &rectangle, const Color::Name color) {
+        filled_rectangle(renderer, rectangle, Color::get(color).get_rgb());
+    }
+
+    static void filled_rounded_rectangle(
+        SDL_Renderer *renderer,
+        const SDL_Rect &rectangle,
+        const float border_thickness,
+        const float radius,
+        const Color::Name color,
+        const Color::Name border_color
+    ) {
+        const auto [x, y, w, h] = rectangle;
+        const auto [r, g, b, a] = Color::get(color).get_rgb();
+
+        const int radius_int = radius;
+        const int fill_padding = border_thickness / 2;
+        const double fill_radius = radius - border_thickness / 2;
+
+        const SDL_Rect rect_filling[3] = {
+            {x + fill_padding, y + radius_int, w - fill_padding * 2, h - radius_int * 2}, // middle
+            {x + radius_int, y + fill_padding, w - radius_int * 2, radius_int - fill_padding}, // top
+            {
+                x + radius_int,
+                y + h - radius_int - fill_padding,
+                w - radius_int * 2,
+                radius_int - fill_padding
+            }, // bottom
+        };
+
+        const SDL_FPoint corners_centers[4] = {
+            {x + w - radius, y + h - radius}, // bottom right
+            {x + radius, y + h - radius}, // bottom left
+            {x + radius, y + radius}, // top left
+            {x + w - radius, y + radius}, // top right
+        };
+
+        SDL_SetRenderDrawColor(renderer, r, g, b, a);
+        SDL_RenderFillRects(renderer, rect_filling, 4);
+
+        for (int i = 0; i < 4; i++) {
+            const auto &[x, y] = corners_centers[i];
+            aaFilledPieRGBA(
+                renderer,
+                x,
+                y,
+                fill_radius,
+                fill_radius,
+                90 * i,
+                90 * (i + 1),
+                0,
+                r,
+                g,
+                b,
+                a
+            );
+        }
+
+        rounded_rectangle(renderer, rectangle, border_thickness, radius, border_color);
     }
 
     static void rounded_rectangle(

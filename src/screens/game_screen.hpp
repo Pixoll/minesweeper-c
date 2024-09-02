@@ -14,6 +14,7 @@ class MainMenuScreen;
 class GameScreen final : virtual public Screen {
     using GameTexture = GameTextureManager::GameTexture;
     using TextureName = GameTextureManager::TextureName;
+    using TextureBundleName = GameTextureManager::TextureBundleName;
 
     Engine *m_engine;
     int m_window_width;
@@ -215,6 +216,10 @@ public:
 
         if (!m_started_game)
             m_texture_manager.get(TextureName::CLICK_TO_START)->render();
+
+        if (m_game.is_over() && !m_game.has_won()) {
+            m_texture_manager.get(TextureBundleName::GAME_LOST)->render();
+        }
     }
 
 private:
