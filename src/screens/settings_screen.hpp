@@ -44,20 +44,7 @@ public:
 
     ~SettingsScreen() override = default;
 
-    void before_event(const SDL_Event &event) override {
-        SDL_Point cursor_pos;
-        SDL_GetMouseState(&cursor_pos.x, &cursor_pos.y);
-
-        const bool cursor_in_back_button = m_texture_manager.get(TextureName::BACK_BUTTON)->contains(cursor_pos);
-        const bool cursor_in_scrollbar = m_texture_manager.get(TextureName::SCROLLBAR)->contains(cursor_pos);
-        const bool cursor_in_setting_toggle = mouse_on_setting_toggle(cursor_pos);
-
-        SDL_SetCursor(
-            cursor_in_back_button || cursor_in_scrollbar || cursor_in_setting_toggle
-            ? m_hand_cursor
-            : m_arrow_cursor
-        );
-    }
+    void before_event(const SDL_Event &event) override {}
 
     void on_keyboard_event(const SDL_KeyboardEvent &event) override {
         if (event.type != SDL_KEYDOWN || event.keysym.sym != SDLK_ESCAPE)
@@ -101,6 +88,19 @@ public:
     }
 
     void on_mouse_motion_event(const SDL_MouseMotionEvent &event) override {
+        SDL_Point cursor_pos;
+        SDL_GetMouseState(&cursor_pos.x, &cursor_pos.y);
+
+        const bool cursor_in_back_button = m_texture_manager.get(TextureName::BACK_BUTTON)->contains(cursor_pos);
+        const bool cursor_in_scrollbar = m_texture_manager.get(TextureName::SCROLLBAR)->contains(cursor_pos);
+        const bool cursor_in_setting_toggle = mouse_on_setting_toggle(cursor_pos);
+
+        SDL_SetCursor(
+            cursor_in_back_button || cursor_in_scrollbar || cursor_in_setting_toggle
+            ? m_hand_cursor
+            : m_arrow_cursor
+        );
+
         // ReSharper disable once CppDFAConstantConditions
         if (!m_holding_scrollbar)
             return;

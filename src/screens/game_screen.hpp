@@ -48,26 +48,7 @@ public:
 
     ~GameScreen() override = default;
 
-    void before_event(const SDL_Event &event) override {
-        const bool single_click_controls = Settings::is_on(Settings::SINGLE_CLICK_CONTROLS);
-
-        SDL_Point cursor_pos;
-        SDL_GetMouseState(&cursor_pos.x, &cursor_pos.y);
-
-        const bool cursor_in_back_button = m_texture_manager.get(TextureName::BACK_BUTTON)->contains(cursor_pos);
-
-        const bool curor_in_flag_action_toggle = single_click_controls
-                && m_texture_manager.get(TextureName::ACTION_TOGGLE_FLAG)->contains(cursor_pos);
-
-        const bool curor_in_mine_action_toggle = single_click_controls
-                && m_texture_manager.get(TextureName::ACTION_TOGGLE_MINE)->contains(cursor_pos);
-
-        SDL_SetCursor(
-            cursor_in_back_button || curor_in_flag_action_toggle || curor_in_mine_action_toggle
-            ? m_hand_cursor
-            : m_arrow_cursor
-        );
-    }
+    void before_event(const SDL_Event &event) override {}
 
     void on_keyboard_event(const SDL_KeyboardEvent &event) override {
         if (event.type != SDL_KEYDOWN || event.keysym.sym != SDLK_ESCAPE)
@@ -171,7 +152,26 @@ public:
         m_game.toggle_cell_flag(x, y);
     }
 
-    void on_mouse_motion_event(const SDL_MouseMotionEvent &event) override {}
+    void on_mouse_motion_event(const SDL_MouseMotionEvent &event) override {
+        const bool single_click_controls = Settings::is_on(Settings::SINGLE_CLICK_CONTROLS);
+
+        SDL_Point cursor_pos;
+        SDL_GetMouseState(&cursor_pos.x, &cursor_pos.y);
+
+        const bool cursor_in_back_button = m_texture_manager.get(TextureName::BACK_BUTTON)->contains(cursor_pos);
+
+        const bool curor_in_flag_action_toggle = single_click_controls
+                && m_texture_manager.get(TextureName::ACTION_TOGGLE_FLAG)->contains(cursor_pos);
+
+        const bool curor_in_mine_action_toggle = single_click_controls
+                && m_texture_manager.get(TextureName::ACTION_TOGGLE_MINE)->contains(cursor_pos);
+
+        SDL_SetCursor(
+            cursor_in_back_button || curor_in_flag_action_toggle || curor_in_mine_action_toggle
+            ? m_hand_cursor
+            : m_arrow_cursor
+        );
+    }
 
     void on_mouse_wheel_event(const SDL_MouseWheelEvent &event) override {}
 

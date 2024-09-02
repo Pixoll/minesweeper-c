@@ -31,38 +31,7 @@ public:
 
     ~MainMenuScreen() override = default;
 
-    void before_event(const SDL_Event &event) override {
-        SDL_Point cursor_pos;
-        SDL_GetMouseState(&cursor_pos.x, &cursor_pos.y);
-
-        const bool cursor_in_quit_button = m_texture_manager.get(TextureName::QUIT_BUTTON)->contains(cursor_pos);
-
-        const bool cursor_in_settings_button = m_texture_manager.get(TextureName::SETTINGS_BUTTON)
-                                                               ->contains(cursor_pos);
-
-        const bool cursor_in_new_game_button = m_texture_manager.get(TextureName::NEW_GAME_BUTTON)
-                                                               ->contains(cursor_pos);
-
-        const bool cursor_in_continue_button = Game::save_exists(selected_difficulty)
-                && m_texture_manager.get(TextureName::CONTINUE_GAME_BUTTON)->contains(cursor_pos);
-
-        const bool cursor_in_left_arrow = selected_difficulty != Game::DIFFIC_LOWEST
-                && m_texture_manager.get(TextureName::LEFT_ARROW)->contains(cursor_pos);
-
-        const bool cursor_in_right_arrow = selected_difficulty != Game::DIFFIC_HIGHEST
-                && m_texture_manager.get(TextureName::RIGHT_ARROW)->contains(cursor_pos);
-
-        SDL_SetCursor(
-            cursor_in_quit_button
-            || cursor_in_settings_button
-            || cursor_in_new_game_button
-            || cursor_in_continue_button
-            || cursor_in_left_arrow
-            || cursor_in_right_arrow
-            ? m_hand_cursor
-            : m_arrow_cursor
-        );
-    }
+    void before_event(const SDL_Event &event) override {}
 
     void on_keyboard_event(const SDL_KeyboardEvent &event) override {
         if (event.type != SDL_KEYDOWN || event.keysym.sym != SDLK_ESCAPE)
@@ -132,7 +101,38 @@ public:
         }
     }
 
-    void on_mouse_motion_event(const SDL_MouseMotionEvent &event) override {}
+    void on_mouse_motion_event(const SDL_MouseMotionEvent &event) override {
+        SDL_Point cursor_pos;
+        SDL_GetMouseState(&cursor_pos.x, &cursor_pos.y);
+
+        const bool cursor_in_quit_button = m_texture_manager.get(TextureName::QUIT_BUTTON)->contains(cursor_pos);
+
+        const bool cursor_in_settings_button = m_texture_manager.get(TextureName::SETTINGS_BUTTON)
+                                                               ->contains(cursor_pos);
+
+        const bool cursor_in_new_game_button = m_texture_manager.get(TextureName::NEW_GAME_BUTTON)
+                                                               ->contains(cursor_pos);
+
+        const bool cursor_in_continue_button = Game::save_exists(selected_difficulty)
+                && m_texture_manager.get(TextureName::CONTINUE_GAME_BUTTON)->contains(cursor_pos);
+
+        const bool cursor_in_left_arrow = selected_difficulty != Game::DIFFIC_LOWEST
+                && m_texture_manager.get(TextureName::LEFT_ARROW)->contains(cursor_pos);
+
+        const bool cursor_in_right_arrow = selected_difficulty != Game::DIFFIC_HIGHEST
+                && m_texture_manager.get(TextureName::RIGHT_ARROW)->contains(cursor_pos);
+
+        SDL_SetCursor(
+            cursor_in_quit_button
+            || cursor_in_settings_button
+            || cursor_in_new_game_button
+            || cursor_in_continue_button
+            || cursor_in_left_arrow
+            || cursor_in_right_arrow
+            ? m_hand_cursor
+            : m_arrow_cursor
+        );
+    }
 
     void on_mouse_wheel_event(const SDL_MouseWheelEvent &event) override {}
 
