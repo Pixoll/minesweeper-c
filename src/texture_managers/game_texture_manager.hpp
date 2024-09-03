@@ -3,6 +3,7 @@
 #include <iostream>
 #include <memory>
 #include <SDL.h>
+#include <string>
 
 #include "../core/game.hpp"
 #include "../core/settings.hpp"
@@ -144,9 +145,12 @@ private:
 
     SDL_Renderer *m_renderer;
     const Game::Measurements &m_measurements;
+    const Game::Difficulty m_game_difficulty;
     const int m_window_width;
     const int m_window_height;
     const int m_window_padding;
+
+    Font m_game_over_font;
 
     GameTexture m_h_grid_line_texture;
     GameTexture m_v_grid_line_texture;
@@ -179,13 +183,16 @@ public:
     GameTextureManager(
         SDL_Renderer *renderer,
         const Game::Measurements &measurements,
+        const Game::Difficulty difficulty,
         const int window_width,
         const int window_height
     ) : m_renderer(renderer),
         m_measurements(measurements),
+        m_game_difficulty(difficulty),
         m_window_width(window_width),
         m_window_height(window_height),
-        m_window_padding(window_height * 0.025) {
+        m_window_padding(window_height * 0.025),
+        m_game_over_font(Font::RUBIK_REGULAR, window_height * 0.03) {
         make_grid_lines_textures();
         make_cell_numbers_textures();
         make_back_button_texture();
@@ -631,24 +638,28 @@ private:
     }
 
     void make_game_lost_texture_bundle() {
-        TextureBundle bundle;
+        m_game_lost_texture_bundle = std::make_shared<TextureBundle>();
 
-        const int box_width = m_window_width * 0.4;
+        const int box_width = m_window_width * 0.3;
         const int box_height = box_width * 3 / 4;
         const int box_x = (m_window_width - box_width) / 2;
         const int box_y = (m_window_height - box_height) / 2;
         const float box_thickness = box_width * 0.002;
-        const float box_radius = box_width * 0.05;
+        const float box_radius = box_width * 0.025;
+        SDL_Color backgound_color = Color::get(Color::LIGHTER_GREY).get_rgb();
+        backgound_color.a = 64;
+
+        TTF_Font *const game_over_font = m_game_over_font.get_raw();
 
         const auto background_texture = std::make_shared<Texture>(
             m_renderer,
             SDL_Rect{0, 0, m_window_width, m_window_height}
         );
-        bundle.add(background_texture);
+        m_game_lost_texture_bundle->add(background_texture);
 
         const Texture::ScopedRender background_renderer = background_texture->set_as_render_target();
 
-        Shape::filled_rectangle(m_renderer, background_texture->get_area(), {0, 0, 0, 128});
+        Shape::filled_rectangle(m_renderer, background_texture->get_area(), backgound_color);
         Shape::filled_rounded_rectangle(
             m_renderer,
             {box_x, box_y, box_width, box_height},
@@ -660,7 +671,29 @@ private:
 
         background_renderer.release();
 
-        m_game_lost_texture_bundle = std::make_shared<TextureBundle>(bundle);
+        const auto game_over_text_texture = std::make_shared<Texture>(
+            m_renderer,
+            game_over_font,
+            "Gave Over",
+            Color::WHITE
+        );
+        game_over_text_texture->set_position(
+            box_x + (box_width - game_over_text_texture->get_w()) / 2,
+            box_y + box_height * 0.1
+        );
+        m_game_lost_texture_bundle->add(game_over_text_texture);
+
+        const auto game_difficulty_text_texture = std::make_shared<Texture>(
+            m_renderer,
+            Font::get_shared(Font::SECONDARY)->get_raw(),
+            std::string("Difficulty: ") + Game::DIFFICULTY_NAMES[m_game_difficulty],
+            Color::WHITE
+        );
+        game_difficulty_text_texture->set_position(
+            box_x + (box_width - game_difficulty_text_texture->get_w()) / 2,
+            game_over_text_texture->get_y() + game_over_text_texture->get_h() * 1.25
+        );
+        m_game_lost_texture_bundle->add(game_difficulty_text_texture);
     }
 
     void make_game_won_texture_bundle() {}

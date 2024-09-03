@@ -36,7 +36,13 @@ public:
         m_window_width(engine->get_window_width()),
         m_window_height(engine->get_window_height()),
         m_game(difficulty, engine->get_window_width(), engine->get_window_height()),
-        m_texture_manager(engine->get_renderer(), m_game.get_measurements(), m_window_width, m_window_height),
+        m_texture_manager(
+            engine->get_renderer(),
+            m_game.get_measurements(),
+            difficulty,
+            m_window_width,
+            m_window_height
+        ),
         m_started_game(false) {}
 
     explicit GameScreen(Engine *engine, const Game &game) :
@@ -44,7 +50,13 @@ public:
         m_window_width(engine->get_window_width()),
         m_window_height(engine->get_window_height()),
         m_game(game),
-        m_texture_manager(engine->get_renderer(), m_game.get_measurements(), m_window_width, m_window_height),
+        m_texture_manager(
+            engine->get_renderer(),
+            m_game.get_measurements(),
+            m_game.get_difficulty(),
+            m_window_width,
+            m_window_height
+        ),
         m_started_game(true) {}
 
     ~GameScreen() override = default;
