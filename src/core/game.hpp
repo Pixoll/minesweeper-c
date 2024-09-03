@@ -148,6 +148,10 @@ public:
         return m_columns;
     }
 
+    [[nodiscard]] Difficulty get_difficulty() const {
+        return m_difficulty;
+    }
+
     [[nodiscard]] int get_remaining_mines() const {
         return m_total_mines - m_flagged_mines;
     }
