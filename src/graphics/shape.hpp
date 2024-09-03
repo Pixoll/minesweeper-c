@@ -68,13 +68,16 @@ public:
     static void filled_rounded_rectangle(
         SDL_Renderer *renderer,
         const SDL_Rect &rectangle,
-        const float border_thickness,
+        float border_thickness,
         const float radius,
         const Color::Name color,
         const Color::Name border_color
     ) {
         const auto [x, y, w, h] = rectangle;
         const auto [r, g, b, a] = Color::get(color).get_rgb();
+
+        if (border_thickness > 0 && border_thickness < 1)
+            border_thickness = 1;
 
         const int radius_int = radius;
         const int fill_padding = border_thickness / 2;
@@ -125,12 +128,15 @@ public:
     static void rounded_rectangle(
         SDL_Renderer *renderer,
         const SDL_Rect &rectangle,
-        const float thickness,
+        float thickness,
         const float radius,
         const Color::Name color
     ) {
         const auto [x, y, w, h] = rectangle;
         const auto [r, g, b, a] = Color::get(color).get_rgb();
+
+        if (thickness > 0 && thickness < 1)
+            thickness = 1;
 
         const int radius_int = radius;
         const int thickness_int = thickness;
