@@ -1,1 +1,2 @@
 cmake_modules/*.cmake linguist-detectable=false
+include/**/* linguist-detectable=false
